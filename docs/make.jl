@@ -5,12 +5,12 @@ DocMeta.setdocmeta!(haplink, :DocTestSetup, :(using haplink); recursive=true)
 
 makedocs(;
     modules=[haplink],
-    authors="Thomas A. Christensen II <25492070+MillironX@users.noreply.github.com> and contributors",
-    repo="https://github.com/MillironX/haplink.jl/blob/{commit}{path}#{line}",
+    authors="Thomas A. Christensen II, Kansas State University, and contributors",
+    repo="https://github.com/ksumngs/haplink.jl/blob/{commit}{path}#{line}",
     sitename="haplink.jl",
     format=Documenter.HTML(;
         prettyurls=get(ENV, "CI", "false") == "true",
-        canonical="https://MillironX.github.io/haplink.jl",
+        canonical="https://ksumngs.github.io/haplink.jl",
         assets=String[],
     ),
     pages=[
@@ -19,6 +19,6 @@ makedocs(;
 )
 
 deploydocs(;
-    repo="github.com/MillironX/haplink.jl",
+    repo="github.com/ksumngs/haplink.jl",
     devbranch="master",
 )

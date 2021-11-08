@@ -4,7 +4,7 @@ CurrentModule = haplink
 
 # haplink
 
-Documentation for [haplink](https://github.com/MillironX/haplink.jl).
+Documentation for [haplink](https://github.com/msumngs/haplink.jl).
 
 ```@index
 ```
