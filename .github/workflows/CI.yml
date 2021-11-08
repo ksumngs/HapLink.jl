@@ -51,9 +51,9 @@ jobs:
       - run: |
           julia --project=docs -e '
             using Documenter: DocMeta, doctest
-            using haplink
-            DocMeta.setdocmeta!(haplink, :DocTestSetup, :(using haplink); recursive=true)
-            doctest(haplink)'
+            using HapLink
+            DocMeta.setdocmeta!(HapLink, :DocTestSetup, :(using HapLink); recursive=true)
+            doctest(HapLink)'
       - run: julia --project=docs docs/make.jl
         env:
           JULIA_PKG_SERVER: ""

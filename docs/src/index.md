@@ -1,14 +1,14 @@
 ```@meta
-CurrentModule = haplink
+CurrentModule = HapLink
 ```
 
-# haplink
+# HapLink
 
-Documentation for [haplink](https://github.com/msumngs/haplink.jl).
+Documentation for [HapLink](https://github.com/msumngs/HapLink.jl).
 
 ```@index
 ```
 
 ```@autodocs
-Modules = [haplink]
+Modules = [HapLink]
 ```

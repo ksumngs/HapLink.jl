@@ -4,7 +4,7 @@ julia --project="$(realpath "$(dirname "${BASH_SOURCE[0]}")")" -e 'using Pkg; Pk
 exec julia --project="$(realpath "$(dirname "${BASH_SOURCE[0]}")")" "${BASH_SOURCE[0]}" "$@"
 =#
 
-using haplink
+using HapLink
 using ArgParse
 
 s = ArgParseSettings()
@@ -87,4 +87,4 @@ s = ArgParseSettings()
 end
 
 args = parse_args(s)
-haplink.main(args)
+HapLink.main(args)

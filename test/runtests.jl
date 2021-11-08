@@ -1,6 +1,6 @@
-using haplink
+using HapLink
 using Test
 
-@testset "haplink.jl" begin
+@testset "HapLink.jl" begin
     # Write your tests here.
 end

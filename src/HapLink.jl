@@ -1,4 +1,4 @@
-module haplink
+module HapLink
 
 using FASTX
 using HypothesisTests

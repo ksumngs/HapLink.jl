@@ -1,4 +1,4 @@
-name = "haplink"
+name = "HapLink"
 uuid = "8ca39d33-de0d-4205-9b21-13a80f2b7eed"
 authors = ["Thomas A. Christensen II, Kansas State University, and contributors"]
 version = "0.1.0"

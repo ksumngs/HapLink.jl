@@ -1,16 +1,16 @@
-using haplink
+using HapLink
 using Documenter
 
-DocMeta.setdocmeta!(haplink, :DocTestSetup, :(using haplink); recursive=true)
+DocMeta.setdocmeta!(HapLink, :DocTestSetup, :(using HapLink); recursive=true)
 
 makedocs(;
-    modules=[haplink],
+    modules=[HapLink],
     authors="Thomas A. Christensen II, Kansas State University, and contributors",
-    repo="https://github.com/ksumngs/haplink.jl/blob/{commit}{path}#{line}",
-    sitename="haplink.jl",
+    repo="https://github.com/ksumngs/HapLink.jl/blob/{commit}{path}#{line}",
+    sitename="HapLink.jl",
     format=Documenter.HTML(;
         prettyurls=get(ENV, "CI", "false") == "true",
-        canonical="https://ksumngs.github.io/haplink.jl",
+        canonical="https://ksumngs.github.io/HapLink.jl",
         assets=String[],
     ),
     pages=[
@@ -19,6 +19,6 @@ makedocs(;
 )
 
 deploydocs(;
-    repo="github.com/ksumngs/haplink.jl",
+    repo="github.com/ksumngs/HapLink.jl",
     devbranch="master",
 )
