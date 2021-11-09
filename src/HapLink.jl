@@ -257,7 +257,7 @@ function Variant(data::DataFrameRow)
     FILTER = :PASS
     INFO   = Dict(
         "DP" => data.depth,
-        "VD" => data.count
+        "AD" => data.count
     )
     refbase    = data.reference_base
     altbase    = data.base
@@ -352,8 +352,8 @@ function savevcf(vars::AbstractVector{Variant}, savepath::String, refpath::Strin
         write(f, "##FILTER=<ID=q$Q,Description=\"Quality below $Q\">\n")
         write(f, "##FILTER=<ID=x$X,Description=\"Position in outer $X% of reads\">\n")
         write(f, "##FILTER=<ID=sg,Description=\"Not significant at α=$α level by Fisher's Exact Test\">\n")
-        write(f, "##INFO=<ID=DP,Number=1,Type=Integer,Description=\"Total Depth\">\n")
-        write(f, "##INFO=<ID=VD,Number=1,Type=Integer,Description=\"Variant Depth\">\n")
+        write(f, "##INFO=<ID=DP,Number=1,Type=Integer,Description=\"Read Depth\">\n")
+        write(f, "##INFO=<ID=AD,Number=1,Type=Integer,Description=\"Alternate Depth\">\n")
         write(f, "#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\n")
         for var in vars
             write(f, string(vcfize(var), "\n"))
