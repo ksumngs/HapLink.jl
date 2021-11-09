@@ -41,9 +41,6 @@ function main(args::Dict{String, Any})
     variants = callvariants(countbasestats(bamfile, reffile),
         Q_variant, f_variant, x_variant, α_variant, D_variant)
 
-    println(string(yamlize.(variants)...))
-    println(string(vcfize.(variants)...))
-
     if !isnothing(args["variants"])
         savevcf(variants, args["variants"], reffile, D_variant, Q_variant, x_variant,α_variant)
     end #if
