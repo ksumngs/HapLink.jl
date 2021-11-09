@@ -6,6 +6,13 @@ using HypothesisTests
 using DataFrames
 using FilePaths
 using BioSequences
+using BioAlignments
+using BioSymbols
+using Combinatorics
+using Distributions
+using SHA
+using StructArrays
+using XAM
 
 const VERSION = "0.1.0"
 
@@ -13,6 +20,10 @@ export countbasestats
 export callvariants
 export Variant
 export savevcf
+export Haplotype
+export findsimulatedhaplotypes
+export findsimulatedoccurrences
+export linkage
 
 """
     main(args::Dict{String, Any})
@@ -32,6 +43,7 @@ function main(args::Dict{String, Any})
     f_variant      = args["frequency"]
     x_variant      = args["position"]
     α_variant      = args["variant_significance"]
+    α_haplotype    = args["haplotype_significance"]
     D_variant      = args["variant_depth"]
     D_haplotype    = args["haplotype_depth"]
 
@@ -41,9 +53,19 @@ function main(args::Dict{String, Any})
     variants = callvariants(countbasestats(bamfile, reffile),
         Q_variant, f_variant, x_variant, α_variant, D_variant)
 
+    iterations = 1000 # max(1000, D_haplotype*length(variants)^2)
+
     if !isnothing(args["variants"])
         savevcf(variants, args["variants"], reffile, D_variant, Q_variant, x_variant,α_variant)
     end #if
+
+    if occursin("ml", args["method"])
+        haplotypes = findsimulatedhaplotypes(variants, bamfile, D_haplotype, α_haplotype, iterations=iterations)
+    else
+        haplotypes = findhaplotypes(variants, bamfile, D_haplotype, α_haplotype)
+    end #if
+
+    @show haplotypes
 
 end #function
 
@@ -244,6 +266,23 @@ struct Variant
     info::Dict{String,Any}
 end #struct
 
+function Base.isless(v1::Variant, v2::Variant)
+    return v1.chromosome < v2.chromosome && v1.position < v2.position
+end #function
+
+struct Haplotype
+    mutations::AbstractVector{Variant}
+end #struct
+
+function Haplotype(var::Variant)
+    return Haplotype([var])
+end #function
+
+struct HaplotypeCounts
+    haplotype::Haplotype
+    counts::AbstractArray{Int}
+end #struct
+
 """
     Variant(data::DataFrameRow)
 
@@ -334,7 +373,7 @@ function vcfize(v::Variant)
 end #function
 
 """
-    savevcf(vars::AbstractVector{Variant}, savepath::String, refpath::String, D::Int,
+    savevcf(vars::AbstractVector{Variant}, savepatmax_varh::String, refpath::String, D::Int,
         Q::Number, x::Float64, α::Float64)
 
 Saves the variants in `vars` to a VCF file at `savepath`, adding the reference genome
@@ -360,5 +399,285 @@ function savevcf(vars::AbstractVector{Variant}, savepath::String, refpath::Strin
         end #for
     end #do
 end #function
+
+function findsimulatedhaplotypes(variants::AbstractVector{Variant}, bamfile::AbstractString,
+    D::Int, α::Float64; iterations=1000)
+
+    variantpairs = combinations(variants, 2)
+
+    linkedvariantpairhaplotypes = Dict()
+
+    for variantpair in variantpairs
+        pairedhaplotype = Haplotype(variantpair)
+        hapcount = findsimulatedoccurrences(pairedhaplotype, bamfile, iterations=iterations)
+        if linkage(hapcount)[2] <= α && last(hapcount) >= D
+            linkedvariantpairhaplotypes[pairedhaplotype] = hapcount
+        end #if
+    end #for
+
+    linkedvariants = unique(cat(map(h -> h.mutations, collect(keys(linkedvariantpairhaplotypes)))..., dims=1))
+
+    possiblelinkages = Dict()
+
+    for variant in linkedvariants
+        possiblelinkages[variant] = sort(unique(cat(map(h -> h.mutations, filter(h -> variant in h.mutations, collect(keys(linkedvariantpairhaplotypes))))..., dims=1)))
+    end #for
+
+    allvariantcombos = Haplotype.(unique(values(possiblelinkages)))
+
+    returnedhaplotypes = Dict()
+
+    for haplotype in allvariantcombos
+        if haskey(linkedvariantpairhaplotypes, haplotype)
+            returnedhaplotypes[haplotype] = linkedvariantpairhaplotypes[haplotype]
+        else
+            hapcount = findsimulatedoccurrences(haplotype, bamfile, iterations=iterations)
+            if linkage(hapcount)[2] <= α && last(hapcount) >= D
+                returnedhaplotypes[haplotype] = hapcount
+            end #if
+        end #if
+    end #for
+
+    return returnedhaplotypes
+
+end #function
+
+function findsimulatedoccurrences(haplotype::Haplotype, bamfile::AbstractString; iterations=1000)
+    # Extract the SNPs we care about
+    mutations = haplotype.mutations
+
+    # Create an empty array for the simulated long reads
+    pseudoreads = Array{Symbol}(undef, iterations, length(mutations))
+
+    # Start reading the BAM file
+    open(BAM.Reader, bamfile) do bamreader
+        # Collect the reads
+        reads = collect(bamreader)
+
+        # Start iterating
+        Threads.@threads for i ∈ 1:iterations
+            # Get the reads that contain the first mutation
+            lastcontainingreads = filter(b -> BAM.position(b) < mutations[1].position && BAM.rightposition(b) > mutations[1].position, reads)
+
+            # Pull a random read from that pool
+            lastread = rand(lastcontainingreads)
+
+            # Find this read's basecall at that position
+            basecall = baseatreferenceposition(lastread, mutations[1].position)
+            basematch = matchvariant(basecall, mutations[1])
+
+            pseudoreads[i, 1] = basematch
+
+            for j ∈ 2:length(mutations)
+                if (BAM.position(lastread) < mutations[j].position && BAM.rightposition(lastread) > mutations[j].position)
+                    thisread = lastread
+                else
+                    thiscontainingreads = filter(
+                        b -> BAM.position(b) > BAM.rightposition(lastread) && BAM.position(b) < mutations[j].position && BAM.rightposition(b) > mutations[j].position,
+                        reads
+                    )
+                    if length(thiscontainingreads) < 1
+                        pseudoreads[i,j] = :other
+                        continue
+                    end #if
+                    thisread = rand(thiscontainingreads)
+                end #if
+
+                # Find this read's basecall at that position
+                basecall = baseatreferenceposition(thisread, mutations[j].position)
+                basematch = matchvariant(basecall, mutations[j])
+
+                pseudoreads[i, j] = basematch
+
+                lastread = thisread
+            end #for
+        end #for
+    end #do
+
+    # Set up haplotype counts
+    hapcounts = zeros(Int, repeat([2], length(mutations))...)
+
+    for i ∈ 1:iterations
+        matches = pseudoreads[i, :]
+        if !any(matches .== :other)
+            coordinate = CartesianIndex((Int.(matches .== :alternate) .+ 1)...)
+            hapcounts[coordinate] += 1
+        end #if
+    end #for
+
+    return hapcounts
+end #function
+
+"""
+    myref2seq(aln::Alignment, i::Int)
+
+Replicates the functionality of BioAlignments `ref2seq`, but can handle hard clips
+by effectively removing them for the intent of finding the position.
+"""
+function myref2seq(aln::Alignment, i::Int)
+    if aln.anchors[2].op == OP_HARD_CLIP
+        # Hard clipping was shown on operation 2
+        # (operation 1 is always a start position)
+
+        # Save where the clipping ends
+        alnstart = aln.anchors[2]
+
+        # Declare a new empty array where we can rebuild the alignment
+        newanchors = AlignmentAnchor[]
+
+        # Rebase the start of our new alignment to where the clipping ends
+        push!(newanchors, AlignmentAnchor(
+            0,
+            aln.anchors[1].refpos,
+            OP_START
+        ))
+
+        # Add new anchors
+        for j in 3:(length(aln.anchors)-1)
+            newanchor = AlignmentAnchor(
+                aln.anchors[j].seqpos - alnstart.seqpos,
+                aln.anchors[j].refpos,
+                aln.anchors[j].op
+            )
+            push!(newanchors, newanchor)
+        end #for
+
+        # Package up our new alignment
+        workingalignment = Alignment(newanchors)
+    else
+        # Package up the old alignment if there was no hard clipping
+        workingalignment = aln
+    end #if
+
+    # Check that the requested base is in range
+    if !seqisinrange(workingalignment, i)
+        return (0, OP_HARD_CLIP)
+    end
+
+    # Perform regular alignment search, minus any hard clipping
+    return ref2seq(workingalignment, i)
+
+end #function
+
+function seqisinrange(aln::Alignment, i::Int)
+    reflen = i - first(aln.anchors).refpos
+    seqlen = last(aln.anchors).seqpos - first(aln.anchors).seqpos
+    return seqlen > reflen
+end #function
+
+function firstseqpos(aln::Alignment)
+    return first(aln.anchors).seqpos
+end #function
+
+function lastseqpos(aln::Alignment)
+    return last(aln.anchors).seqpos
+end #function
+
+"""
+    matchvariant(base::Union{NucleotideSeq,DNA,AbstractVector{DNA}}, var::Variant)
+
+Checks if `base` matches the reference or variant expected in `var`, and returns a symbol
+indicating which, if any, it matches.
+
+Returned values can be `:reference` for a reference match, `:alternate` for an alternate
+match, or `:other` for no match with the given variant.
+"""
+function matchvariant(base::NucleotideSeq, var::Variant)
+    refbase = LongDNASeq(var.referencebase)
+    altbase = LongDNASeq(var.alternatebase)
+
+    if base == refbase
+        return :reference
+    elseif base == altbase
+        return :alternate
+    else
+        return :other
+    end #if
+end #function
+
+function matchvariant(base::DNA, var::Variant)
+    return matchvariant(LongDNASeq([base]), var)
+end
+
+function matchvariant(base::AbstractVector{DNA}, var::Variant)
+    return matchvariant(LongDNASeq(base), var)
+end
+
+"""
+    linkage(counts::AbstractArray{Int})
+
+Calculates the linkage disequilibrium and Chi-squared significance level of a combination of
+haplotypes whose number of occurrences are given by `counts`.
+
+`counts` is an ``N``-dimensional array where the ``N``th dimension represents the ``N``th
+variant call position within a haplotype. `findoccurrences` produces such an array.
+"""
+function linkage(counts::AbstractArray{Int})
+    # Get the probability of finding a perfect reference sequence
+    P_allref = first(counts) / sum(counts)
+
+    # Get the probabilities of finding reference bases in any of the haplotypes
+    P_refs = sumsliced.([counts], 1:ndims(counts)) ./ sum(counts)
+
+    # Calculate linkage disequilibrium
+    Δ = P_allref - prod(P_refs)
+
+    # Calculate the test statistic
+    r = Δ / (prod(P_refs .* (1 .- P_refs))^(1/ndims(counts)))
+    Χ_squared = r^2 * sum(counts)
+
+    # Calculate the significance
+    p = 1 - cdf(Chisq(1), Χ_squared)
+
+    return Δ, p
+end #function
+
+"""
+    sumsliced(A::AbstractArray, dim::Int, pos::Int=1)
+
+Sum all elements that are that can be referenced by `pos` in the `dim` dimension of `A`.
+
+# Example
+
+```julia-repl
+julia> A = reshape(1:8, 2, 2, 2)
+2×2×2 reshape(::UnitRange{Int64}, 2, 2, 2) with eltype Int64:
+[:, :, 1] =
+ 1  3
+ 2  4
+
+[:, :, 2] =
+ 5  7
+ 6  8
+
+julia> sumsliced(A, 2)
+16
+
+julia> sumsliced(A, 2, 2)
+20
+```
+
+Heavily inspired by Holy, Tim "Multidimensional algorithms and iteration"
+<https://julialang.org/blog/2016/02/iteration/#filtering_along_a_specified_dimension_exploiting_multiple_indexes>
+"""
+function sumsliced(A::AbstractArray, dim::Int, pos::Int=1)
+    i_pre  = CartesianIndices(size(A)[1:dim-1])
+    i_post = CartesianIndices(size(A)[dim+1:end])
+    return sum(A[i_pre, pos, i_post])
+end #function
+
+"""
+    baseatreferenceposition(record::BAM.Record, pos::Int)
+
+Get the base at reference position `pos` present in the sequence of `record`.
+"""
+function baseatreferenceposition(record::BAM.Record, pos::Int)
+    seqpos = myref2seq(BAM.alignment(record), pos)[1]
+    if seqpos > 0 && seqpos < BAM.seqlength(record)
+        return BAM.sequence(record)[seqpos]
+    else
+        return DNA_N
+    end
+end # function
 
 end #module
