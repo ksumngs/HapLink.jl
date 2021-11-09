@@ -20,6 +20,7 @@ XAM = "d759349c-bcba-11e9-07c2-5b90f8f05f7c"
 YAML = "ddb6d928-2868-570f-bddf-ab3f9cf99eb6"
 
 [compat]
+XAM = "0.2"
 GenomicFeatures = "2"
 FilePaths = "0.8"
 BioSequences = "2"
