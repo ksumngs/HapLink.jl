@@ -153,21 +153,28 @@ function phrederror(qual::Number)
 end #function
 
 struct Variant
-    region::String
+    chromosome::String
     position::Int
+    identifier::String
     referencebase::NucleotideSeq
     alternatebase::NucleotideSeq
-    totaldepth::Int
-    alternatedepth::Int
+    quality::Number
+    filter::Symbol
+    info::Dict{String,Any}
 end #struct
 
 function Variant(data::DataFrameRow)
-    region = data.chr
-    pos = data.position
-    refbase = data.reference_base
-    altbase = data.base
-    tdepth = data.depth
-    altdep = data.count
+    CHROM  = data.chr
+    POS    = data.position
+    ID     = "."
+    QUAL   = data.avg_basequality
+    FILTER = :PASS
+    INFO   = Dict(
+        "DP" => data.depth,
+        "VD" => data.count
+    )
+    refbase    = data.reference_base
+    altbase    = data.base
 
     # Check for insertion
     if first(altbase) == '+'
@@ -179,19 +186,26 @@ function Variant(data::DataFrameRow)
         altbase = "-"
     end
 
-    refseq = LongDNASeq(refbase)
-    altseq = LongDNASeq(altbase)
+    REF = LongDNASeq(refbase)
+    ALT = LongDNASeq(altbase)
 
-    return Variant(region, pos, refseq, altseq, tdepth, altdep)
+    return Variant(CHROM, POS, ID, REF, ALT, QUAL, FILTER, INFO)
 end #function
 
 function yamlize(v::Variant)
+    infostring = ""
+    for n in v.info
+        infostring = string(infostring, "      ", n[1], ": ", n[2], "\n")
+    end
     return string(
         "  - chromosome: ",
-        v.region,
+        v.chromosome,
         "\n",
         "    position: ",
         string(v.position),
+        "\n",
+        "    identifier: ",
+        string(v.identifier),
         "\n",
         "    referencebase: ",
         string(v.referencebase),
@@ -199,12 +213,14 @@ function yamlize(v::Variant)
         "    alternatebase: ",
         string(v.alternatebase),
         "\n",
-        "    totaldepth: ",
-        string(v.totaldepth),
+        "    quality: ",
+        string(v.quality),
         "\n",
-        "    alternatedepth: ",
-        string(v.alternatedepth),
+        "    filter: ",
+        string(v.filter),
         "\n",
+        "    info:\n",
+        infostring
     )
 end
 
