@@ -1,10 +1,13 @@
 module HapLink
 
 using FASTX
+using Dates
 using HypothesisTests
 using DataFrames
 using FilePaths
 using BioSequences
+
+const VERSION = "0.1.0"
 
 function main(args::Dict{String, Any})
     # 1. Analyze bam
@@ -29,6 +32,10 @@ function main(args::Dict{String, Any})
 
     println(string(yamlize.(variants)...))
     println(string(vcfize.(variants)...))
+
+    if !isnothing(args["variants"])
+        savevcf(variants, args["variants"], reffile, D_variant, Q_variant, x_variant,α_variant)
+    end #if
 
 end #function
 
@@ -238,4 +245,24 @@ function vcfize(v::Variant)
     )
 end
 
-end
+function savevcf(vars::AbstractVector{Variant}, savepath::String, refpath::String, D::Int, Q::Number, x::Float64, α::Float64)
+    X = string(trunc(Int, x * 100))
+    open(savepath, "w") do f
+        write(f, "##fileformat=VCFv4.2\n")
+        write(f, string("##filedate=", Dates.format(today(), "YYYYmmdd"), "\n"))
+        write(f, string("##source=HapLink.jlv", VERSION, "\n"))
+        write(f, string("##reference=file://", abspath(refpath), "\n"))
+        write(f, "##FILTER=<ID=d$D,Description=\"Variant depth below $D\">\n")
+        write(f, "##FILTER=<ID=q$Q,Description=\"Quality below $Q\">\n")
+        write(f, "##FILTER=<ID=x$X,Description=\"Position in outer $X% of reads\">\n")
+        write(f, "##FILTER=<ID=sg,Description=\"Not significant at α=$α level by Fisher's Exact Test\">\n")
+        write(f, "##INFO=<ID=DP,Number=1,Type=Integer,Description=\"Total Depth\">\n")
+        write(f, "##INFO=<ID=VD,Number=1,Type=Integer,Description=\"Variant Depth\">\n")
+        write(f, "#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\n")
+        for var in vars
+            write(f, string(vcfize(var), "\n"))
+        end #for
+    end #do
+end #function
+
+end #module
