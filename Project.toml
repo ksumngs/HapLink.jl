@@ -21,6 +21,10 @@ YAML = "ddb6d928-2868-570f-bddf-ab3f9cf99eb6"
 
 [compat]
 GenomicFeatures = "2"
+FilePaths = "0.8"
+BioSequences = "2"
+BioAlignments = "2"
+DataFrames = "1"
 julia = "1.6"
 
 [extras]
