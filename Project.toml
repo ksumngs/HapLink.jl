@@ -21,6 +21,8 @@ YAML = "ddb6d928-2868-570f-bddf-ab3f9cf99eb6"
 
 [compat]
 FASTX = "1"
+BioAlignments = "2"
+DataFrames = "1"
 julia = "1.6"
 
 [extras]
