@@ -28,6 +28,7 @@ function main(args::Dict{String, Any})
         Q_variant, f_variant, x_variant, α_variant, D_variant)
 
     println(string(yamlize.(variants)...))
+    println(string(vcfize.(variants)...))
 
 end #function
 
@@ -221,6 +222,19 @@ function yamlize(v::Variant)
         "\n",
         "    info:\n",
         infostring
+    )
+end
+
+function vcfize(v::Variant)
+    return string(
+        v.chromosome,             "\t",
+        string(v.position),       "\t",
+        v.identifier,             "\t",
+        string(v.referencebase),  "\t",
+        string(v.alternatebase),  "\t",
+        string(trunc(v.quality)), "\t",
+        string(v.filter),         "\t",
+        join([string(n[1],"=",n[2]) for n in v.info], ";")
     )
 end
 
