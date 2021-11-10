@@ -22,6 +22,7 @@ export findsimulatedhaplotypes
 export findsimulatedoccurrences
 export linkage
 export sumsliced
+export mutate
 
 include("variant.jl")
 include("haplotype.jl")
