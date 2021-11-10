@@ -15,3 +15,7 @@ end #struct
 function Haplotype(var::Variant)
     return Haplotype([var])
 end #function
+
+function Base.show(io::IO, h::Haplotype)
+    print(io, string("Haplotype (", length(h.mutations), ") [", join([string(v.chromosome, ":", v.position) for v in h.mutations], ","), "]"))
+end #function
