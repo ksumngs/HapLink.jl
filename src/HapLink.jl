@@ -21,6 +21,7 @@ export callvariants
 export findsimulatedhaplotypes
 export findsimulatedoccurrences
 export linkage
+export sumsliced
 
 include("variant.jl")
 include("haplotype.jl")
@@ -380,7 +381,7 @@ Sum all elements that are that can be referenced by `pos` in the `dim` dimension
 
 # Example
 
-```julia-repl
+```jldoctest
 julia> A = reshape(1:8, 2, 2, 2)
 2×2×2 reshape(::UnitRange{Int64}, 2, 2, 2) with eltype Int64:
 [:, :, 1] =
@@ -392,10 +393,10 @@ julia> A = reshape(1:8, 2, 2, 2)
  6  8
 
 julia> sumsliced(A, 2)
-16
+14
 
 julia> sumsliced(A, 2, 2)
-20
+22
 ```
 
 Heavily inspired by Holy, Tim "Multidimensional algorithms and iteration"
