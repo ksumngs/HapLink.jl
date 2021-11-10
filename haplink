@@ -10,7 +10,7 @@ using ArgParse
 s = ArgParseSettings(
     prog="haplink",
     description="A haplotype caller for long sequencing reads using linkage disequilibrium",
-    version=@project_version,
+    version="v0.1.0",
     add_version=true,
     autofix_names=true
 )
