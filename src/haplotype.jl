@@ -5,8 +5,8 @@ export Haplotype
 """
     Haplotype(mutations::AbstractVector{Variant})
 
-Create an object to describe a group of mutations that appear together. A single [`Variant`]
-can be passed to create a haplotype of a single variant.
+Create an object to describe a group of mutations that appear together. A single
+[`Variant`](@ref) can be passed to create a haplotype of a single variant.
 """
 struct Haplotype
     mutations::AbstractVector{Variant}

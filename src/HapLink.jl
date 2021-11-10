@@ -39,6 +39,7 @@ function main(args::Dict{String, Any})
     # 4. Export haplotypes as YAML
     # 5. Export haplotypes as FASTA
 
+    # Read the argument table in as variables
     bamfile        = args["bamfile"]
     reffile        = args["reference"]
     annotationfile = args["annotations"]
@@ -50,20 +51,48 @@ function main(args::Dict{String, Any})
     D_variant      = args["variant_depth"]
     D_haplotype    = args["haplotype_depth"]
 
+    # Find the file prefix for output files if none was provided
     bampath = Path(bamfile)
     prefix = isnothing(args["prefix"]) ? filename(bampath) : args["prefix"]
 
-    variants = callvariants(countbasestats(bamfile, reffile),
-        Q_variant, f_variant, x_variant, α_variant, D_variant)
+    # Call variants
+    variants = callvariants(
+        countbasestats(bamfile, reffile),
+        D_variant,
+        Q_variant,
+        x_variant,
+        f_variant,
+        α_variant
+    )
 
-    iterations = 1000 # max(1000, D_haplotype*length(variants)^2)
 
+    # Save the variants to a VCF file, if requested
     if !isnothing(args["variants"])
-        savevcf(variants, args["variants"], reffile, D_variant, Q_variant, x_variant,α_variant)
+        savevcf(
+            variants,
+            args["variants"],
+            reffile,
+            D_variant,
+            Q_variant,
+            x_variant,
+            α_variant
+        )
     end #if
 
+
+
     if occursin("ml", args["method"])
-        haplotypes = findsimulatedhaplotypes(variants, bamfile, D_haplotype, α_haplotype, iterations=iterations)
+        # TODO: implement an expression-evaluator for ML iterations
+        # Calculate the number of iterations for each haplotype
+        iterations = 1000 # max(1000, D_haplotype*length(variants)^2)
+
+        haplotypes = findsimulatedhaplotypes(
+            variants,
+            bamfile,
+            D_haplotype,
+            α_haplotype,
+            iterations=iterations
+        )
     else
         haplotypes = findhaplotypes(variants, bamfile, D_haplotype, α_haplotype)
     end #if
@@ -73,22 +102,30 @@ function main(args::Dict{String, Any})
 end #function
 
 """
-    callvariants(bamcounts::AbstractDataFrame, Q_min::Int, f_min::Float64, x_min::Float64,
-        α::Float64, D_min::Int)
+    callvariants(bamcounts::AbstractDataFrame, D_min::Int, Q_min::Int, x_min::Float64,
+        f_min::Float64, α::Float64)
 
-Based on the aligned basecalls and stats in `bamcounts`, call variants and return them as a
-vector of [`Variant`](@ref)s.
+Based on the aligned basecalls and stats in `bamcounts`, call variants.
 
-|         |                                                                                                |
-| ------: | ---------------------------------------------------------------------------------------------- |
-| `Q_min` | is the lowest average quality to allow for a variant                                           |
-| `f_min` | is the lowest frequency to allow for a variant                                                 |
-| `x_min` | is the highest percentage toward the edge that a call can be to be labeled a variant           |
-| `α`     | is the highest ``p``-value that can be considered a significant variant by Fisher's Exact Test |
-| `D_min` | is the minimum depth to call a variant                                                         |
+# Arguments
+- `bamcounts::AbstractDataFrame`: `DataFrame` containing the output from `bam-readcount`
+- `D_min::Int`: minimum variant depth
+- `Q_min::Int`: minimum average PHRED-scaled quality at variant position
+- `x_min::Float64`: minimum average fractional distance from read end at variant position
+- `f_min::Float64`: minimum frequency of variant
+- `α::Float64`: significance level of variants by Fisher's Exact Test
+
+# Returns
+- `Vector{Variant}`: [`Variant`](@ref)s that passed all the above filters
 """
-function callvariants(bamcounts::AbstractDataFrame,
-    Q_min::Int, f_min::Float64, x_min::Float64, α::Float64, D_min::Int)
+function callvariants(
+    bamcounts::AbstractDataFrame,
+    D_min::Int,
+    Q_min::Int,
+    x_min::Float64,
+    f_min::Float64,
+    α::Float64
+)
 
     variantdata = copy(bamcounts)
     filter!(var -> var.base != var.reference_base, variantdata)
@@ -119,35 +156,79 @@ function phrederror(qual::Number)
 end #function
 
 """
-    savevcf(vars::AbstractVector{Variant}, savepatmax_varh::String, refpath::String, D::Int,
+    savevcf(vars::AbstractVector{Variant}, savepath::String, refpath::String, D::Int,
         Q::Number, x::Float64, α::Float64)
+
+Save a VCF file populated with `vars`
+
+# Arguments
+- `vars::AbstractVector{Variant}`: `Vector` of [`Variant`](@ref)s to write to file
+- `savepath::AbstractString`: path of the VCF file to write to. Will be overwritten
+- `refpath::AbstractString`: path of the reference genome used to call variants. The
+    absolute path will be added to the `##reference` metadata
+- `D::Int`: mimimum variant depth used to filter variants. Will be added as `##FILTER`
+    metadata
+- `Q::Number`: minimum PHRED quality used to filter variants. Will be added as `##FILTER`
+    metadata
+- `x::Float64`: minimum fractional read position used to filter variants. Will be added as
+    `##FILTER` metadata
+- `α::Float64`: Fisher's Exact Test significance level used to filter variants. Will be
+    added as `##FILTER` metadata
 
 Saves the variants in `vars` to a VCF file at `savepath`, adding the reference genome
 `refpath`, the depth cutoff `D`, the quality cutoff `Q`, the position cutoff `x`, and the
 significance cutoff `α` as metadata.
 """
-function savevcf(vars::AbstractVector{Variant}, savepath::String, refpath::String, D::Int, Q::Number, x::Float64, α::Float64)
+function savevcf(
+    vars::AbstractVector{Variant},
+    savepath::AbstractString,
+    refpath::AbstractString,
+    D::Int,
+    Q::Number,
+    x::Float64,
+    α::Float64
+)
+
+    # Convert read position to integer percent
     X = string(trunc(Int, x * 100))
+
+    # Open the file via clobbering
     open(savepath, "w") do f
+        # Write headers
         write(f, "##fileformat=VCFv4.2\n")
         write(f, string("##filedate=", Dates.format(today(), "YYYYmmdd"), "\n"))
         write(f, string("##source=HapLink.jlv", VERSION, "\n"))
         write(f, string("##reference=file://", abspath(refpath), "\n"))
+
+        # Write filter metadata
         write(f, "##FILTER=<ID=d$D,Description=\"Variant depth below $D\">\n")
         write(f, "##FILTER=<ID=q$Q,Description=\"Quality below $Q\">\n")
         write(f, "##FILTER=<ID=x$X,Description=\"Position in outer $X% of reads\">\n")
         write(f, "##FILTER=<ID=sg,Description=\"Not significant at α=$α level by Fisher's Exact Test\">\n")
+
+        # Add descriptions of the info tags I chose to include
+        # TODO: Find a way for these _not_ to be hard-coded in here
         write(f, "##INFO=<ID=DP,Number=1,Type=Integer,Description=\"Read Depth\">\n")
         write(f, "##INFO=<ID=AD,Number=1,Type=Integer,Description=\"Alternate Depth\">\n")
+
+        # Write the header line?
+        # TODO: Check this header against VCF spec
         write(f, "#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\n")
+
+        # Write every variant out
         for var in vars
             write(f, string(serialize_vcf(var), "\n"))
         end #for
     end #do
 end #function
 
-function findsimulatedhaplotypes(variants::AbstractVector{Variant}, bamfile::AbstractString,
-    D::Int, α::Float64; iterations=1000)
+function findsimulatedhaplotypes(
+    variants::AbstractVector{Variant},
+    bamfile::AbstractString,
+    D::Int,
+    α::Float64;
+    iterations=1000
+)
 
     variantpairs = combinations(variants, 2)
 
@@ -188,7 +269,12 @@ function findsimulatedhaplotypes(variants::AbstractVector{Variant}, bamfile::Abs
 
 end #function
 
-function findsimulatedoccurrences(haplotype::Haplotype, bamfile::AbstractString; iterations=1000)
+function findsimulatedoccurrences(
+    haplotype::Haplotype,
+    bamfile::AbstractString;
+    iterations=1000
+)
+
     # Extract the SNPs we care about
     mutations = haplotype.mutations
 
@@ -203,7 +289,10 @@ function findsimulatedoccurrences(haplotype::Haplotype, bamfile::AbstractString;
         # Start iterating
         Threads.@threads for i ∈ 1:iterations
             # Get the reads that contain the first mutation
-            lastcontainingreads = filter(b -> BAM.position(b) < mutations[1].position && BAM.rightposition(b) > mutations[1].position, reads)
+            lastcontainingreads = filter(
+                b -> BAM.position(b) < mutations[1].position && BAM.rightposition(b) > mutations[1].position,
+                reads
+            )
 
             # Pull a random read from that pool
             lastread = rand(lastcontainingreads)
