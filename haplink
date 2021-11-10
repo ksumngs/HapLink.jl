@@ -1,13 +1,19 @@
 #!/bin/bash
 #=
-julia --project="$(realpath "$(dirname "$(readlink "${BASH_SOURCE[0]}")")")" -e 'using Pkg; Pkg.instantiate()'
-exec julia --project="$(realpath "$(dirname "$(readlink "${BASH_SOURCE[0]}")")")" "${BASH_SOURCE[0]}" "$@"
+julia --project="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" -e 'using Pkg; Pkg.instantiate()'
+exec julia --project="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" "${BASH_SOURCE[0]}" "$@"
 =#
 
 using HapLink
 using ArgParse
 
-s = ArgParseSettings()
+s = ArgParseSettings(
+    prog="haplink",
+    description="A haplotype caller for long sequencing reads using linkage disequilibrium",
+    version=@project_version,
+    add_version=true,
+    autofix_names=true
+)
 @add_arg_table s begin
     "bamfile"
         help         = "BAM formatted file containing the alignment to call haplotypes from"
