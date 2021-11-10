@@ -99,7 +99,13 @@ function main(args::Dict{String, Any})
         haplotypes = findhaplotypes(variants, bamfile, D_haplotype, α_haplotype)
     end #if
 
-    println(serialize_yaml.(collect(keys(haplotypes)))...)
+    # Write the found haplotypes to file
+    yamlfile = string(prefix, ".yaml")
+    open(yamlfile, "w") do f
+        for happair in haplotypes
+            write(f, serialize_yaml(happair))
+        end #for
+    end #do
 
 end #function
 
@@ -406,6 +412,27 @@ function sumsliced(A::AbstractArray, dim::Int, pos::Int=1)
     i_pre  = CartesianIndices(size(A)[1:dim-1])
     i_post = CartesianIndices(size(A)[dim+1:end])
     return sum(A[i_pre, pos, i_post])
+end #function
+
+function serialize_yaml(h::Pair; reason::Union{String,Nothing}=nothing)
+    occurrences = "occurrences:\n"
+    for i in CartesianIndices(h.second)
+        location = [Tuple(i)...]
+        variantpattern = string.(replace(replace(location, 1 => "ref"), 2 => "alt"))
+        key = join(variantpattern, "_")
+        occurrences = string(occurrences, "  ", key, ": ", h.second[i], "\n")
+    end #for
+
+    return string(
+        serialize_yaml(h.first, reason=reason),
+        occurrences,
+        "Δ: ",
+        linkage(h.second)[1],
+        "\n",
+        "p: ",
+        linkage(h.second)[2],
+        "\n"
+    )
 end #function
 
 end #module
