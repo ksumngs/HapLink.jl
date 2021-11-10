@@ -1,7 +1,7 @@
 {
     "version": "0.2",
     "language": "en",
-    "allowCompoundWords": false,
+    "allowCompoundWords": true,
     "dictionaryDefinitions": [
         { "name": "bioinformatics", "path": "./.cspell/bioinformatics.txt" },
         { "name": "julia", "path": "./.cspell/julia.txt"}
