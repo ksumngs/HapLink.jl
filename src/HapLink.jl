@@ -101,12 +101,23 @@ function main(args::Dict{String, Any})
 
     # Write the found haplotypes to file
     yamlfile = string(prefix, ".yaml")
-    open(yamlfile, "w") do f
+    open(string(prefix, ".yaml"), "w") do f
         for happair in haplotypes
             write(f, serialize_yaml(happair))
         end #for
     end #do
 
+    open(FASTA.Reader, reffile) do r
+        record = collect(r)[1]
+        newrecords = unique(mutate.([record], collect(keys(haplotypes))))
+
+        # Write the found haplotypes to FASTA
+        open(FASTA.Writer, string(prefix, ".fasta")) do f
+            for q in newrecords
+                write(f, q)
+            end #for
+        end #do
+    end #do
 end #function
 
 """
@@ -434,5 +445,29 @@ function serialize_yaml(h::Pair; reason::Union{String,Nothing}=nothing)
         "\n"
     )
 end #function
+
+function mutate(record::FASTA.Record, haplotype::Haplotype)
+    newseq = mutate(sequence(record), haplotype)
+    sequencehash = bytes2hex(sha1(string(newseq)))
+    newid = sequencehash[1:8]
+    newdesc = string(description(record), ", variant ", sequencehash)
+
+    return FASTA.Record(
+        newid,
+        newdesc,
+        newseq
+    )
+
+end
+
+function mutate(seq::NucleotideSeq, haplotype::Haplotype)
+    newseq = seq
+
+    for var in haplotype.mutations
+        newseq[var.position] = var.alternatebase[1]
+    end
+
+    return newseq
+end
 
 end #module
