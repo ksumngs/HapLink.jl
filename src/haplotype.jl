@@ -19,3 +19,12 @@ end #function
 function Base.show(io::IO, h::Haplotype)
     print(io, string("Haplotype (", length(h.mutations), ") [", join([string(v.chromosome, ":", v.position) for v in h.mutations], ","), "]"))
 end #function
+
+function serialize_yaml(h::Haplotype; reason::Union{String,Nothing}=nothing)
+    return string(
+        "---\n",
+        isnothing(reason) ? "" : string("reason: ", reason, "\n"),
+        "mutations: \n",
+        serialize_yaml.(h.mutations)...
+    )
+end

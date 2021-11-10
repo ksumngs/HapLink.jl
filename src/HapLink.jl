@@ -98,7 +98,7 @@ function main(args::Dict{String, Any})
         haplotypes = findhaplotypes(variants, bamfile, D_haplotype, α_haplotype)
     end #if
 
-    @show haplotypes
+    println(serialize_yaml.(collect(keys(haplotypes)))...)
 
 end #function
 
