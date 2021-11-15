@@ -68,6 +68,14 @@ function main(args::Dict{String, Any})
         α_variant
     )
 
+    # Check for zero found variants
+    if length(variants) < 1
+        @warn "No variants found!"
+        touch(string(prefix, ".yaml"))
+        cp(reffile, string(prefix, ".fasta"))
+        return
+    end #if
+
 
     # Save the variants to a VCF file, if requested
     if !isnothing(args["variants"])
