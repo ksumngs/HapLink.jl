@@ -11,7 +11,6 @@ using BioSymbols
 using Combinatorics
 using Distributions
 using SHA
-using StructArrays
 using XAM
 
 const VERSION = "0.1.0"
@@ -267,12 +266,27 @@ function findsimulatedhaplotypes(
         end #if
     end #for
 
-    linkedvariants = unique(cat(map(h -> h.mutations, collect(keys(linkedvariantpairhaplotypes)))..., dims=1))
+    linkedvariants = unique(
+        cat(map(h -> h.mutations, collect(keys(linkedvariantpairhaplotypes)))..., dims=1)
+    )
 
     possiblelinkages = Dict()
 
     for variant in linkedvariants
-        possiblelinkages[variant] = sort(unique(cat(map(h -> h.mutations, filter(h -> variant in h.mutations, collect(keys(linkedvariantpairhaplotypes))))..., dims=1)))
+        possiblelinkages[variant] = sort(
+            unique(
+                cat(
+                    map(
+                        h -> h.mutations,
+                        filter(
+                            h -> variant in h.mutations,
+                            collect(keys(linkedvariantpairhaplotypes))
+                        )
+                    )...,
+                dims=1
+                )
+            )
+        )
     end #for
 
     allvariantcombos = Haplotype.(unique(values(possiblelinkages)))
