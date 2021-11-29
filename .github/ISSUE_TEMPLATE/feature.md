@@ -1,6 +1,6 @@
 ---
 name: Feature Request
-about: Something isn't working like it's supposed to
+about: A new idea to make HapLink even more robust
 labels: enhancement
 ---
 
