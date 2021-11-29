@@ -18,9 +18,7 @@ makedocs(;
         "API Reference" => "api.md"
     ],
 )
-#=
 deploydocs(;
     repo="github.com/ksumngs/HapLink.jl",
     devbranch="master",
 )
-=#
