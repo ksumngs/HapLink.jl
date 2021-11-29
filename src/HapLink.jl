@@ -154,12 +154,22 @@ function callvariants(
     α::Float64
 )
 
+    # Ensure we don't mutate the input reads
     variantdata = copy(bamcounts)
+
+    # Exclude any non-variants i.e. reference bases
     filter!(var -> var.base != var.reference_base, variantdata)
+
+    # Simple metric filters
     filter!(var -> var.count >= D_min, variantdata)
     filter!(var -> var.avg_basequality >= Q_min, variantdata)
     filter!(var -> var.avg_pos_as_fraction >= x_min, variantdata)
     filter!(var -> (var.count / var.depth) >= f_min, variantdata)
+
+    # Calculate the Fisher's Exact probability of a variant base appearing due to sequencing
+    # errors. This method is perfectly identical to the way iVar calls variants (See
+    # https://github.com/andersen-lab/ivar/blob/v1.3.1/src/call_variants.cpp#L139), but
+    # implemented in a slightly different way
     filter!(
         var -> pvalue(FisherExactTest(
             round(Int, phrederror(var.avg_basequality)*var.depth),
@@ -169,6 +179,8 @@ function callvariants(
         )) <= α,
         variantdata
     )
+
+    # Return variant objects based on the remaining variant calls
     return Variant.(eachrow(variantdata))
 
 end #function
