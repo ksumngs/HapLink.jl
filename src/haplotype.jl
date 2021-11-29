@@ -1,5 +1,3 @@
-include("variant.jl")
-
 export Haplotype
 
 """

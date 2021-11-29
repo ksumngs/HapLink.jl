@@ -3,8 +3,6 @@ using BioSequences
 using BioSymbols
 using XAM
 
-include("variant.jl")
-
 export baseatreferenceposition
 export matchvariant
 
