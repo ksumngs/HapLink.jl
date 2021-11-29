@@ -93,6 +93,8 @@ function main(args::Dict{String, Any})
         # Calculate the number of iterations for each haplotype
         iterations = 1000 # max(1000, D_haplotype*length(variants)^2)
 
+        # TODO: implement an overlapped-read ML algorithm
+
         haplotypes = findsimulatedhaplotypes(
             variants,
             bamfile,
@@ -101,6 +103,7 @@ function main(args::Dict{String, Any})
             iterations=iterations
         )
     else
+        # TODO: implement a long read, non-simulated likage finder
         haplotypes = findhaplotypes(variants, bamfile, D_haplotype, α_haplotype)
     end #if
 
@@ -253,6 +256,8 @@ function findsimulatedhaplotypes(
     α::Float64;
     iterations=1000
 )
+
+    # TODO: Abstract the simulated haplotype finding into a higher-level function
 
     variantpairs = combinations(variants, 2)
 
