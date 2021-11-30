@@ -273,7 +273,7 @@ function findsimulatedhaplotypes(
 
     variantpairs = combinations(variants, 2)
 
-    linkedvariantpairhaplotypes = Dict()
+    linkedvariantpairhaplotypes = Dict{Haplotype, Matrix{Int}}()
 
     for variantpair in variantpairs
         pairedhaplotype = Haplotype(variantpair)
@@ -287,7 +287,7 @@ function findsimulatedhaplotypes(
         cat(map(h -> h.mutations, collect(keys(linkedvariantpairhaplotypes)))..., dims=1)
     )
 
-    possiblelinkages = Dict()
+    possiblelinkages = Dict{Variant, AbstractArray{Variant}}()
 
     for variant in linkedvariants
         possiblelinkages[variant] = sort(
@@ -308,7 +308,7 @@ function findsimulatedhaplotypes(
 
     allvariantcombos = Haplotype.(unique(sort.(values(possiblelinkages))))
 
-    returnedhaplotypes = Dict()
+    returnedhaplotypes = Dict{Haplotype, Any}()
 
     for haplotype in allvariantcombos
         if haskey(linkedvariantpairhaplotypes, haplotype)
