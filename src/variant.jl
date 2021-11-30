@@ -2,6 +2,8 @@ using BioSequences
 using BioSymbols
 using DataFrames
 
+export Variant
+
 """
     Variant
 
