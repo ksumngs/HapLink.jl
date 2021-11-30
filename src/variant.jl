@@ -83,6 +83,10 @@ function Variant(data::DataFrameRow)
     return Variant(CHROM, POS, ID, REF, ALT, QUAL, FILTER, INFO)
 end #function
 
+function Base.show(io::IO, v::Variant)
+    print(io, string("Variant (", v.chromosome, ":", v.position, " ", v.referencebase, "=>", v.alternatebase, ")"))
+end #function
+
 function Base.isless(v1::Variant, v2::Variant)
     return v1.chromosome <= v2.chromosome && v1.position < v2.position
 end #function
