@@ -306,7 +306,7 @@ function findsimulatedhaplotypes(
         )
     end #for
 
-    allvariantcombos = Haplotype.(unique(values(possiblelinkages)))
+    allvariantcombos = Haplotype.(unique(sort.(values(possiblelinkages))))
 
     returnedhaplotypes = Dict()
 
