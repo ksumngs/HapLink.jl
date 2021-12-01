@@ -13,6 +13,7 @@ using Combinatorics
 using Distributions
 using SHA
 using XAM
+using YAML
 
 const VERSION = "0.1.0"
 
@@ -29,7 +30,7 @@ include("haplotype.jl")
 include("readcounts.jl")
 include("sequences.jl")
 
-Base.@ccallable function julia_main()::Cint
+Base.@ccallable function haplink()::Cint
     s = ArgParseSettings(
         prog="haplink",
         description="A haplotype caller for long sequencing reads using linkage disequilibrium",
@@ -208,6 +209,30 @@ Base.@ccallable function julia_main()::Cint
             end #for
         end #do
     end #do
+
+    return 0
+end #function
+
+Base.@ccallable function make_haplotype_fastas()::Cint
+    hfile = ARGS[1]
+    rfile = ARGS[2]
+    ffile = ARGS[3]
+
+    haployaml = read(hfile, String)
+    haplostrings = split(haployaml, "---\n")[2:end]
+    haplotypes = Haplotype.(YAML.load.(haplostrings, dicttype=Dict{String,Any}))
+
+    rreader = open(FASTA.Reader, rfile)
+    refrec = collect(rreader)[1]
+    close(rreader)
+
+    newrecords = unique(mutate.([refrec], haplotypes))
+
+    fwriter = open(FASTA.Writer, ffile)
+    for r in newrecords
+        write(fwriter, r)
+    end
+    close(fwriter)
 
     return 0
 end #function

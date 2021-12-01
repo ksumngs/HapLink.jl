@@ -85,6 +85,21 @@ function Variant(data::DataFrameRow)
     return Variant(CHROM, POS, ID, REF, ALT, QUAL, FILTER, INFO)
 end #function
 
+function Variant(vardict::Dict{String,Any})
+    region  = vardict["chromosome"]
+    pos     = vardict["position"]
+    id      = vardict["identifier"]
+    refbase = vardict["referencebase"]
+    altbase = vardict["alternatebase"]
+    qual    = vardict["quality"]
+    filter  = Symbol(vardict["filter"])
+
+    refseq = LongDNASeq(refbase)
+    altseq = LongDNASeq(altbase)
+
+    return Variant(region, pos, id, refseq, altseq, qual, filter, Dict())
+end #function
+
 function Base.show(io::IO, v::Variant)
     print(io, string("Variant (", v.chromosome, ":", v.position, " ", v.referencebase, "=>", v.alternatebase, ")"))
 end #function
