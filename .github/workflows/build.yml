@@ -7,6 +7,7 @@ jobs:
   binary_build:
     name: Build Binaries
     runs-on: ${{ matrix.config.os }}
+    continue-on-error: true
     strategy:
       fail-fast: false
       matrix:
@@ -23,12 +24,15 @@ jobs:
       - uses: julia-actions/julia-buildpkg@v1
       - run: |
           julia -e 'using Pkg; Pkg.add("PackageCompiler")'
+        shell: bash
       - run: |
           julia -e '
           using PackageCompiler
           create_app(".", "build", cpu_target="x86-64")'
+        shell: bash
       - run: |
           tar -c -v -f HapLink_${{ matrix.config.os }}.x86_64.tar.gz build
+        shell: bash
       - uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
