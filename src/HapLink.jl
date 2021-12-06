@@ -15,7 +15,9 @@ using SHA
 using XAM
 using YAML
 
-const VERSION = "0.1.0"
+const VERSION = ArgParse.project_version(
+    string(joinpath(parent(parent(Path(Base.find_package("HapLink")))), "Project.toml"))
+)
 
 export countbasestats
 export callvariants
@@ -34,7 +36,7 @@ Base.@ccallable function haplink()::Cint
     s = ArgParseSettings(
         prog="haplink",
         description="A haplotype caller for long sequencing reads using linkage disequilibrium",
-        version="v0.1.0",
+        version=VERSION,
         add_version=true,
         autofix_names=true
     )
