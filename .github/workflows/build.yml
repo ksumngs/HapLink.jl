@@ -1,0 +1,37 @@
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v[0-9]+.*'
+jobs:
+  binary_build:
+    name: Build Binaries
+    runs-on: ${{ matrix.config.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - os: ubuntu-latest
+          - os: macos-latest
+          - os: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: julia-actions/setup-julia
+        with:
+          version: '1.6'
+          arch: x64
+      - uses: julia-actions/julia-buildpkg@v1
+      - run: |
+          julia -e 'using Pkg; Pkg.add("PackageCompiler")'
+      - run: |
+          julia -e '
+          using PackageCompiler
+          create_app(".", "build", cpu_target="x86-64")'
+      - run: |
+          tar -c -v -f HapLink_${{ matrix.config.os }}.x86_64.tar.gz build
+      - uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ github.ref }}
+          file: HapLink_${{ matrix.config.os }}.x86_64.tar.gz
+          asset_name: haplink-$tag_${{ matrix.config.os }}.x86_64.tar.gz
