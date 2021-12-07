@@ -19,7 +19,6 @@ const VERSION = ArgParse.project_version(
     string(joinpath(parent(parent(Path(Base.find_package("HapLink")))), "Project.toml"))
 )
 
-export countbasestats
 export callvariants
 export mutate
 
