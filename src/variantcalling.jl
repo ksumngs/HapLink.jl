@@ -1,3 +1,5 @@
+export callvariants
+
 """
     phrederror(quality::Number)
 
