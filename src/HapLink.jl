@@ -31,6 +31,7 @@ include("variant.jl")
 include("haplotype.jl")
 include("readcounts.jl")
 include("sequences.jl")
+include("variantcalling.jl")
 
 Base.@ccallable function haplink()::Cint
     s = ArgParseSettings(
