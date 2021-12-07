@@ -1,6 +1,7 @@
 export findsimulatedhaplotypes
 export findsimulatedoccurrences
 export linkage
+export sumsliced
 
 function findsimulatedhaplotypes(
     variants::AbstractVector{Variant},
@@ -216,4 +217,59 @@ function linkage(counts::AbstractArray{Int})
     p = 1 - cdf(Chisq(1), Χ_squared)
 
     return Δ, p
+end #function
+
+"""
+    sumsliced(A::AbstractArray, dim::Int, pos::Int=1)
+
+Sum all elements that are that can be referenced by `pos` in the `dim` dimension of `A`.
+
+# Example
+
+```jldoctest
+julia> A = reshape(1:8, 2, 2, 2)
+2×2×2 reshape(::UnitRange{Int64}, 2, 2, 2) with eltype Int64:
+[:, :, 1] =
+ 1  3
+ 2  4
+
+[:, :, 2] =
+ 5  7
+ 6  8
+
+julia> sumsliced(A, 2)
+14
+
+julia> sumsliced(A, 2, 2)
+22
+```
+
+Heavily inspired by Holy, Tim "Multidimensional algorithms and iteration"
+<https://julialang.org/blog/2016/02/iteration/#filtering_along_a_specified_dimension_exploiting_multiple_indexes>
+"""
+function sumsliced(A::AbstractArray, dim::Int, pos::Int=1)
+    i_pre  = CartesianIndices(size(A)[1:dim-1])
+    i_post = CartesianIndices(size(A)[dim+1:end])
+    return sum(A[i_pre, pos, i_post])
+end #function
+
+function serialize_yaml(h::Pair; reason::Union{String,Nothing}=nothing)
+    occurrences = "occurrences:\n"
+    for i in CartesianIndices(h.second)
+        location = [Tuple(i)...]
+        variantpattern = string.(replace(replace(location, 1 => "ref"), 2 => "alt"))
+        key = join(variantpattern, "_")
+        occurrences = string(occurrences, "  ", key, ": ", h.second[i], "\n")
+    end #for
+
+    return string(
+        serialize_yaml(h.first, reason=reason),
+        occurrences,
+        "Δ: ",
+        linkage(h.second)[1],
+        "\n",
+        "p: ",
+        linkage(h.second)[2],
+        "\n"
+    )
 end #function
