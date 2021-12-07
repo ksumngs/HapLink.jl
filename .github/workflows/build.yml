@@ -47,13 +47,13 @@ jobs:
         env:
           SOURCE_TAG: ${{ steps.tag_name.outputs.SOURCE_TAG }}
         run: |
-          tar cv build/* | gzip -9 > HapLink-${SOURCE_TAG}_linux.x86_64.tar.gz
+          tar cv -C build . | gzip -9 > HapLink-${SOURCE_TAG}_linux.x86_64.tar.gz
       - if: ${{ matrix.config.os == 'macos-latest' }}
         shell: bash
         env:
           SOURCE_TAG: ${{ steps.tag_name.outputs.SOURCE_TAG }}
         run: |
-          tar cv build/* | gzip -9 > HapLink-${SOURCE_TAG}_mac.x86_64.tar.gz
+          tar cv -C build . | gzip -9 > HapLink-${SOURCE_TAG}_mac.x86_64.tar.gz
       - if: ${{ matrix.config.os == 'windows-latest' }}
         shell: pwsh
         env:
