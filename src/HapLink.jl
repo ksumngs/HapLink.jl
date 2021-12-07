@@ -21,7 +21,6 @@ const VERSION = ArgParse.project_version(
 
 export countbasestats
 export callvariants
-export findsimulatedoccurrences
 export linkage
 export sumsliced
 export mutate
@@ -238,111 +237,6 @@ Base.@ccallable function make_haplotype_fastas()::Cint
     close(fwriter)
 
     return 0
-end #function
-
-"""
-    function findsimulatedoccurrences(args...; kwargs...)
-
-Find the number of times a particular haplotype is supported by a maximum likelihood
-simulation of combining aligned reads in a BAM file.
-
-# Arguments
-- `haplotype::Haplotype`: The combination of variants to test the aligned reads for evidence
-    of
-- `bamfile::AbstractString`: The path to a BAM file containing aligned reads to be tested
-    for instances of `haplotype`
-
-# Keywords
-- `iterations::Integer=1000`: The number of times to combine reads and test for the presence
-    of `haplotype`
-
-`findsimulatedoccurrences` examines each variant position in `haplotype` and finds a random
-read containing that position from `bamfile`. It will then check if the next variant
-position is contained on the previous read, and if not pick a new random read that contains
-that variant position. In this way, it assembles a set of reads that conceivably could have
-come from the same template strand via maximum likelihood.
-
-From that set of reads, `findsimulatedoccurrences` returns an ``N``-dimensional matrix where
-``N`` is the number of variant positions in `haplotypes`. The ``1`` index position in the
-``n``th dimension represents the number of times the ``n``th variant position was found to
-have the reference base called, while the ``2`` index position represents the number of
-times the ``n``th variant position was found to have the alternate base called. E.g.
-`first(findsimulatedoccurrences(...))` gives the number of times the all-reference base
-haplotype was found in the simulation, while `findsimulatedoccurrences(...)[end]` gives the
-number of times the all-alternate base haplotype was found.
-"""
-function findsimulatedoccurrences(
-    haplotype::Haplotype,
-    bamfile::AbstractString;
-    iterations=1000
-)
-
-    # Extract the SNPs we care about
-    mutations = haplotype.mutations
-
-    # Create an empty array for the simulated long reads
-    pseudoreads = Array{Symbol}(undef, iterations, length(mutations))
-
-    # Start reading the BAM file
-    open(BAM.Reader, bamfile) do bamreader
-        # Collect the reads
-        reads = collect(bamreader)
-
-        # Start iterating
-        Threads.@threads for i ∈ 1:iterations
-            # Get the reads that contain the first mutation
-            lastcontainingreads = filter(
-                b -> BAM.position(b) < mutations[1].position && BAM.rightposition(b) > mutations[1].position,
-                reads
-            )
-
-            # Pull a random read from that pool
-            lastread = rand(lastcontainingreads)
-
-            # Find this read's basecall at that position
-            basecall = baseatreferenceposition(lastread, mutations[1].position)
-            basematch = matchvariant(basecall, mutations[1])
-
-            pseudoreads[i, 1] = basematch
-
-            for j ∈ 2:length(mutations)
-                if (BAM.position(lastread) < mutations[j].position && BAM.rightposition(lastread) > mutations[j].position)
-                    thisread = lastread
-                else
-                    thiscontainingreads = filter(
-                        b -> BAM.position(b) > BAM.rightposition(lastread) && BAM.position(b) < mutations[j].position && BAM.rightposition(b) > mutations[j].position,
-                        reads
-                    )
-                    if length(thiscontainingreads) < 1
-                        pseudoreads[i,j] = :other
-                        continue
-                    end #if
-                    thisread = rand(thiscontainingreads)
-                end #if
-
-                # Find this read's basecall at that position
-                basecall = baseatreferenceposition(thisread, mutations[j].position)
-                basematch = matchvariant(basecall, mutations[j])
-
-                pseudoreads[i, j] = basematch
-
-                lastread = thisread
-            end #for
-        end #for
-    end #do
-
-    # Set up haplotype counts
-    hapcounts = zeros(Int, repeat([2], length(mutations))...)
-
-    for i ∈ 1:iterations
-        matches = pseudoreads[i, :]
-        if !any(matches .== :other)
-            coordinate = CartesianIndex((Int.(matches .== :alternate) .+ 1)...)
-            hapcounts[coordinate] += 1
-        end #if
-    end #for
-
-    return hapcounts
 end #function
 
 """
