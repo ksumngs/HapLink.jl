@@ -480,37 +480,4 @@ function serialize_yaml(h::Pair; reason::Union{String,Nothing}=nothing)
     )
 end #function
 
-"""
-    function mutate(seq::FASTA.Record, haplotype::Haplotype)
-    function mutate(seq::NucleotideSeq, haplotype::Haplotype)
-
-Give the reference sequence `seq` mutations to match the position and basecalls of
-`haplotype`. Returns a new sequence, leaving `seq` unmodified.
-
-When mutating a `FASTA.Record`, the new record is given a new unique identifier and
-description based on the SHA1 hash of the complete genotype.
-"""
-function mutate(record::FASTA.Record, haplotype::Haplotype)
-    newseq = mutate(sequence(record), haplotype)
-    sequencehash = bytes2hex(sha1(string(newseq)))
-    newid = sequencehash[1:8]
-    newdesc = string(description(record), ", variant ", sequencehash)
-
-    return FASTA.Record(
-        newid,
-        newdesc,
-        newseq
-    )
-end #function
-
-function mutate(seq::NucleotideSeq, haplotype::Haplotype)
-    newseq = seq
-
-    for var in haplotype.mutations
-        newseq[var.position] = var.alternatebase[1]
-    end #for
-
-    return newseq
-end #function
-
 end #module
