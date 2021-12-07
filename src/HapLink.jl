@@ -501,17 +501,16 @@ function mutate(record::FASTA.Record, haplotype::Haplotype)
         newdesc,
         newseq
     )
-
-end
+end #function
 
 function mutate(seq::NucleotideSeq, haplotype::Haplotype)
     newseq = seq
 
     for var in haplotype.mutations
         newseq[var.position] = var.alternatebase[1]
-    end
+    end #for
 
     return newseq
-end
+end #function
 
 end #module
