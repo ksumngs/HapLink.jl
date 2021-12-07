@@ -240,6 +240,37 @@ Base.@ccallable function make_haplotype_fastas()::Cint
     return 0
 end #function
 
+"""
+    function findsimulatedoccurrences(args...; kwargs...)
+
+Find the number of times a particular haplotype is supported by a maximum likelihood
+simulation of combining aligned reads in a BAM file.
+
+# Arguments
+- `haplotype::Haplotype`: The combination of variants to test the aligned reads for evidence
+    of
+- `bamfile::AbstractString`: The path to a BAM file containing aligned reads to be tested
+    for instances of `haplotype`
+
+# Keywords
+- `iterations::Integer=1000`: The number of times to combine reads and test for the presence
+    of `haplotype`
+
+`findsimulatedoccurrences` examines each variant position in `haplotype` and finds a random
+read containing that position from `bamfile`. It will then check if the next variant
+position is contained on the previous read, and if not pick a new random read that contains
+that variant position. In this way, it assembles a set of reads that conceivably could have
+come from the same template strand via maximum likelihood.
+
+From that set of reads, `findsimulatedoccurrences` returns an ``N``-dimensional matrix where
+``N`` is the number of variant positions in `haplotypes`. The ``1`` index position in the
+``n``th dimension represents the number of times the ``n``th variant position was found to
+have the reference base called, while the ``2`` index position represents the number of
+times the ``n``th variant position was found to have the alternate base called. E.g.
+`first(findsimulatedoccurrences(...))` gives the number of times the all-reference base
+haplotype was found in the simulation, while `findsimulatedoccurrences(...)[end]` gives the
+number of times the all-alternate base haplotype was found.
+"""
 function findsimulatedoccurrences(
     haplotype::Haplotype,
     bamfile::AbstractString;
