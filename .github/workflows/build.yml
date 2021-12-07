@@ -27,7 +27,15 @@ jobs:
       - run: |
           julia -e '
           using PackageCompiler
-          create_app(".", "build", cpu_target="x86-64")'
+          create_app(
+            ".",
+            "build",
+            executables=[
+              "haplink" => "haplink",
+              "make-haplotype-fastas" => "make_haplotype_fastas"
+            ],
+            cpu_target="x86-64"
+          )'
         shell: bash
       - run: |
           tar -c -v -f HapLink_${{ matrix.config.os }}.x86_64.tar.gz build
