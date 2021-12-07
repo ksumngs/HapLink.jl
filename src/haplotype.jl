@@ -20,7 +20,16 @@ function Haplotype(hapdict::Dict{String,Any})
 end
 
 function Base.show(io::IO, h::Haplotype)
-    print(io, string("Haplotype (", length(h.mutations), ") [", join([string(v.chromosome, ":", v.position) for v in h.mutations], ","), "]"))
+    return print(
+        io,
+        string(
+            "Haplotype (",
+            length(h.mutations),
+            ") [",
+            join([string(v.chromosome, ":", v.position) for v in h.mutations], ","),
+            "]",
+        ),
+    )
 end #function
 
 function serialize_yaml(h::Haplotype; reason::Union{String,Nothing}=nothing)
@@ -28,6 +37,6 @@ function serialize_yaml(h::Haplotype; reason::Union{String,Nothing}=nothing)
         "---\n",
         isnothing(reason) ? "" : string("reason: ", reason, "\n"),
         "mutations: \n",
-        serialize_yaml.(h.mutations)...
+        serialize_yaml.(h.mutations)...,
     )
 end

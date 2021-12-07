@@ -6,7 +6,7 @@ export callvariants
 Converts a PHRED33-scaled error number into the expected fractional error of basecall
 """
 function phrederror(qual::Number)
-    return 10^(-1*qual/10)
+    return 10^(-1 * qual / 10)
 end #function
 
 """
@@ -32,7 +32,7 @@ function callvariants(
     Q_min::Int,
     x_min::Float64,
     f_min::Float64,
-    α::Float64
+    α::Float64,
 )
 
     # Ensure we don't mutate the input reads
@@ -52,18 +52,20 @@ function callvariants(
     # https://github.com/andersen-lab/ivar/blob/v1.3.1/src/call_variants.cpp#L139), but
     # implemented in a slightly different way
     filter!(
-        var -> pvalue(FisherExactTest(
-            round(Int, phrederror(var.avg_basequality)*var.depth),
-            round(Int, (1-phrederror(var.avg_basequality))*var.depth),
-            var.count,
-            var.depth
-        )) <= α,
-        variantdata
+        var ->
+            pvalue(
+                FisherExactTest(
+                    round(Int, phrederror(var.avg_basequality) * var.depth),
+                    round(Int, (1 - phrederror(var.avg_basequality)) * var.depth),
+                    var.count,
+                    var.depth,
+                ),
+            ) <= α,
+        variantdata,
     )
 
     # Return variant objects based on the remaining variant calls
     return Variant.(eachrow(variantdata))
-
 end #function
 
 """
@@ -97,7 +99,7 @@ function savevcf(
     D::Int,
     Q::Number,
     x::Float64,
-    α::Float64
+    α::Float64,
 )
 
     # Convert read position to integer percent
@@ -115,7 +117,10 @@ function savevcf(
         write(f, "##FILTER=<ID=d$D,Description=\"Variant depth below $D\">\n")
         write(f, "##FILTER=<ID=q$Q,Description=\"Quality below $Q\">\n")
         write(f, "##FILTER=<ID=x$X,Description=\"Position in outer $X% of reads\">\n")
-        write(f, "##FILTER=<ID=sg,Description=\"Not significant at α=$α level by Fisher's Exact Test\">\n")
+        write(
+            f,
+            "##FILTER=<ID=sg,Description=\"Not significant at α=$α level by Fisher's Exact Test\">\n",
+        )
 
         # Add descriptions of the info tags I chose to include
         # TODO: Find a way for these _not_ to be hard-coded in here

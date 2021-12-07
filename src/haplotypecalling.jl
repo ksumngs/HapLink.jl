@@ -8,7 +8,7 @@ function findsimulatedhaplotypes(
     bamfile::AbstractString,
     D::Int,
     α::Float64;
-    iterations=1000
+    iterations=1000,
 )
 
     # TODO: Abstract the simulated haplotype finding into a higher-level function
@@ -18,13 +18,13 @@ function findsimulatedhaplotypes(
     variantpairs = combinations(variants, 2)
 
     # Create a place to store linked pairs and their statistics
-    linkedvariantpairhaplotypes = Dict{Haplotype, Matrix{Int}}()
+    linkedvariantpairhaplotypes = Dict{Haplotype,Matrix{Int}}()
 
     # Calculate the linkage between every possible variant pair, saving the pair as a
     # haplotype if it exhibited linkage
     for variantpair in variantpairs
         pairedhaplotype = Haplotype(variantpair)
-        hapcount = findsimulatedoccurrences(pairedhaplotype, bamfile, iterations=iterations)
+        hapcount = findsimulatedoccurrences(pairedhaplotype, bamfile; iterations=iterations)
         if linkage(hapcount)[2] <= α && last(hapcount) >= D
             linkedvariantpairhaplotypes[pairedhaplotype] = hapcount
         end #if
@@ -33,12 +33,12 @@ function findsimulatedhaplotypes(
     # Use (abuse?) Julia's awesome broadcasting and spatting to get a non-redundant list of
     # every variant position that exhibited linkage with any other variant position
     linkedvariants = unique(
-        cat(map(h -> h.mutations, collect(keys(linkedvariantpairhaplotypes)))..., dims=1)
+        cat(map(h -> h.mutations, collect(keys(linkedvariantpairhaplotypes)))...; dims=1)
     )
 
     # Create a new dict with the basic structure
     # variant => [all possibly linked variants]
-    possiblelinkages = Dict{Variant, AbstractArray{Variant}}()
+    possiblelinkages = Dict{Variant,AbstractArray{Variant}}()
 
     # Based on the information of what variants exhibit linkage disequilibrium while in
     # pairs, for a variant foo, find every other variant that exhibited paired linkage with
@@ -52,12 +52,12 @@ function findsimulatedhaplotypes(
                         h -> h.mutations,
                         filter(
                             h -> variant in h.mutations,
-                            collect(keys(linkedvariantpairhaplotypes))
-                        )
-                    )...,
-                dims=1
-                )
-            )
+                            collect(keys(linkedvariantpairhaplotypes)),
+                        ),
+                    )...;
+                    dims=1,
+                ),
+            ),
         )
     end #for
 
@@ -65,14 +65,14 @@ function findsimulatedhaplotypes(
     allvariantcombos = Haplotype.(unique(sort.(values(possiblelinkages))))
 
     # Set aside a place to put haplotypes that we'll return to the caller
-    returnedhaplotypes = Dict{Haplotype, Any}()
+    returnedhaplotypes = Dict{Haplotype,Any}()
 
     # Calculate the linkage between any new possible haplotypes
     for haplotype in allvariantcombos
         if haskey(linkedvariantpairhaplotypes, haplotype)
             returnedhaplotypes[haplotype] = linkedvariantpairhaplotypes[haplotype]
         else
-            hapcount = findsimulatedoccurrences(haplotype, bamfile, iterations=iterations)
+            hapcount = findsimulatedoccurrences(haplotype, bamfile; iterations=iterations)
             if linkage(hapcount)[2] <= α && last(hapcount) >= D
                 returnedhaplotypes[haplotype] = hapcount
             end #if
@@ -82,7 +82,6 @@ function findsimulatedhaplotypes(
     # TODO: Add the single-variant haplotypes back in
 
     return returnedhaplotypes
-
 end #function
 
 """
@@ -117,9 +116,7 @@ haplotype was found in the simulation, while `findsimulatedoccurrences(...)[end]
 number of times the all-alternate base haplotype was found.
 """
 function findsimulatedoccurrences(
-    haplotype::Haplotype,
-    bamfile::AbstractString;
-    iterations=1000
+    haplotype::Haplotype, bamfile::AbstractString; iterations=1000
 )
 
     # Extract the SNPs we care about
@@ -134,11 +131,13 @@ function findsimulatedoccurrences(
         reads = collect(bamreader)
 
         # Start iterating
-        Threads.@threads for i ∈ 1:iterations
+        Threads.@threads for i in 1:iterations
             # Get the reads that contain the first mutation
             lastcontainingreads = filter(
-                b -> BAM.position(b) < mutations[1].position && BAM.rightposition(b) > mutations[1].position,
-                reads
+                b ->
+                    BAM.position(b) < mutations[1].position &&
+                        BAM.rightposition(b) > mutations[1].position,
+                reads,
             )
 
             # Pull a random read from that pool
@@ -150,16 +149,22 @@ function findsimulatedoccurrences(
 
             pseudoreads[i, 1] = basematch
 
-            for j ∈ 2:length(mutations)
-                if (BAM.position(lastread) < mutations[j].position && BAM.rightposition(lastread) > mutations[j].position)
+            for j in 2:length(mutations)
+                if (
+                    BAM.position(lastread) < mutations[j].position &&
+                    BAM.rightposition(lastread) > mutations[j].position
+                )
                     thisread = lastread
                 else
                     thiscontainingreads = filter(
-                        b -> BAM.position(b) > BAM.rightposition(lastread) && BAM.position(b) < mutations[j].position && BAM.rightposition(b) > mutations[j].position,
-                        reads
+                        b ->
+                            BAM.position(b) > BAM.rightposition(lastread) &&
+                                BAM.position(b) < mutations[j].position &&
+                                BAM.rightposition(b) > mutations[j].position,
+                        reads,
                     )
                     if length(thiscontainingreads) < 1
-                        pseudoreads[i,j] = :other
+                        pseudoreads[i, j] = :other
                         continue
                     end #if
                     thisread = rand(thiscontainingreads)
@@ -179,7 +184,7 @@ function findsimulatedoccurrences(
     # Set up haplotype counts
     hapcounts = zeros(Int, repeat([2], length(mutations))...)
 
-    for i ∈ 1:iterations
+    for i in 1:iterations
         matches = pseudoreads[i, :]
         if !any(matches .== :other)
             coordinate = CartesianIndex((Int.(matches .== :alternate) .+ 1)...)
@@ -210,7 +215,7 @@ function linkage(counts::AbstractArray{Int})
     Δ = P_allref - prod(P_refs)
 
     # Calculate the test statistic
-    r = Δ / (prod(P_refs .* (1 .- P_refs))^(1/ndims(counts)))
+    r = Δ / (prod(P_refs .* (1 .- P_refs))^(1 / ndims(counts)))
     Χ_squared = r^2 * sum(counts)
 
     # Calculate the significance
@@ -248,8 +253,8 @@ Heavily inspired by Holy, Tim "Multidimensional algorithms and iteration"
 <https://julialang.org/blog/2016/02/iteration/#filtering_along_a_specified_dimension_exploiting_multiple_indexes>
 """
 function sumsliced(A::AbstractArray, dim::Int, pos::Int=1)
-    i_pre  = CartesianIndices(size(A)[1:dim-1])
-    i_post = CartesianIndices(size(A)[dim+1:end])
+    i_pre  = CartesianIndices(size(A)[1:(dim - 1)])
+    i_post = CartesianIndices(size(A)[(dim + 1):end])
     return sum(A[i_pre, pos, i_post])
 end #function
 
@@ -263,13 +268,13 @@ function serialize_yaml(h::Pair; reason::Union{String,Nothing}=nothing)
     end #for
 
     return string(
-        serialize_yaml(h.first, reason=reason),
+        serialize_yaml(h.first; reason=reason),
         occurrences,
         "Δ: ",
         linkage(h.second)[1],
         "\n",
         "p: ",
         linkage(h.second)[2],
-        "\n"
+        "\n",
     )
 end #function

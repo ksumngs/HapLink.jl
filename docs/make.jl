@@ -13,12 +13,6 @@ makedocs(;
         canonical="https://ksumngs.github.io/HapLink.jl",
         assets=String[],
     ),
-    pages=[
-        "Home" => "index.md",
-        "API Reference" => "api.md"
-    ],
+    pages=["Home" => "index.md", "API Reference" => "api.md"],
 )
-deploydocs(;
-    repo="github.com/ksumngs/HapLink.jl",
-    devbranch="master",
-)
+deploydocs(; repo="github.com/ksumngs/HapLink.jl", devbranch="master")

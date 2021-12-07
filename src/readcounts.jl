@@ -19,7 +19,7 @@ function countbasestats(bamfile::String, reffile::String)
             seqlength = FASTA.seqlen(refrecord)
             bamanalysis = string(
                 bamanalysis,
-                readchomp(`bam-readcount -f $reffile $bamfile "$chromosome:1-$seqlength"`)
+                readchomp(`bam-readcount -f $reffile $bamfile "$chromosome:1-$seqlength"`),
             )
         end #for
     end #do
@@ -57,7 +57,7 @@ Convert the output from [bam-readcount](https://github.com/genome/bam-readcount)
 """
 function transformbamcounts(bamcounts::AbstractVector{String})
     # Declare an empty bam stats data frame
-    countsdata = DataFrame(
+    countsdata = DataFrame(;
         chr                                  = String[],
         position                             = Int[],
         reference_base                       = String[],
@@ -75,7 +75,7 @@ function transformbamcounts(bamcounts::AbstractVector{String})
         num_q2_containing_reads              = Int[],
         avg_distance_to_q2_start_in_q2_reads = Float64[],
         avg_clipped_length                   = Float64[],
-        avg_distance_to_effective_3p_end     = Float64[]
+        avg_distance_to_effective_3p_end     = Float64[],
     )
 
     # Transform the bam stats file
@@ -85,31 +85,33 @@ function transformbamcounts(bamcounts::AbstractVector{String})
 
         # Loop through the base-dependent stat blocks
         for i in 6:length(bamfields)
-                # Split the base-dependent stats by colons
-                basestats = split(bamfields[i], ":")
+            # Split the base-dependent stats by colons
+            basestats = split(bamfields[i], ":")
 
-                # Parse the data into the correct types
-                chr                                  = bamfields[1]
-                position                             = parse(Int, bamfields[2])
-                reference_base                       = bamfields[3]
-                depth                                = parse(Int, bamfields[4])
-                base                                 = basestats[1]
-                count                                = parse(Int, basestats[2])
-                avg_mapping_quality                  = parse(Float64, basestats[3])
-                avg_basequality                      = parse(Float64, basestats[4])
-                avg_se_mapping_quality               = parse(Float64, basestats[5])
-                num_plus_strand                      = parse(Int, basestats[6])
-                num_minus_strand                     = parse(Int, basestats[7])
-                avg_pos_as_fraction                  = parse(Float64, basestats[8])
-                avg_num_mismatches_as_fraction       = parse(Float64, basestats[9])
-                avg_sum_mismatch_qualities           = parse(Float64, basestats[10])
-                num_q2_containing_reads              = parse(Int, basestats[11])
-                avg_distance_to_q2_start_in_q2_reads = parse(Float64, basestats[12])
-                avg_clipped_length                   = parse(Float64, basestats[13])
-                avg_distance_to_effective_3p_end     = parse(Float64, basestats[14])
+            # Parse the data into the correct types
+            chr                                  = bamfields[1]
+            position                             = parse(Int, bamfields[2])
+            reference_base                       = bamfields[3]
+            depth                                = parse(Int, bamfields[4])
+            base                                 = basestats[1]
+            count                                = parse(Int, basestats[2])
+            avg_mapping_quality                  = parse(Float64, basestats[3])
+            avg_basequality                      = parse(Float64, basestats[4])
+            avg_se_mapping_quality               = parse(Float64, basestats[5])
+            num_plus_strand                      = parse(Int, basestats[6])
+            num_minus_strand                     = parse(Int, basestats[7])
+            avg_pos_as_fraction                  = parse(Float64, basestats[8])
+            avg_num_mismatches_as_fraction       = parse(Float64, basestats[9])
+            avg_sum_mismatch_qualities           = parse(Float64, basestats[10])
+            num_q2_containing_reads              = parse(Int, basestats[11])
+            avg_distance_to_q2_start_in_q2_reads = parse(Float64, basestats[12])
+            avg_clipped_length                   = parse(Float64, basestats[13])
+            avg_distance_to_effective_3p_end     = parse(Float64, basestats[14])
 
-                # Append the data to the dataframe
-                push!(countsdata, [
+            # Append the data to the dataframe
+            push!(
+                countsdata,
+                [
                     chr,
                     position,
                     reference_base,
@@ -127,8 +129,9 @@ function transformbamcounts(bamcounts::AbstractVector{String})
                     num_q2_containing_reads,
                     avg_distance_to_q2_start_in_q2_reads,
                     avg_clipped_length,
-                    avg_distance_to_effective_3p_end
-                ])
+                    avg_distance_to_effective_3p_end,
+                ],
+            )
         end #for
     end #for
 

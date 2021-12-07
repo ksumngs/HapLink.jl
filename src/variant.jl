@@ -57,17 +57,14 @@ struct Variant
 end #struct
 
 function Variant(data::DataFrameRow)
-    CHROM  = data.chr
-    POS    = data.position
-    ID     = "."
-    QUAL   = data.avg_basequality
-    FILTER = :PASS
-    INFO   = Dict(
-        "DP" => data.depth,
-        "AD" => data.count
-    )
-    refbase    = data.reference_base
-    altbase    = data.base
+    CHROM   = data.chr
+    POS     = data.position
+    ID      = "."
+    QUAL    = data.avg_basequality
+    FILTER  = :PASS
+    INFO    = Dict("DP" => data.depth, "AD" => data.count)
+    refbase = data.reference_base
+    altbase = data.base
 
     # Check for insertion
     if first(altbase) == '+'
@@ -101,7 +98,20 @@ function Variant(vardict::Dict{String,Any})
 end #function
 
 function Base.show(io::IO, v::Variant)
-    print(io, string("Variant (", v.chromosome, ":", v.position, " ", v.referencebase, "=>", v.alternatebase, ")"))
+    return print(
+        io,
+        string(
+            "Variant (",
+            v.chromosome,
+            ":",
+            v.position,
+            " ",
+            v.referencebase,
+            "=>",
+            v.alternatebase,
+            ")",
+        ),
+    )
 end #function
 
 function Base.isless(v1::Variant, v2::Variant)
@@ -141,7 +151,7 @@ function serialize_yaml(v::Variant)
         string(v.filter),
         "\n",
         "    info:\n",
-        infostring
+        infostring,
     )
 end #function
 
@@ -152,13 +162,20 @@ Create a VCF line to represent `v`.
 """
 function serialize_vcf(v::Variant)
     return string(
-        v.chromosome,             "\t",
-        string(v.position),       "\t",
-        v.identifier,             "\t",
-        string(v.referencebase),  "\t",
-        string(v.alternatebase),  "\t",
-        string(trunc(v.quality)), "\t",
-        string(v.filter),         "\t",
-        join([string(n[1],"=",n[2]) for n in v.info], ";")
+        v.chromosome,
+        "\t",
+        string(v.position),
+        "\t",
+        v.identifier,
+        "\t",
+        string(v.referencebase),
+        "\t",
+        string(v.alternatebase),
+        "\t",
+        string(trunc(v.quality)),
+        "\t",
+        string(v.filter),
+        "\t",
+        join([string(n[1], "=", n[2]) for n in v.info], ";"),
     )
 end #function

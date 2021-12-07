@@ -25,18 +25,14 @@ function myref2seq(aln::Alignment, i::Int)
         newanchors = AlignmentAnchor[]
 
         # Rebase the start of our new alignment to where the clipping ends
-        push!(newanchors, AlignmentAnchor(
-            0,
-            aln.anchors[1].refpos,
-            OP_START
-        ))
+        push!(newanchors, AlignmentAnchor(0, aln.anchors[1].refpos, OP_START))
 
         # Add new anchors
-        for j in 3:(length(aln.anchors)-1)
+        for j in 3:(length(aln.anchors) - 1)
             newanchor = AlignmentAnchor(
                 aln.anchors[j].seqpos - alnstart.seqpos,
                 aln.anchors[j].refpos,
-                aln.anchors[j].op
+                aln.anchors[j].op,
             )
             push!(newanchors, newanchor)
         end #for
@@ -55,7 +51,6 @@ function myref2seq(aln::Alignment, i::Int)
 
     # Perform regular alignment search, minus any hard clipping
     return ref2seq(workingalignment, i)
-
 end #function
 
 function seqisinrange(aln::Alignment, i::Int)
@@ -132,11 +127,7 @@ function mutate(record::FASTA.Record, haplotype::Haplotype)
     newid = sequencehash[1:8]
     newdesc = string(description(record), ", variant ", sequencehash)
 
-    return FASTA.Record(
-        newid,
-        newdesc,
-        newseq
-    )
+    return FASTA.Record(newid, newdesc, newseq)
 end #function
 
 function mutate(seq::NucleotideSeq, haplotype::Haplotype)
