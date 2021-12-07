@@ -16,6 +16,10 @@ jobs:
           - os: windows-latest
     steps:
       - uses: actions/checkout@v2
+      - id: tag_name
+        shell: bash
+        run: |
+          echo ::set-output name-SOURCE_TAG::${GITHUB_REF#refs/tags/}
       - uses: julia-actions/setup-julia@v1
         with:
           version: '1.6'
@@ -37,12 +41,27 @@ jobs:
             cpu_target="x86-64"
           )'
         shell: bash
-      - run: |
-          tar -c -v -f HapLink_${{ matrix.config.os }}.x86_64.tar.gz build
+      - if: ${{ matrix.config.os == 'ubuntu-latest' }}
         shell: bash
+        env:
+          SOURCE_TAG: ${{ steps.tag_name.outputs.SOURCE_TAG }}
+        run: |
+          tar cv build/* | gzip -9 > HapLink-${SOURCE_TAG}_linux.x86_64.tar.gz
+      - if: ${{ matrix.config.os == 'macos-latest' }}
+        shell: bash
+        env:
+          SOURCE_TAG: ${{ steps.tag_name.outputs.SOURCE_TAG }}
+        run: |
+          tar cv build/* | gzip -9 > HapLink-${SOURCE_TAG}_mac.x86_64.tar.gz
+      - if: ${{ matrix.config.os == 'windows-latest' }}
+        shell: pwsh
+        env:
+          SOURCE_TAG: ${{ steps.tag_name.outputs.SOURCE_TAG }}
+        run: |
+          Compress-Archive -Path .\build\* -DestinationPath .\HapLink-${SOURCE_TAG}_win.x86_64.zip
       - uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ github.ref }}
-          file: HapLink_${{ matrix.config.os }}.x86_64.tar.gz
-          asset_name: haplink-$tag_${{ matrix.config.os }}.x86_64.tar.gz
+          file_glob: true
+          file: HapLink-*_{linux,mac,win}.x86_64.{tar.gz,zip}
