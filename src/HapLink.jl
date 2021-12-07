@@ -21,7 +21,6 @@ const VERSION = ArgParse.project_version(
 
 export countbasestats
 export callvariants
-export linkage
 export sumsliced
 export mutate
 
@@ -237,35 +236,6 @@ Base.@ccallable function make_haplotype_fastas()::Cint
     close(fwriter)
 
     return 0
-end #function
-
-"""
-    linkage(counts::AbstractArray{Int})
-
-Calculates the linkage disequilibrium and Chi-squared significance level of a combination of
-haplotypes whose number of occurrences are given by `counts`.
-
-`counts` is an ``N``-dimensional array where the ``N``th dimension represents the ``N``th
-variant call position within a haplotype. `findoccurrences` produces such an array.
-"""
-function linkage(counts::AbstractArray{Int})
-    # Get the probability of finding a perfect reference sequence
-    P_allref = first(counts) / sum(counts)
-
-    # Get the probabilities of finding reference bases in any of the haplotypes
-    P_refs = sumsliced.([counts], 1:ndims(counts)) ./ sum(counts)
-
-    # Calculate linkage disequilibrium
-    Δ = P_allref - prod(P_refs)
-
-    # Calculate the test statistic
-    r = Δ / (prod(P_refs .* (1 .- P_refs))^(1/ndims(counts)))
-    Χ_squared = r^2 * sum(counts)
-
-    # Calculate the significance
-    p = 1 - cdf(Chisq(1), Χ_squared)
-
-    return Δ, p
 end #function
 
 """
