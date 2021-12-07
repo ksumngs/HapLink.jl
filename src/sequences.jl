@@ -5,6 +5,7 @@ using XAM
 
 export baseatreferenceposition
 export matchvariant
+export mutate
 
 """
     myref2seq(aln::Alignment, i::Int)
