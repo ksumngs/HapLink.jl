@@ -1,5 +1,6 @@
 export findsimulatedhaplotypes
 export findsimulatedoccurrences
+export occurrence_matrix
 export linkage
 export sumsliced
 
@@ -181,11 +182,57 @@ function findsimulatedoccurrences(
         end #for
     end #do
 
-    # Set up haplotype counts
-    hapcounts = zeros(Int, repeat([2], length(mutations))...)
+    return occurrence_matrix(pseudoreads)
+end #function
 
-    for i in 1:iterations
-        matches = pseudoreads[i, :]
+"""
+    occurrence_matrix(readmatches::AbstractArray{Symbol})
+
+Transforms the haplotype occurrence table `readmatches` into an incidence matrix
+
+# Arguments
+- `readmatches::AbstractArray{Symbol}`: An ``m``x``n`` array where ``m`` is the number of
+    reads represented, and ``n`` is the number of variants in the haplotype considered, e.g.
+    readmatches[4,3] represents the match value for the third variant in the fourth read.
+    Valid values in the array are `:reference`, `:alternate`, and `:other`.
+
+# Returns
+- `2x2x... Array{Int64, size(readmatches)[2]}`: An ``N``-dimensional matrix where ``N`` is
+    the number of variant positions in `readmatches`. The ``1`` index position in the
+    ``n``th dimension represents the number of times the ``n``th variant position was found
+    to have the reference base called, while the ``2`` index position represents the number
+    of times the ``n``th variant position was found to have the alternate base called. E.g.
+    `first(occurrence_matrix(reads))` gives the number of times the all-reference base
+    haplotype was found in `reads`, while `occurrence_matrix(reads)[end]` gives the number
+    of times the all-alternate base haplotype was found.
+
+# Example
+```jldoctest
+julia> pseudoreads = [
+           :reference :reference :reference
+           :reference :reference :alternate
+           :reference :reference :alternate
+           :reference :reference :other
+       ];
+
+julia> occurrence_matrix(pseudoreads)
+2×2×2 Array{Int64, 3}:
+[:, :, 1] =
+ 1  0
+ 0  0
+
+[:, :, 2] =
+ 2  0
+ 0  0
+```
+"""
+function occurrence_matrix(readmatches::AbstractArray{Symbol})
+    # Set up an n-dimensional matrix to store haplotype counts
+    hapcounts = zeros(Int, repeat([2], size(readmatches)[2])...)
+
+    # Transform each match row into a count in the incidence matrix
+    for i in 1:size(readmatches)[1]
+        matches = readmatches[i, :]
         if !any(matches .== :other)
             coordinate = CartesianIndex((Int.(matches .== :alternate) .+ 1)...)
             hapcounts[coordinate] += 1
