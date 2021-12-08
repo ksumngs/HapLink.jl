@@ -1,4 +1,5 @@
 export findsimulatedhaplotypes
+export longread_genome
 export simulate_genome
 export occurrence_matrix
 export linkage
@@ -87,6 +88,84 @@ function findsimulatedhaplotypes(
     # TODO: Add the single-variant haplotypes back in
 
     return returnedhaplotypes
+end #function
+
+"""
+    longread_genome(haplotype::Haplotype, bamfile::AbstractString; iterations::Int64=0)
+
+Parse the whole-genome length reads in `bamfile` to determine each read's basecall at every
+variant position within `haplotype`.
+
+# Arguments
+- `haplotype::Haplotype`: The combination of variants to test basecalls against
+- `bamfile::AbstractString`: The path to a BAM file containing aligned reads to be tested
+    for instances of `haplotype`
+
+# Keywords
+- `iterations::Int`: Unused. Present to maintain interoperability with
+    [`simulate_genome`](@ref).
+
+# Returns
+- `MxN Array{Symbol}` where `M` is the number of reads present in `bamfile` and
+    `N=length(haplotype.mutations)`: A table of which base each read has in every variant
+    position of `haplotype`. The table has reads for rows and variant positions for columns,
+    e.g. longread_genome(...)[5,2] gives the basecall for the fifth read at the second
+    variant position. Basecalls are given as `Symbol` objects with possible values of
+    - `:reference`
+    - `:alternate`
+    - `:other`
+"""
+function longread_genome(haplotype::Haplotype, bamfile::AbstractString; iterations::Int=0)
+
+    # Extract the SNPs we care about
+    mutations = haplotype.mutations
+
+    # Create the return object
+    pseudoreads = Symbol[]
+
+    # Start reading the BAM file
+    open(BAM.Reader, bamfile) do bamreader
+        # Collect the reads
+        reads = collect(bamreader)
+
+        # Get only the reads that contain all of the variant positions
+        containingreads = filter(
+            b ->
+                BAM.position(b) < min(varposition.(mutations)...) &&
+                    BAM.rightposition(b) > max(varposition.(mutations)...),
+            reads,
+        )
+
+        # Piece out if there aren't any full-length reads
+        if length(containingreads) < 1
+            @warn "No reads in $bamfile contained all variant positions. Exiting now."
+            return reshape(repeat([:other], length(mutations)), (1, length(mutations)))
+        end #if
+
+        # Overwrite the return object as the correct dimensions
+        pseudoreads = Array{Symbol}(undef, length(containingreads), length(mutations))
+
+        # Check every NGS read that contains all positions
+        for i in 1:length(containingreads)
+            # Make it like a foreach loop
+            record = containingreads[i]
+
+            # Check agains every variant position
+            for j in 1:length(mutations)
+                # Make it like a foreach loop
+                mutation = mutations[j]
+
+                # Pull the basecall
+                basecall = baseatreferenceposition(record, varposition(mutation))
+                basematch = matchvariant(basecall, mutation)
+
+                # Put into the results
+                pseudoreads[i, j] = basematch
+            end #for
+        end #for
+    end #do
+
+    return pseudoreads
 end #function
 
 """
