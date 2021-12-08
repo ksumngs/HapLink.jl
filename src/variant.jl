@@ -118,6 +118,10 @@ function Base.isless(v1::Variant, v2::Variant)
     return v1.chromosome <= v2.chromosome && v1.position < v2.position
 end #function
 
+function varposition(v::Variant)
+    return v.position
+end #function
+
 """
     serialize_yaml(v::Variant)
 
