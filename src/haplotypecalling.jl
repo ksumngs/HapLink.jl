@@ -412,12 +412,18 @@ end #function
 
 function serialize_yaml(h::Pair; reason::Union{String,Nothing}=nothing)
     occurrences = "occurrences:\n"
-    for i in CartesianIndices(h.second)
-        location = [Tuple(i)...]
-        variantpattern = string.(replace(replace(location, 1 => "ref"), 2 => "alt"))
-        key = join(variantpattern, "_")
-        occurrences = string(occurrences, "  ", key, ": ", h.second[i], "\n")
-    end #for
+    if sum(size(h.second)) > 3
+        for i in CartesianIndices(h.second)
+            location = [Tuple(i)...]
+            variantpattern = string.(replace(replace(location, 1 => "ref"), 2 => "alt"))
+            key = join(variantpattern, "_")
+            occurrences = string(occurrences, "  ", key, ": ", h.second[i], "\n")
+        end #for
+    else
+        occurrences = string(
+            occurrences, "  ref: ", h.second[1], "\n  alt: ", h.second[2], "\n"
+        )
+    end #if
 
     return string(
         serialize_yaml(h.first; reason=reason),
