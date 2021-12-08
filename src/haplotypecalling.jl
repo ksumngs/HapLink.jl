@@ -1,5 +1,5 @@
 export findsimulatedhaplotypes
-export findsimulatedoccurrences
+export simulate_genome
 export occurrence_matrix
 export linkage
 export sumsliced
@@ -25,7 +25,7 @@ function findsimulatedhaplotypes(
     # haplotype if it exhibited linkage
     for variantpair in variantpairs
         pairedhaplotype = Haplotype(variantpair)
-        hapcount = findsimulatedoccurrences(pairedhaplotype, bamfile; iterations=iterations)
+        hapcount = simulate_genome(pairedhaplotype, bamfile; iterations=iterations)
         if linkage(hapcount)[2] <= α && last(hapcount) >= D
             linkedvariantpairhaplotypes[pairedhaplotype] = hapcount
         end #if
@@ -73,7 +73,7 @@ function findsimulatedhaplotypes(
         if haskey(linkedvariantpairhaplotypes, haplotype)
             returnedhaplotypes[haplotype] = linkedvariantpairhaplotypes[haplotype]
         else
-            hapcount = findsimulatedoccurrences(haplotype, bamfile; iterations=iterations)
+            hapcount = simulate_genome(haplotype, bamfile; iterations=iterations)
             if linkage(hapcount)[2] <= α && last(hapcount) >= D
                 returnedhaplotypes[haplotype] = hapcount
             end #if
@@ -86,7 +86,7 @@ function findsimulatedhaplotypes(
 end #function
 
 """
-    function findsimulatedoccurrences(args...; kwargs...)
+    simulate_genome(haplotype::Haplotype, bamfile::AbstractString; iterations::Int64=1000)
 
 Find the number of times a particular haplotype is supported by a maximum likelihood
 simulation of combining aligned reads in a BAM file.
@@ -116,9 +116,7 @@ times the ``n``th variant position was found to have the alternate base called. 
 haplotype was found in the simulation, while `findsimulatedoccurrences(...)[end]` gives the
 number of times the all-alternate base haplotype was found.
 """
-function findsimulatedoccurrences(
-    haplotype::Haplotype, bamfile::AbstractString; iterations=1000
-)
+function simulate_genome(haplotype::Haplotype, bamfile::AbstractString; iterations=1000)
 
     # Extract the SNPs we care about
     mutations = haplotype.mutations
