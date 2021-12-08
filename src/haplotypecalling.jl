@@ -5,6 +5,36 @@ export occurrence_matrix
 export linkage
 export sumsliced
 
+"""
+    find_haplotypes(
+        variants::AbstractVector{Variant},
+        bamfile::AbstractString,
+        D::Int,
+        α::Float64,
+        haplotypemethod
+    )
+
+Find all combinations of `variants` that the reads in `bamfile` support as a valid haplotype
+with a minimum depth of `D` and Χ-squared linkage disequilibrium significance of `α`, with
+the haplotypes being converted into genomes via `haplotypemethod`.
+
+# Arguments
+- `variants::AbstractVector{Variant}`: A `Vector` of `Variant` objects which will be
+    combined into `Haplotype` objects and tested for validity
+- `bamfile::AbstractString`: The path to a BAM file containing reads to check for the
+    presence of haplotypes
+- `D::Int`: The minimum number of times a haplotype must be present in the reads according
+    to `haplotypemethod`
+- `α::Float64`: The maximum ``Χ``-squared ``p``-value at which to consider a haplotype
+    significant and worth returning.
+- `haplotypemethod`: A function handle with the signature `f(h::Haplotype,
+    b::AbstractString)` which with return a table of the variant basecall matches found.
+    Both [`longread_genome`](@ref) and [`simulate_genome`](@ref) fulfil this requirement.
+
+# Returns
+- `Dict{Haplotype,Matrix{Int}}`: A dictionary containing every significant haplotype and its
+    incidence matrix
+"""
 function find_haplotypes(
     variants::AbstractVector{Variant},
     bamfile::AbstractString,
