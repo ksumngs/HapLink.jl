@@ -158,7 +158,7 @@ Base.@ccallable function haplink()::Cint
         @warn "No variants found!"
         touch(string(prefix, ".yaml"))
         cp(reffile, string(prefix, ".fasta"))
-        return nothing
+        return 0
     end #if
 
     if occursin("ml", args["method"])
