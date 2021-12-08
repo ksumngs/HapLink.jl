@@ -88,8 +88,15 @@ end #function
 """
     simulate_genome(haplotype::Haplotype, bamfile::AbstractString; iterations::Int64=1000)
 
-Find the number of times a particular haplotype is supported by a maximum likelihood
-simulation of combining aligned reads in a BAM file.
+Simulate a set of `iterations` reads that contain all of the variant positions in
+`haplotype` containing the actual reads present in `bamfile` via a maximum likelihood
+method.
+
+`simulate_genome` examines each variant position in `haplotype` and finds a random read
+containing that position from `bamfile`. It will then check if the next variant position is
+contained on the previous read, and if not pick a new random read that contains that variant
+position. In this way, it assembles a set of reads that conceivably could have come from the
+same template strand via maximum likelihood.
 
 # Arguments
 - `haplotype::Haplotype`: The combination of variants to test the aligned reads for evidence
@@ -101,20 +108,15 @@ simulation of combining aligned reads in a BAM file.
 - `iterations::Integer=1000`: The number of times to combine reads and test for the presence
     of `haplotype`
 
-`findsimulatedoccurrences` examines each variant position in `haplotype` and finds a random
-read containing that position from `bamfile`. It will then check if the next variant
-position is contained on the previous read, and if not pick a new random read that contains
-that variant position. In this way, it assembles a set of reads that conceivably could have
-come from the same template strand via maximum likelihood.
-
-From that set of reads, `findsimulatedoccurrences` returns an ``N``-dimensional matrix where
-``N`` is the number of variant positions in `haplotypes`. The ``1`` index position in the
-``n``th dimension represents the number of times the ``n``th variant position was found to
-have the reference base called, while the ``2`` index position represents the number of
-times the ``n``th variant position was found to have the alternate base called. E.g.
-`first(findsimulatedoccurrences(...))` gives the number of times the all-reference base
-haplotype was found in the simulation, while `findsimulatedoccurrences(...)[end]` gives the
-number of times the all-alternate base haplotype was found.
+# Returns
+- `MxN Array{Symbol}` where `M=iterations` and `N=length(haplotype.mutations)`: A table of
+    which base each simulated read has in every variant position of `haplotype`. The table
+    has reads for rows and variant positions for columns, e.g. simulate_genome(...)[5,2]
+    gives the basecall for the fifth simulated read at the second variant position.
+    Basecalls are given as `Symbol` objects with possible values of
+    - `:reference`
+    - `:alternate`
+    - `:other`
 """
 function simulate_genome(haplotype::Haplotype, bamfile::AbstractString; iterations=1000)
 
