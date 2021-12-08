@@ -162,19 +162,20 @@ Base.@ccallable function haplink()::Cint
     end #if
 
     if occursin("ml", args["method"])
-        # TODO: implement an expression-evaluator for ML iterations
         # Calculate the number of iterations for each haplotype
-        iterations = 1000 # max(1000, D_haplotype*length(variants)^2)
+        # TODO: implement an expression-evaluator for ML iterations
+        iterations = 1000
 
-        # TODO: implement an overlapped-read ML algorithm
-
-        haplotypes = find_haplotypes(
-            variants, bamfile, D_haplotype, α_haplotype; iterations=iterations
-        )
+        # Use the simulated read method
+        hapmethod(h::Haplotype, b::AbstractString) =
+            simulate_genome(h, b; iterations=iterations)
     else
-        # TODO: implement a long read, non-simulated likage finder
-        haplotypes = findhaplotypes(variants, bamfile, D_haplotype, α_haplotype)
+        # Use the actual read method
+        hapmethod(h::Haplotype, b::AbstractString) =
+            longread_genome(h, b)
     end #if
+
+    haplotypes = find_haplotypes(variants, bamfile, D_haplotype, α_haplotype, hapmethod)
 
     # Write the found haplotypes to file
     yamlfile = string(prefix, ".yaml")
