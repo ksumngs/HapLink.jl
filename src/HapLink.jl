@@ -168,7 +168,7 @@ Base.@ccallable function haplink()::Cint
 
         # TODO: implement an overlapped-read ML algorithm
 
-        haplotypes = findsimulatedhaplotypes(
+        haplotypes = find_haplotypes(
             variants, bamfile, D_haplotype, α_haplotype; iterations=iterations
         )
     else

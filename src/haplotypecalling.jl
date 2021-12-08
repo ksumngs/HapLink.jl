@@ -1,11 +1,11 @@
-export findsimulatedhaplotypes
+export find_haplotypes
 export longread_genome
 export simulate_genome
 export occurrence_matrix
 export linkage
 export sumsliced
 
-function findsimulatedhaplotypes(
+function find_haplotypes(
     variants::AbstractVector{Variant},
     bamfile::AbstractString,
     D::Int,
