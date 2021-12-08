@@ -109,7 +109,17 @@ function find_haplotypes(
         end #if
     end #for
 
-    # TODO: Add the single-variant haplotypes back in
+    # Add the single-variant haplotypes back in
+    confirmedlinkedvariants = unique(
+        cat(mutations.(collect(keys(returnedhaplotypes)))...; dims=1)
+    )
+    singlevariants = filter(v -> !(v in confirmedlinkedvariants), variants)
+    for var in singlevariants
+        varhap = Haplotype(var)
+        altdepth = alternatedepth(var)
+        refdepth = totaldepth(var) - altdepth
+        returnedhaplotypes[varhap] = [refdepth altdepth]
+    end #for
 
     return returnedhaplotypes
 end #function
