@@ -1,4 +1,5 @@
 export Haplotype
+export mutations
 
 """
     Haplotype(mutations::AbstractVector{Variant})
@@ -30,6 +31,10 @@ function Base.show(io::IO, h::Haplotype)
             "]",
         ),
     )
+end #function
+
+function mutations(h::Haplotype)
+    return h.mutations
 end #function
 
 function serialize_yaml(h::Haplotype; reason::Union{String,Nothing}=nothing)
