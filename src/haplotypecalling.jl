@@ -9,11 +9,9 @@ function find_haplotypes(
     variants::AbstractVector{Variant},
     bamfile::AbstractString,
     D::Int,
-    α::Float64;
-    iterations=1000,
+    α::Float64,
+    haplotypemethod
 )
-
-    # TODO: Abstract the simulated haplotype finding into a higher-level function
 
     # Find every possible pair of variants. These may be valid haplotypes in their own
     # right, but for right now, we are just going to use them to find linkage between pairs
@@ -27,7 +25,7 @@ function find_haplotypes(
     for variantpair in variantpairs
         pairedhaplotype = Haplotype(variantpair)
         hapcount = occurrence_matrix(
-            simulate_genome(pairedhaplotype, bamfile; iterations=iterations)
+            haplotypemethod(pairedhaplotype, bamfile)
         )
         if linkage(hapcount)[2] <= α && last(hapcount) >= D
             linkedvariantpairhaplotypes[pairedhaplotype] = hapcount
@@ -77,7 +75,7 @@ function find_haplotypes(
             returnedhaplotypes[haplotype] = linkedvariantpairhaplotypes[haplotype]
         else
             hapcount = occurrence_matrix(
-                simulate_genome(haplotype, bamfile; iterations=iterations)
+                haplotypemethod(haplotype, bamfile)
             )
             if linkage(hapcount)[2] <= α && last(hapcount) >= D
                 returnedhaplotypes[haplotype] = hapcount
@@ -202,6 +200,8 @@ same template strand via maximum likelihood.
     - `:other`
 """
 function simulate_genome(haplotype::Haplotype, bamfile::AbstractString; iterations=1000)
+
+    # TODO: implement an overlapped-read ML algorithm
 
     # Extract the SNPs we care about
     mutations = haplotype.mutations
