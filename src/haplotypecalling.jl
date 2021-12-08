@@ -89,7 +89,7 @@ function find_haplotypes(
 end #function
 
 """
-    longread_genome(haplotype::Haplotype, bamfile::AbstractString; iterations::Int64=0)
+    longread_genome(haplotype::Haplotype, bamfile::AbstractString)
 
 Parse the whole-genome length reads in `bamfile` to determine each read's basecall at every
 variant position within `haplotype`.
@@ -98,10 +98,6 @@ variant position within `haplotype`.
 - `haplotype::Haplotype`: The combination of variants to test basecalls against
 - `bamfile::AbstractString`: The path to a BAM file containing aligned reads to be tested
     for instances of `haplotype`
-
-# Keywords
-- `iterations::Int`: Unused. Present to maintain interoperability with
-    [`simulate_genome`](@ref).
 
 # Returns
 - `MxN Array{Symbol}` where `M` is the number of reads present in `bamfile` and
@@ -113,7 +109,7 @@ variant position within `haplotype`.
     - `:alternate`
     - `:other`
 """
-function longread_genome(haplotype::Haplotype, bamfile::AbstractString; iterations::Int=0)
+function longread_genome(haplotype::Haplotype, bamfile::AbstractString)
 
     # Extract the SNPs we care about
     mutations = haplotype.mutations
