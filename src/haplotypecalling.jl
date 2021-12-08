@@ -25,7 +25,9 @@ function findsimulatedhaplotypes(
     # haplotype if it exhibited linkage
     for variantpair in variantpairs
         pairedhaplotype = Haplotype(variantpair)
-        hapcount = simulate_genome(pairedhaplotype, bamfile; iterations=iterations)
+        hapcount = occurrence_matrix(
+            simulate_genome(pairedhaplotype, bamfile; iterations=iterations)
+        )
         if linkage(hapcount)[2] <= α && last(hapcount) >= D
             linkedvariantpairhaplotypes[pairedhaplotype] = hapcount
         end #if
@@ -73,7 +75,9 @@ function findsimulatedhaplotypes(
         if haskey(linkedvariantpairhaplotypes, haplotype)
             returnedhaplotypes[haplotype] = linkedvariantpairhaplotypes[haplotype]
         else
-            hapcount = simulate_genome(haplotype, bamfile; iterations=iterations)
+            hapcount = occurrence_matrix(
+                simulate_genome(haplotype, bamfile; iterations=iterations)
+            )
             if linkage(hapcount)[2] <= α && last(hapcount) >= D
                 returnedhaplotypes[haplotype] = hapcount
             end #if
@@ -182,7 +186,7 @@ function simulate_genome(haplotype::Haplotype, bamfile::AbstractString; iteratio
         end #for
     end #do
 
-    return occurrence_matrix(pseudoreads)
+    return pseudoreads
 end #function
 
 """
