@@ -3,6 +3,7 @@ using BioSymbols
 using DataFrames
 
 export Variant
+export alternatedepth
 
 """
     Variant
@@ -120,6 +121,10 @@ end #function
 
 function varposition(v::Variant)
     return v.position
+end #function
+
+function alternatedepth(v::Variant)
+    return v.info["AD"]
 end #function
 
 """
