@@ -167,12 +167,12 @@ Base.@ccallable function haplink()::Cint
         iterations = 1000
 
         # Use the simulated read method
-        hapmethod(h::Haplotype, b::AbstractString) =
-            simulate_genome(h, b; iterations=iterations)
+        hapmethod =
+            (h::Haplotype, b::AbstractString) ->
+                simulate_genome(h, b; iterations=iterations)
     else
         # Use the actual read method
-        hapmethod(h::Haplotype, b::AbstractString) =
-            longread_genome(h, b)
+        hapmethod = (h::Haplotype, b::AbstractString) -> longread_genome(h, b)
     end #if
 
     haplotypes = find_haplotypes(variants, bamfile, D_haplotype, α_haplotype, hapmethod)

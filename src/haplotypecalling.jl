@@ -40,7 +40,7 @@ function find_haplotypes(
     bamfile::AbstractString,
     D::Int,
     α::Float64,
-    haplotypemethod
+    haplotypemethod,
 )
 
     # Find every possible pair of variants. These may be valid haplotypes in their own
@@ -54,9 +54,7 @@ function find_haplotypes(
     # haplotype if it exhibited linkage
     for variantpair in variantpairs
         pairedhaplotype = Haplotype(variantpair)
-        hapcount = occurrence_matrix(
-            haplotypemethod(pairedhaplotype, bamfile)
-        )
+        hapcount = occurrence_matrix(haplotypemethod(pairedhaplotype, bamfile))
         if linkage(hapcount)[2] <= α && last(hapcount) >= D
             linkedvariantpairhaplotypes[pairedhaplotype] = hapcount
         end #if
@@ -104,9 +102,7 @@ function find_haplotypes(
         if haskey(linkedvariantpairhaplotypes, haplotype)
             returnedhaplotypes[haplotype] = linkedvariantpairhaplotypes[haplotype]
         else
-            hapcount = occurrence_matrix(
-                haplotypemethod(haplotype, bamfile)
-            )
+            hapcount = occurrence_matrix(haplotypemethod(haplotype, bamfile))
             if linkage(hapcount)[2] <= α && last(hapcount) >= D
                 returnedhaplotypes[haplotype] = hapcount
             end #if
