@@ -179,7 +179,7 @@ function overlap_inrange(record1::BAM.Record, record2::BAM.Record; min::Int=0, m
     end #if
 
     # Calculate the overlap
-    overlap = -(BAM.rightposition(record2) - BAM.position(record1))
+    overlap = BAM.rightposition(record1) - BAM.position(record2)
 
     return overlap >= min && overlap <= max
 end #function
