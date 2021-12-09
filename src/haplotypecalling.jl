@@ -187,7 +187,7 @@ function longread_genome(haplotype::Haplotype, bamfile::AbstractString)
 
                 # Pull the basecall
                 basecall = baseatreferenceposition(record, varposition(mutation))
-                basematch = matchvariant(basecall, mutation)
+                basematch = isnothing(basecall) ? :other : matchvariant(basecall, mutation)
 
                 # Put into the results
                 pseudoreads[i, j] = basematch
@@ -261,7 +261,7 @@ function simulate_genome(haplotype::Haplotype, bamfile::AbstractString; iteratio
 
             # Find this read's basecall at that position
             basecall = baseatreferenceposition(lastread, mutations[1].position)
-            basematch = matchvariant(basecall, mutations[1])
+            basematch = isnothing(basecall) ? :other : matchvariant(basecall, mutations[1])
 
             pseudoreads[i, 1] = basematch
 
@@ -288,7 +288,7 @@ function simulate_genome(haplotype::Haplotype, bamfile::AbstractString; iteratio
 
                 # Find this read's basecall at that position
                 basecall = baseatreferenceposition(thisread, mutations[j].position)
-                basematch = matchvariant(basecall, mutations[j])
+                basematch = isnothing(basecall) ? :other : matchvariant(basecall, mutations[j])
 
                 pseudoreads[i, j] = basematch
 
