@@ -159,8 +159,10 @@ function variant_positions_match(
     variantpositions::AbstractVecOrMat{Int}
 )
     for pos in variantpositions
-        if baseatreferenceposition(record1, pos) != baseatreferenceposition(record2, pos)
-            return false
+        if containsposition(record1, pos) && containsposition(record2, pos)
+            if baseatreferenceposition(record1, pos) != baseatreferenceposition(record2, pos)
+                return false
+            end #if
         end #if
     end #for
 
