@@ -6,6 +6,7 @@ using XAM
 export baseatreferenceposition
 export matchvariant
 export mutate
+export variant_positions_match
 
 """
     myref2seq(aln::Alignment, i::Int)
@@ -138,4 +139,28 @@ function mutate(seq::NucleotideSeq, haplotype::Haplotype)
     end #for
 
     return newseq
+end #function
+
+"""
+    variant_positions_match(
+        record1::BAM.Record,
+        record2::BAM.Record,
+        variantpositions::AbstractVecOrMat{Int}
+    )
+
+Check `record1` and `record2` at and return `true` if the basecalls are identical at every
+position in `variantpositions`.
+"""
+function variant_positions_match(
+    record1::BAM.Record,
+    record2::BAM.Record,
+    variantpositions::AbstractVecOrMat{Int}
+)
+    for pos in variantpositions
+        if baseatreferenceposition(record1, pos) != baseatreferenceposition(record2, pos)
+            return false
+        end #if
+    end #for
+
+    return true
 end #function
