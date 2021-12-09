@@ -7,6 +7,7 @@ export baseatreferenceposition
 export matchvariant
 export mutate
 export variant_positions_match
+export overlap_inrange
 
 """
     myref2seq(aln::Alignment, i::Int)
@@ -163,4 +164,21 @@ function variant_positions_match(
     end #for
 
     return true
+end #function
+
+"""
+    overlap_inrange(record1::BAM.Record, record2::BAM.Record; min::Int=0, max::Int=100)
+
+Check if `record1` and `record2` overlap by an amount between `min` and `max`.
+"""
+function overlap_inrange(record1::BAM.Record, record2::BAM.Record; min::Int=0, max::Int=100)
+    # Interpet a minimum overlap of 0 as gaps are permitted
+    if min == 0
+        min = typemin(Int)
+    end #if
+
+    # Calculate the overlap
+    overlap = -(BAM.rightposition(record2) - BAM.position(record1))
+
+    return overlap >= min && overlap <= max
 end #function
