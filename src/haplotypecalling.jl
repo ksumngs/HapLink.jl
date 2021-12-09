@@ -220,6 +220,9 @@ same template strand via maximum likelihood.
 # Keywords
 - `iterations::Integer=1000`: The number of times to combine reads and test for the presence
     of `haplotype`
+- `nextreadcandidates`: A function handle of the signature `f(r1::BAM.Record,
+    r2::BAM.Record, pos::AbstractVecOrMat{Int})` that determines if `r2` can be paired in
+    the same simulated genome as `r2` based on the variant positions listed in `pos`
 
 # Returns
 - `MxN Array{Symbol}` where `M=iterations` and `N=length(haplotype.mutations)`: A table of
@@ -231,7 +234,12 @@ same template strand via maximum likelihood.
     - `:alternate`
     - `:other`
 """
-function simulate_genome(haplotype::Haplotype, bamfile::AbstractString; iterations=1000)
+function simulate_genome(
+    haplotype::Haplotype,
+    bamfile::AbstractString;
+    iterations=1000,
+    nextreadcandidates=variant_positions_match
+)
 
     # TODO: implement an overlapped-read ML algorithm
 
@@ -274,9 +282,8 @@ function simulate_genome(haplotype::Haplotype, bamfile::AbstractString; iteratio
                 else
                     thiscontainingreads = filter(
                         b ->
-                            BAM.position(b) > BAM.rightposition(lastread) &&
-                                BAM.position(b) < mutations[j].position &&
-                                BAM.rightposition(b) > mutations[j].position,
+                            nextreadcandidates(lastread, b, varposition.(mutations)) &&
+                            containsposition(b, varposition(mutations[j])),
                         reads,
                     )
                     if length(thiscontainingreads) < 1

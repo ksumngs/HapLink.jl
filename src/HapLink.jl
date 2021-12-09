@@ -166,10 +166,17 @@ Base.@ccallable function haplink()::Cint
         # TODO: implement an expression-evaluator for ML iterations
         iterations = 1000
 
+        # Create a read matching algorithm
+        domatch =
+            (r1::BAM.Record, r2::BAM.Record, pos::AbstractVecOrMat{Int}) ->
+                BAM.position(r2) >= BAM.position(r1) &&
+                    variant_positions_match(r1, r2, pos) &&
+                    overlap_inrange(r1, r2)
+
         # Use the simulated read method
         hapmethod =
             (h::Haplotype, b::AbstractString) ->
-                simulate_genome(h, b; iterations=iterations)
+                simulate_genome(h, b; iterations=iterations, nextreadcandidates=domatch)
     else
         # Use the actual read method
         hapmethod = (h::Haplotype, b::AbstractString) -> longread_genome(h, b)
