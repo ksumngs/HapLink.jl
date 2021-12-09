@@ -214,3 +214,12 @@ function overlap_aligns(
 
     return false
 end #function
+
+"""
+    containsposition(record::BAM.Record, i::Int)
+
+Check to see if reference posision `i` is available in `record`
+"""
+function containsposition(record::BAM.Record, i::Int)
+    return i >= BAM.position(record) && i <= BAM.rightposition(record)
+end
