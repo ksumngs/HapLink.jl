@@ -5,6 +5,7 @@ using DataFrames
 export Variant
 export totaldepth
 export alternatedepth
+export varposition
 
 """
     Variant
