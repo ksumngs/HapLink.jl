@@ -9,6 +9,7 @@ export mutate
 export variant_positions_match
 export overlap_inrange
 export overlap_aligns
+export containsposition
 
 """
     myref2seq(aln::Alignment, i::Int)
