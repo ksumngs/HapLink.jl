@@ -120,6 +120,7 @@ Base.@ccallable function haplink()::Cint
                 """
         required = false
         default  = 100
+        arg_type = Int64
         range_tester = x -> x >= 0
         "--iterations"
         help = "Formula to determine how many iterations to perform using one of the ml methods"
