@@ -105,6 +105,14 @@ Base.@ccallable function haplink()::Cint
         default      = "ml-overlap"
         arg_type     = String
         range_tester = x -> (x == "ml-overlap") || (x == "ml-gapped") || (x == "raw")
+        "--overlap_min", "-i"
+        help     = """
+                The minimum amount reads must overlap to be placed in the same simulated \
+                template strand.
+                """
+        required = false
+        default  = 0
+        arg_type = Int64
         "--iterations"
         help = "Formula to determine how many iterations to perform using one of the ml methods"
         required = false
