@@ -238,7 +238,7 @@ function simulate_genome(
     haplotype::Haplotype,
     bamfile::AbstractString;
     iterations=1000,
-    nextreadcandidates=variant_positions_match
+    nextreadcandidates=variant_positions_match,
 )
 
     # TODO: implement an overlapped-read ML algorithm
@@ -283,7 +283,7 @@ function simulate_genome(
                     thiscontainingreads = filter(
                         b ->
                             nextreadcandidates(lastread, b, varposition.(mutations)) &&
-                            containsposition(b, varposition(mutations[j])),
+                                containsposition(b, varposition(mutations[j])),
                         reads,
                     )
                     if length(thiscontainingreads) < 1
@@ -295,7 +295,8 @@ function simulate_genome(
 
                 # Find this read's basecall at that position
                 basecall = baseatreferenceposition(thisread, mutations[j].position)
-                basematch = isnothing(basecall) ? :other : matchvariant(basecall, mutations[j])
+                basematch =
+                    isnothing(basecall) ? :other : matchvariant(basecall, mutations[j])
 
                 pseudoreads[i, j] = basematch
 
