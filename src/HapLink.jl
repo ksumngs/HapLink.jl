@@ -147,6 +147,8 @@ Base.@ccallable function haplink()::Cint
     α_haplotype    = args["haplotype_significance"]
     D_variant      = args["variant_depth"]
     D_haplotype    = args["haplotype_depth"]
+    maxoverlap     = args["overlap_max"]
+    minoverlap     = args["overlap_min"]
 
     # Find the file prefix for output files if none was provided
     bampath = Path(bamfile)
@@ -187,7 +189,7 @@ Base.@ccallable function haplink()::Cint
             (r1::BAM.Record, r2::BAM.Record, pos::AbstractVecOrMat{Int}) ->
                 BAM.position(r2) >= BAM.position(r1) &&
                     variant_positions_match(r1, r2, pos) &&
-                    overlap_inrange(r1, r2)
+                    overlap_inrange(r1, r2; max=maxoverlap, min=minoverlap)
 
         # Use the simulated read method
         hapmethod =
