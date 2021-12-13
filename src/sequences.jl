@@ -159,13 +159,12 @@ Check `record1` and `record2` at and return `true` if the basecalls are identica
 position in `variantpositions`.
 """
 function variant_positions_match(
-    record1::BAM.Record,
-    record2::BAM.Record,
-    variantpositions::AbstractVecOrMat{Int}
+    record1::BAM.Record, record2::BAM.Record, variantpositions::AbstractVecOrMat{Int}
 )
     for pos in variantpositions
         if containsposition(record1, pos) && containsposition(record2, pos)
-            if baseatreferenceposition(record1, pos) != baseatreferenceposition(record2, pos)
+            if baseatreferenceposition(record1, pos) !=
+                baseatreferenceposition(record2, pos)
                 return false
             end #if
         end #if
