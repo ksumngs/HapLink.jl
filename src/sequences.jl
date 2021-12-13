@@ -8,7 +8,6 @@ export matchvariant
 export mutate
 export variant_positions_match
 export overlap_inrange
-export overlap_aligns
 export containsposition
 
 """
@@ -190,37 +189,6 @@ function overlap_inrange(record1::BAM.Record, record2::BAM.Record; min::Int=0, m
     overlap = BAM.rightposition(record1) - BAM.position(record2)
 
     return overlap >= min && overlap <= max
-end #function
-
-"""
-    overlap_aligns(
-        record1::BAM.Record,
-        record2::BAM.Record,
-        minscore::Int,
-        scoremodel::AffineGapScoreModel,
-    )
-
-Check if `record1` and `record2` align with a score of at least `minscore` using a gap model
-of `scoremodel`.
-"""
-function overlap_aligns(
-    record1::BAM.Record,
-    record2::BAM.Record,
-    minscore::Int,
-    scoremodel::AffineGapScoreModel,
-)
-    alignment = pairalign(
-        OverlapAlignment(),
-        BAM.sequence(record1),
-        BAM.sequence(record2),
-        scoremodel
-    )
-
-    if score(alignment) > minscore
-        return true
-    end # if
-
-    return false
 end #function
 
 """
