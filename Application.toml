@@ -1,0 +1,3 @@
+[entrypoints]
+"haplink" = "haplink"
+"make-haplotype-fastas" = "make_haplotype_fastas"
