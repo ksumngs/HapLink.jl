@@ -114,12 +114,12 @@ Base.@ccallable function haplink()::Cint
         default  = 0
         arg_type = Int64
         "--overlap_max", "-m"
-        help     = """
-                The maximum amount reads are allowed to overlap to be placed in the same \
-                simulated template strand.
-                """
+        help = """
+            The maximum amount reads are allowed to overlap to be placed in the same \
+            simulated template strand.
+            """
         required = false
-        default  = 100
+        default = 100
         arg_type = Int64
         range_tester = x -> x >= 0
         "--iterations"
