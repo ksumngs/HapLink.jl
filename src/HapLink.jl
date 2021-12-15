@@ -158,8 +158,8 @@ Base.@ccallable function haplink()::Cint
                 methods
                 """
             required = false
-            default  = ":(1000)"
-            arg_type = String
+            default  = 1000
+            arg_type = Int64
     end #add_arg_table
     #! format: on
 
@@ -184,6 +184,7 @@ Base.@ccallable function haplink()::Cint
     D_haplotype    = args["haplotype_depth"]
     maxoverlap     = args["overlap_max"]
     minoverlap     = args["overlap_min"]
+    iterations     = args["iterations"]
 
     # Find the file prefix for output files if none was provided
     bampath = Path(bamfile)
@@ -215,10 +216,6 @@ Base.@ccallable function haplink()::Cint
     end #if
 
     if occursin("ml", args["method"])
-        # Calculate the number of iterations for each haplotype
-        # TODO: implement an expression-evaluator for ML iterations
-        iterations = 1000
-
         # Create a read matching algorithm
         domatch =
             (r1::BAM.Record, r2::BAM.Record, pos::AbstractVecOrMat{Int}) ->
