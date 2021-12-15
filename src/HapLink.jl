@@ -34,100 +34,134 @@ Base.@ccallable function haplink()::Cint
         add_version=true,
         autofix_names=true,
     )
+    # Disable Julia formatter as it doesn't understand the nested table syntax of ArgParse
+    #! format: off
     @add_arg_table s begin
         "bamfile"
-        help = "BAM formatted file containing the alignment to call haplotypes from"
-        required     = true
-        arg_type     = String
-        range_tester = x -> isfile(x)
+            help = """
+                BAM formatted file containing the alignment to call haplotypes from
+                """
+            required     = true
+            arg_type     = String
+            range_tester = x -> isfile(x)
         "--reference", "-r"
-        help         = "FASTA formatted reference genome"
-        required     = true
-        arg_type     = String
-        range_tester = x -> isfile(x)
+            help = """
+                FASTA formatted reference genome
+                """
+            required     = true
+            arg_type     = String
+            range_tester = x -> isfile(x)
         "--annotations", "-g"
-        help         = "GFF3 formatted annotations for the reference genome"
-        required     = false
-        arg_type     = String
-        range_tester = x -> isfile(x)
+            help = """
+                GFF3 formatted annotations for the reference genome
+                """
+            required     = false
+            arg_type     = String
+            range_tester = x -> isfile(x)
         "--variants", "-v"
-        help     = "(NOT IMPLEMENTED) File to output all variant calls in VCF format"
-        required = false
+            help = """
+                (NOT IMPLEMENTED) File to output all variant calls in VCF format
+                """
+            required = false
         "--prefix", "-p"
-        help     = "Test to start the output file names with. If unspecified, will use the name of the alignment file up to the first dot (.)"
-        required = false
-        arg_type = String
+            help = """
+                Test to start the output file names with. If unspecified, will use the name
+                of the alignment file up to the first dot (.)
+                """
+            required = false
+            arg_type = String
         "--quality", "-q"
-        help         = "Minimum average quality (PHRED score) of a variant basecall"
-        required     = false
-        default      = 21
-        arg_type     = Int64
-        range_tester = x -> x > 0
+            help = """
+                Minimum average quality (PHRED score) of a variant basecall
+                """
+            required     = false
+            default      = 21
+            arg_type     = Int64
+            range_tester = x -> x > 0
         "--frequency", "-t"
-        help         = "Minimum frequency at which a variant must appear"
-        required     = false
-        default      = 0.05
-        arg_type     = Float64
-        range_tester = x -> (x >= 0) && (x <= 1)
+            help = """
+                Minimum frequency at which a variant must appear
+                """
+            required     = false
+            default      = 0.05
+            arg_type     = Float64
+            range_tester = x -> (x >= 0) && (x <= 1)
         "--position", "-x"
-        help         = "Remove variants that occur only in positions within this percentage of the end"
-        required     = false
-        default      = 0.1
-        arg_type     = Float64
-        range_tester = x -> (x >= 0) && (x <= 1)
+            help = """
+                Remove variants that occur only in positions within this percentage of the
+                end
+                """
+            required     = false
+            default      = 0.1
+            arg_type     = Float64
+            range_tester = x -> (x >= 0) && (x <= 1)
         "--variant_significance", "-a"
-        help         = "Maximum Χ-squared significance level to consider a haplotype"
-        required     = false
-        default      = 1e-5
-        arg_type     = Float64
-        range_tester = x -> (x >= 0) && (x <= 1)
+            help = """
+                Maximum Χ-squared significance level to consider a haplotype
+                """
+            required     = false
+            default      = 1e-5
+            arg_type     = Float64
+            range_tester = x -> (x >= 0) && (x <= 1)
         "--haplotype_significance", "-b"
-        help         = "Maximum Χ-squared significance level to consider a haplotype"
-        required     = false
-        default      = 1e-5
-        arg_type     = Float64
-        range_tester = x -> (x >= 0) && (x <= 1)
+            help = """
+                Maximum Χ-squared significance level to consider a haplotype
+                """
+            required     = false
+            default      = 1e-5
+            arg_type     = Float64
+            range_tester = x -> (x >= 0) && (x <= 1)
         "--variant_depth", "-d"
-        help         = "Minimum depth to consider a variant"
-        required     = false
-        default      = 10
-        arg_type     = Int64
-        range_tester = x -> x >= 1
+            help = """
+                Minimum depth to consider a variant
+                """
+            required     = false
+            default      = 10
+            arg_type     = Int64
+            range_tester = x -> x >= 1
         "--haplotype_depth", "-u"
-        help         = "Minimum depth to consider a haplotype"
-        required     = false
-        default      = 10
-        arg_type     = Int64
-        range_tester = x -> x >= 1
+            help = """
+                Minimum depth to consider a haplotype
+                """
+            required     = false
+            default      = 10
+            arg_type     = Int64
+            range_tester = x -> x >= 1
         "--method"
-        help = "Haplotype read-building method. Choose 'ml-template' or 'raw'"
-        required     = false
-        default      = "ml-template"
-        arg_type     = String
-        range_tester = x -> (x == "ml-template") || (x == "raw")
+            help = """
+                Haplotype read-building method. Choose 'ml-template' or 'raw'
+                """
+            required     = false
+            default      = "ml-template"
+            arg_type     = String
+            range_tester = x -> (x == "ml-template") || (x == "raw")
         "--overlap_min", "-i"
-        help     = """
-                The minimum amount reads must overlap to be placed in the same simulated \
+            help = """
+                The minimum amount reads must overlap to be placed in the same simulated
                 template strand.
                 """
-        required = false
-        default  = 0
-        arg_type = Int64
+            required = false
+            default  = 0
+            arg_type = Int64
         "--overlap_max", "-m"
-        help = """
-            The maximum amount reads are allowed to overlap to be placed in the same \
-            simulated template strand.
-            """
-        required = false
-        default = 100
-        arg_type = Int64
-        range_tester = x -> x >= 0
+            help = """
+                The maximum amount reads are allowed to overlap to be placed in the same
+                simulated template strand.
+                """
+            required     = false
+            default      = 100
+            arg_type     = Int64
+            range_tester = x -> x >= 0
         "--iterations"
-        help = "Formula to determine how many iterations to perform using one of the ml methods"
-        required = false
-        default  = ":(1000)"
-        arg_type = String
-    end
+            help = """
+                Formula to determine how many iterations to perform using one of the ml
+                methods
+                """
+            required = false
+            default  = ":(1000)"
+            arg_type = String
+    end #add_arg_table
+    #! format: on
 
     args = parse_args(s)
 
