@@ -100,11 +100,11 @@ Base.@ccallable function haplink()::Cint
         arg_type     = Int64
         range_tester = x -> x >= 1
         "--method"
-        help = "Haplotype read-building method. Choose one of 'ml-overlap', 'ml-gapped' or 'raw'"
+        help = "Haplotype read-building method. Choose 'ml-template' or 'raw'"
         required     = false
-        default      = "ml-overlap"
+        default      = "ml-template"
         arg_type     = String
-        range_tester = x -> (x == "ml-overlap") || (x == "ml-gapped") || (x == "raw")
+        range_tester = x -> (x == "ml-template") || (x == "raw")
         "--overlap_min", "-i"
         help     = """
                 The minimum amount reads must overlap to be placed in the same simulated \
