@@ -121,7 +121,20 @@ function find_haplotypes(
         returnedhaplotypes[varhap] = [refdepth altdepth]
     end #for
 
-    return returnedhaplotypes
+    # Declare a place to put the haplotypes plus their calculations
+    happlusmeta = Dict{Haplotype,HaplotypeMeta}()
+
+    # Add the haplotypes with their metadata into the returned output
+    for hap in returnedhaplotypes
+        happlusmeta[hap[1]] = HaplotypeMeta(
+            last(hap[2]) / sum(hap[2]),
+            linkage(hap[2])[1],
+            linkage(hap[2])[2],
+            nothing
+        )
+    end #for
+
+    return happlusmeta
 end #function
 
 """
