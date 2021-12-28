@@ -224,7 +224,20 @@ end #function
 
 Base.@ccallable function haplink()::Cint
 
-    command, args = parse_arguments()
+    command, arguments = parse_arguments()
+    if command == "variants"
+        variants(arguments)
+    elseif command =="haplotypes"
+        haplotypes(arguments)
+    elseif command =="sequences"
+        sequences(arguments)
+    else
+        @error "Unknown command $command. Use 'variants', 'haplotypes', or 'sequences'."
+        return 1
+    end #if
+
+    return 0
+
 
     # 1. Analyze bam
     # 2. Call variants
