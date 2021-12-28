@@ -24,7 +24,7 @@ RUN --mount=type=secret,id=SSHKEY \
   cd HapLink.jl && \
   git checkout ${HAPLINK_VERSION} && \
   /tmp/julia/julia-${JULIA_VERSION}/bin/julia -e 'using Pkg; Pkg.activate("."); Pkg.instantiate()' && \
-  /tmp/julia/julia-${JULIA_VERSION}/bin/julia -e 'using PackageCompiler; create_app(".", "build", precompile_execution_file="precompile_app.jl", executables=["haplink" => "haplink", "make-haplotype-fastas" => "make_haplotype_fastas"], cpu_target="x86-64")' && \
+  /tmp/julia/julia-${JULIA_VERSION}/bin/julia -e 'using PackageCompiler; create_app(".", "build", precompile_execution_file="precompile_app.jl", executables=["haplink" => "haplink"], cpu_target="x86-64")' && \
   cp -r build/bin/* /usr/bin && \
   cp -r build/lib/* /usr/lib && \
   cp -r build/share/* /usr/share && \
