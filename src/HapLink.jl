@@ -248,46 +248,12 @@ Base.@ccallable function haplink()::Cint
     # Read the argument table in as variables
     bamfile        = args["bamfile"]
     reffile        = args["reference"]
-    annotationfile = args["annotations"]
-    Q_variant      = args["quality"]
-    f_variant      = args["frequency"]
-    x_variant      = args["position"]
-    α_variant      = args["variant_significance"]
+
     α_haplotype    = args["haplotype_significance"]
-    D_variant      = args["variant_depth"]
     D_haplotype    = args["haplotype_depth"]
     maxoverlap     = args["overlap_max"]
     minoverlap     = args["overlap_min"]
     iterations     = args["iterations"]
-
-    # Find the file prefix for output files if none was provided
-    bampath = Path(bamfile)
-    prefix = isnothing(args["prefix"]) ? filename(bampath) : args["prefix"]
-
-    # Call variants
-    variants = callvariants(
-        countbasestats(bamfile, reffile),
-        D_variant,
-        Q_variant,
-        x_variant,
-        f_variant,
-        α_variant,
-    )
-
-    # Save the variants to a VCF file, if requested
-    if !isnothing(args["variants"])
-        savevcf(
-            variants, args["variants"], reffile, D_variant, Q_variant, x_variant, α_variant
-        )
-    end #if
-
-    # Check for zero found variants
-    if length(variants) < 1
-        @warn "No variants found!"
-        touch(string(prefix, ".yaml"))
-        cp(reffile, string(prefix, ".fasta"))
-        return 0
-    end #if
 
     if occursin("ml", args["method"])
         # Create a read matching algorithm
@@ -353,6 +319,33 @@ Base.@ccallable function make_haplotype_fastas()::Cint
     close(fwriter)
 
     return 0
+end #function
+
+function variants(arguments::Dict{String,Any})
+    # Read the argument table in as variables
+    bamfile        = arguments["bam"]
+    reffile        = arguments["reference"]
+    outfile        = arguments["output"]
+    quality        = arguments["quality"]
+    frequency      = arguments["frequency"]
+    position       = arguments["position"]
+    significance   = arguments["significance"]
+    depth          = arguments["depth"]
+
+    # Call variants
+    variants = callvariants(
+        countbasestats(bamfile, reffile),
+        depth,
+        quality,
+        position,
+        frequency,
+        significance,
+    )
+
+    # Save the variants to a VCF file
+    savevcf(
+        variants, outfile, reffile, depth, quality, position, significance
+    )
 end #function
 
 end #module
