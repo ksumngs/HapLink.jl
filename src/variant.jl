@@ -84,7 +84,7 @@ function Variant(data::DataFrameRow)
     return Variant(CHROM, POS, ID, REF, ALT, QUAL, FILTER, INFO)
 end #function
 
-function Variant(vardict::Dict{String,Any})
+function Variant(vardict::Dict{Any,Any})
     region  = vardict["chromosome"]
     pos     = vardict["position"]
     id      = vardict["identifier"]
