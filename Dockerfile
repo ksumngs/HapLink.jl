@@ -22,7 +22,7 @@ RUN --mount=type=secret,id=SSHKEY \
   git clone git@github.com:ksumngs/HapLink.jl.git && \
   rm -rf /root/.ssh && \
   cd HapLink.jl && \
-  git checkout ${HAPLINK_VERSION} && \
+  git checkout v${HAPLINK_VERSION} && \
   /tmp/julia/julia-${JULIA_VERSION}/bin/julia -e 'using Pkg; Pkg.activate("."); Pkg.instantiate()' && \
   /tmp/julia/julia-${JULIA_VERSION}/bin/julia -e 'using PackageCompiler; create_app(".", "build", precompile_execution_file="precompile_app.jl", executables=["haplink" => "haplink"], cpu_target="x86-64")' && \
   cp -r build/bin/* /usr/bin && \
