@@ -278,8 +278,10 @@ function haplotypes(arguments::Dict{String,Any})
     maxoverlap = arguments["overlap_max"]
     iterations = arguments["iterations"]
 
-    # TODO: Implement a real function that can do this
-    variants = read_from_vcf(varfile)
+    # Read in the variants
+    variantstrings = readlines(varfile)
+    filter!(v -> !startswith(v, '#'), variantstrings)
+    variants = Variant.(variantstrings)
 
     if occursin("ml", method)
         # Create a read matching algorithm
