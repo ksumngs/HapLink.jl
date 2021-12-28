@@ -294,14 +294,16 @@ function haplotypes(arguments::Dict{String,Any})
         hapmethod = (h::Haplotype, b::AbstractString) -> longread_genome(h, b)
     end #if
 
+    # Get the haplotypes and most of the statstics
     haplotypes = find_haplotypes(variants, bamfile, depth, significance, hapmethod)
 
     # Write the found haplotypes to file
-    open(outfile, "w") do f
-        for happair in haplotypes
-            write(f, serialize_yaml(happair))
-        end #for
-    end #do
+    outdata = OrderedDict(
+        "version" => VERSION,
+        "settings" => arguments,
+        "haplotypes" => Dict.(collect(haplotypes))
+    )
+    YAML.write_file(outfile, outdata)
 
     return nothing
 end #function
