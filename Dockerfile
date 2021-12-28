@@ -2,8 +2,8 @@
 
 FROM mgibio/bam-readcount:1.0.0
 
-ENV JULIA_VERSION 1.6.4
-ENV HAPLINK_VERSION 0.2.0
+ENV JULIA_VERSION 1.6.5
+ENV HAPLINK_VERSION 0.3.0
 
 RUN --mount=type=secret,id=SSHKEY \
   apt-get update && \
