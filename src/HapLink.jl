@@ -301,6 +301,7 @@ function haplotypes(arguments::Dict{String,Any})
         end #for
     end #do
 
+    return nothing
 end #function
 
 function sequences(arguments::Dict{String,Any})
