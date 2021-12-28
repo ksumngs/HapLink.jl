@@ -272,30 +272,6 @@ Base.@ccallable function haplink()::Cint
     return 0
 end #function
 
-Base.@ccallable function make_haplotype_fastas()::Cint
-    hfile = ARGS[1]
-    rfile = ARGS[2]
-    ffile = ARGS[3]
-
-    haployaml = read(hfile, String)
-    haplostrings = split(haployaml, "---\n")[2:end]
-    haplotypes = Haplotype.(YAML.load.(haplostrings, dicttype=Dict{String,Any}))
-
-    rreader = open(FASTA.Reader, rfile)
-    refrec = collect(rreader)[1]
-    close(rreader)
-
-    newrecords = unique(mutate.([refrec], haplotypes))
-
-    fwriter = open(FASTA.Writer, ffile)
-    for r in newrecords
-        write(fwriter, r)
-    end
-    close(fwriter)
-
-    return 0
-end #function
-
 function variants(arguments::Dict{String,Any})
     # Read the argument table in as variables
     bamfile        = arguments["bam"]
@@ -365,6 +341,30 @@ function haplotypes(arguments::Dict{String,Any})
         end #for
     end #do
 
+end #function
+
+function sequences(arguments::Dict{String,Any})
+    hfile = arguments["haplotypes"]
+    rfile = arguments["reference"]
+    ffile = arguments["output"]
+
+    haployaml = read(hfile, String)
+    haplostrings = split(haployaml, "---\n")[2:end]
+    haplotypes = Haplotype.(YAML.load.(haplostrings, dicttype=Dict{String,Any}))
+
+    rreader = open(FASTA.Reader, rfile)
+    refrec = collect(rreader)[1]
+    close(rreader)
+
+    newrecords = unique(mutate.([refrec], haplotypes))
+
+    fwriter = open(FASTA.Writer, ffile)
+    for r in newrecords
+        write(fwriter, r)
+    end
+    close(fwriter)
+
+    return nothing
 end #function
 
 end #module
