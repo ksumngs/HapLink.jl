@@ -3,6 +3,7 @@
 FROM mgibio/bam-readcount:1.0.0
 
 ENV JULIA_VERSION 1.6.4
+ENV HAPLINK_VERSION 0.2.0
 
 RUN --mount=type=secret,id=SSHKEY \
   apt-get update && \
@@ -21,7 +22,7 @@ RUN --mount=type=secret,id=SSHKEY \
   git clone git@github.com:ksumngs/HapLink.jl.git && \
   rm -rf /root/.ssh && \
   cd HapLink.jl && \
-  git checkout v0.2.0 && \
+  git checkout ${HAPLINK_VERSION} && \
   /tmp/julia/julia-${JULIA_VERSION}/bin/julia -e 'using Pkg; Pkg.activate("."); Pkg.instantiate()' && \
   /tmp/julia/julia-${JULIA_VERSION}/bin/julia -e 'using PackageCompiler; create_app(".", "build", precompile_execution_file="precompile_app.jl", executables=["haplink" => "haplink", "make-haplotype-fastas" => "make_haplotype_fastas"], cpu_target="x86-64")' && \
   cp -r build/bin/* /usr/bin && \
