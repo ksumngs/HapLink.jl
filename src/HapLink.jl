@@ -98,7 +98,7 @@ function parse_arguments()
             range_tester = x -> (x >= 0) && (x <= 1)
         "--significance", "-a"
             help = """
-                Maximum Χ-squared significance level to consider a haplotype
+                Maximum Χ-squared significance level to consider a variant
                 """
             required     = false
             default      = 1e-5
