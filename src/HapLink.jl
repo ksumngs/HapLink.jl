@@ -322,11 +322,11 @@ function sequences(arguments::Dict{String,Any})
 
     newrecords = unique(mutate.([refrec], haplotypes))
 
-    fwriter = open(FASTA.Writer, ffile)
-    for r in newrecords
-        write(fwriter, r)
-    end
-    close(fwriter)
+    open(FASTA.Writer, ffile) do f
+        for r in newrecords
+            write(f, r)
+        end #for
+    end #do
 
     return nothing
 end #function
