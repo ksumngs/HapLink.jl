@@ -5,17 +5,21 @@ FROM mgibio/bam-readcount:1.0.0
 ENV JULIA_VERSION 1.6.5
 ENV HAPLINK_VERSION 0.4.0
 
-RUN --mount=type=secret,id=SSHKEY \
+RUN \
   apt-get update && \
   apt-get install -y --no-install-recommends \
     ssh \
     curl \
     git \
     ca-certificates \
-    build-essential && \
+    build-essential
+
+RUN \
   mkdir -p /tmp/julia && \
   curl -L "https://julialang-s3.julialang.org/bin/linux/x64/1.6/julia-${JULIA_VERSION}-linux-x86_64.tar.gz" | tar xvz -C /tmp/julia && \
-  /tmp/julia/julia-${JULIA_VERSION}/bin/julia -e 'using Pkg; Pkg.add("PackageCompiler")' && \
+  /tmp/julia/julia-${JULIA_VERSION}/bin/julia -e 'using Pkg; Pkg.add("PackageCompiler")'
+
+RUN --mount=type=secret,id=SSHKEY \
   mkdir -p /root/.ssh && \
   ssh-keyscan github.com >> /root/.ssh/known_hosts && \
   cp /run/secrets/SSHKEY /root/.ssh/id_rsa && \
