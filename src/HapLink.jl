@@ -255,32 +255,7 @@ Base.@ccallable function haplink()::Cint
     minoverlap     = args["overlap_min"]
     iterations     = args["iterations"]
 
-    if occursin("ml", args["method"])
-        # Create a read matching algorithm
-        domatch =
-            (r1::BAM.Record, r2::BAM.Record, pos::AbstractVecOrMat{Int}) ->
-                BAM.position(r2) >= BAM.position(r1) &&
-                    variant_positions_match(r1, r2, pos) &&
-                    overlap_inrange(r1, r2; max=maxoverlap, min=minoverlap)
 
-        # Use the simulated read method
-        hapmethod =
-            (h::Haplotype, b::AbstractString) ->
-                simulate_genome(h, b; iterations=iterations, nextreadcandidates=domatch)
-    else
-        # Use the actual read method
-        hapmethod = (h::Haplotype, b::AbstractString) -> longread_genome(h, b)
-    end #if
-
-    haplotypes = find_haplotypes(variants, bamfile, D_haplotype, α_haplotype, hapmethod)
-
-    # Write the found haplotypes to file
-    yamlfile = string(prefix, ".yaml")
-    open(string(prefix, ".yaml"), "w") do f
-        for happair in haplotypes
-            write(f, serialize_yaml(happair))
-        end #for
-    end #do
 
     open(FASTA.Reader, reffile) do r
         record = collect(r)[1]
@@ -346,6 +321,50 @@ function variants(arguments::Dict{String,Any})
     savevcf(
         variants, outfile, reffile, depth, quality, position, significance
     )
+end #function
+
+function haplotypes(arguments::Dict{String,Any})
+    # Read the argument table in as variables
+    bamfile = arguments["bam"]
+    reffile = arguments["reference"]
+    varfile = arguments["variants"]
+    outfile = arguments["output"]
+    significance = arguments["significance"]
+    depth = arguments["depth"]
+    method = arguments["method"]
+    minoverlap = arguments["overlap_min"]
+    maxoverlap = arguments["overlap_max"]
+    iterations = arguments["iterations"]
+
+    # TODO: Implement a real function that can do this
+    variants = read_from_vcf(varfile)
+
+    if occursin("ml", method)
+        # Create a read matching algorithm
+        domatch =
+            (r1::BAM.Record, r2::BAM.Record, pos::AbstractVecOrMat{Int}) ->
+                BAM.position(r2) >= BAM.position(r1) &&
+                    variant_positions_match(r1, r2, pos) &&
+                    overlap_inrange(r1, r2; max=maxoverlap, min=minoverlap)
+
+        # Use the simulated read method
+        hapmethod =
+            (h::Haplotype, b::AbstractString) ->
+                simulate_genome(h, b; iterations=iterations, nextreadcandidates=domatch)
+    else
+        # Use the actual read method
+        hapmethod = (h::Haplotype, b::AbstractString) -> longread_genome(h, b)
+    end #if
+
+    haplotypes = find_haplotypes(variants, bamfile, depth, significance, hapmethod)
+
+    # Write the found haplotypes to file
+    open(outfile, "w") do f
+        for happair in haplotypes
+            write(f, serialize_yaml(happair))
+        end #for
+    end #do
+
 end #function
 
 end #module
