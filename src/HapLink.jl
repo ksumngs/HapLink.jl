@@ -313,9 +313,8 @@ function sequences(arguments::Dict{String,Any})
     rfile = arguments["reference"]
     ffile = arguments["output"]
 
-    haployaml = read(hfile, String)
-    haplostrings = split(haployaml, "---\n")[2:end]
-    haplotypes = Haplotype.(YAML.load.(haplostrings, dicttype=Dict{String,Any}))
+    haplodata = YAML.load_file(hfile)["haplotypes"]
+    haplotypes = Haplotype.(map(f -> Variant.(f["snps"]), haplodata))
 
     rreader = open(FASTA.Reader, rfile)
     refrec = collect(rreader)[1]
