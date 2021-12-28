@@ -148,7 +148,7 @@ function Base.isless(v1::Variant, v2::Variant)
 end #function
 
 function Dict(v::Variant)
-    Dict(key => getfield(v, key) for key in fieldnames(Variant))
+    return OrderedDict(key => getfield(v, key) for key in fieldnames(Variant))
 end #function
 
 function varposition(v::Variant)
