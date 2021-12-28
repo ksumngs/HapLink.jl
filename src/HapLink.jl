@@ -223,7 +223,6 @@ function parse_arguments()
 end #function
 
 Base.@ccallable function haplink()::Cint
-
     command, arguments = parse_arguments()
     if command == "variants"
         variants(arguments)
@@ -235,39 +234,6 @@ Base.@ccallable function haplink()::Cint
         @error "Unknown command $command. Use 'variants', 'haplotypes', or 'sequences'."
         return 1
     end #if
-
-    return 0
-
-
-    # 1. Analyze bam
-    # 2. Call variants
-    # 3. Call haplotypes
-    # 4. Export haplotypes as YAML
-    # 5. Export haplotypes as FASTA
-
-    # Read the argument table in as variables
-    bamfile        = args["bamfile"]
-    reffile        = args["reference"]
-
-    α_haplotype    = args["haplotype_significance"]
-    D_haplotype    = args["haplotype_depth"]
-    maxoverlap     = args["overlap_max"]
-    minoverlap     = args["overlap_min"]
-    iterations     = args["iterations"]
-
-
-
-    open(FASTA.Reader, reffile) do r
-        record = collect(r)[1]
-        newrecords = unique(mutate.([record], collect(keys(haplotypes))))
-
-        # Write the found haplotypes to FASTA
-        open(FASTA.Writer, string(prefix, ".fasta")) do f
-            for q in newrecords
-                write(f, q)
-            end #for
-        end #do
-    end #do
 
     return 0
 end #function
