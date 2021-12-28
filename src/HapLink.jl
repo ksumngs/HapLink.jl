@@ -25,6 +25,7 @@ include("readcounts.jl")
 include("sequences.jl")
 include("variantcalling.jl")
 include("haplotypecalling.jl")
+include("haplotypemeta.jl")
 
 function parse_arguments()
     s = ArgParseSettings(;
