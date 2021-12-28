@@ -105,19 +105,19 @@ function Variant(varstring::AbstractString)
 
     # Extract the basic fields
     region = varfields[1]
-    pos = varfields[2]
+    pos = parse(Int, varfields[2])
     id = varfields[3]
     refbase = varfields[4]
     altbase = varfields[5]
-    qual = varfields[6]
+    qual = parse(Float64, varfields[6])
     filter = Symbol(varfields[7])
 
     # Convert the info fields into a dictionary
-    info = Dict{String,Any}
+    info = Dict{String,Any}()
     infofields = split(varfields[8], ";")
     for f in infofields
         infofield = split(f, "=")
-        info[string(infofield[1])] = infofield[2]
+        info[infofield[1]] = parse(Int64, infofield[2])
     end #for
 
     refseq = LongDNASeq(refbase)
