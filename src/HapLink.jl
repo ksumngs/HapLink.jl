@@ -26,7 +26,7 @@ include("sequences.jl")
 include("variantcalling.jl")
 include("haplotypecalling.jl")
 
-Base.@ccallable function haplink()::Cint
+function parse_arguments()
     s = ArgParseSettings(;
         prog="haplink",
         description="A haplotype caller for long sequencing reads using linkage disequilibrium",
@@ -217,6 +217,14 @@ Base.@ccallable function haplink()::Cint
     #! format: on
 
     args = parse_args(s)
+
+    return args["%COMMAND%"], args[args["%COMMAND%"]]
+
+end #function
+
+Base.@ccallable function haplink()::Cint
+
+    command, args = parse_arguments()
 
     # 1. Analyze bam
     # 2. Call variants
