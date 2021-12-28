@@ -36,8 +36,23 @@ Base.@ccallable function haplink()::Cint
     )
     # Disable Julia formatter as it doesn't understand the nested table syntax of ArgParse
     #! format: off
+
+    # Declare the HapLink commands
     @add_arg_table s begin
-        "bamfile"
+        "variants"
+            help = "Call variants"
+            action = :command
+        "haplotypes"
+            help = "Call haplotypes"
+            action = :command
+        "sequences"
+            help = "Convert haplotypes to fasta"
+            action = :command
+    end #add_arg_table
+
+    # Add arguments for the variant calling command
+    @add_arg_table s["variants"] begin
+        "--bam", "-i"
             help = """
                 BAM formatted file containing the alignment to call haplotypes from
                 """
@@ -51,25 +66,11 @@ Base.@ccallable function haplink()::Cint
             required     = true
             arg_type     = String
             range_tester = x -> isfile(x)
-        "--annotations", "-g"
+        "--output", "-o"
             help = """
-                GFF3 formatted annotations for the reference genome
-                """
-            required     = false
-            arg_type     = String
-            range_tester = x -> isfile(x)
-        "--variants", "-v"
-            help = """
-                (NOT IMPLEMENTED) File to output all variant calls in VCF format
-                """
-            required = false
-        "--prefix", "-p"
-            help = """
-                Test to start the output file names with. If unspecified, will use the name
-                of the alignment file up to the first dot (.)
-                """
-            required = false
-            arg_type = String
+                File to output all variant calls to in VCF format
+            """
+            required     = true
         "--quality", "-q"
             help = """
                 Minimum average quality (PHRED score) of a variant basecall
@@ -95,7 +96,7 @@ Base.@ccallable function haplink()::Cint
             default      = 0.1
             arg_type     = Float64
             range_tester = x -> (x >= 0) && (x <= 1)
-        "--variant_significance", "-a"
+        "--significance", "-a"
             help = """
                 Maximum Χ-squared significance level to consider a haplotype
                 """
@@ -103,15 +104,7 @@ Base.@ccallable function haplink()::Cint
             default      = 1e-5
             arg_type     = Float64
             range_tester = x -> (x >= 0) && (x <= 1)
-        "--haplotype_significance", "-b"
-            help = """
-                Maximum Χ-squared significance level to consider a haplotype
-                """
-            required     = false
-            default      = 1e-5
-            arg_type     = Float64
-            range_tester = x -> (x >= 0) && (x <= 1)
-        "--variant_depth", "-d"
+        "--depth", "-d"
             help = """
                 Minimum depth to consider a variant
                 """
@@ -119,7 +112,45 @@ Base.@ccallable function haplink()::Cint
             default      = 10
             arg_type     = Int64
             range_tester = x -> x >= 1
-        "--haplotype_depth", "-u"
+    end #add_arg_table
+
+    # Add arguments for the haplotype calling command
+    @add_arg_table s["haplotypes"] begin
+        "--bam", "-i"
+            help = """
+                BAM formatted file containing the alignment to call haplotypes from
+                """
+            required     = true
+            arg_type     = String
+            range_tester = x -> isfile(x)
+        "--reference", "-r"
+            help = """
+                FASTA formatted reference genome
+                """
+            required     = true
+            arg_type     = String
+            range_tester = x -> isfile(x)
+        "--variants", "-v"
+            help = """
+                VCF formmated file containing the variant calls to consider haplotypes from
+            """
+            required     = true
+            arg_type     = String
+            range_tester = x -> isfile(x)
+        "--output", "-o"
+            help = """
+                File to output all haplotype calls to in YAML format
+            """
+            required     = true
+        "--significance", "-a"
+            help = """
+                Maximum Χ-squared significance level to consider a haplotype
+                """
+            required     = false
+            default      = 1e-5
+            arg_type     = Float64
+            range_tester = x -> (x >= 0) && (x <= 1)
+        "--depth", "-d"
             help = """
                 Minimum depth to consider a haplotype
                 """
@@ -135,7 +166,7 @@ Base.@ccallable function haplink()::Cint
             default      = "ml-template"
             arg_type     = String
             range_tester = x -> (x == "ml-template") || (x == "raw")
-        "--overlap_min", "-i"
+        "--overlap_min", "-m"
             help = """
                 The minimum amount reads must overlap to be placed in the same simulated
                 template strand.
@@ -143,7 +174,7 @@ Base.@ccallable function haplink()::Cint
             required = false
             default  = 0
             arg_type = Int64
-        "--overlap_max", "-m"
+        "--overlap_max", "-n"
             help = """
                 The maximum amount reads are allowed to overlap to be placed in the same
                 simulated template strand.
@@ -152,7 +183,7 @@ Base.@ccallable function haplink()::Cint
             default      = 100
             arg_type     = Int64
             range_tester = x -> x >= 0
-        "--iterations"
+        "--iterations", "-j"
             help = """
                 Formula to determine how many iterations to perform using one of the ml
                 methods
@@ -160,6 +191,28 @@ Base.@ccallable function haplink()::Cint
             required = false
             default  = 1000
             arg_type = Int64
+    end #add_arg_table
+
+    @add_arg_table! s["sequences"] begin
+        "--haplotypes", "-i"
+            help = """
+                YAML file describing the haplotypes to create
+            """
+                required     = true
+                arg_type     = String
+                range_tester = x -> isfile(x)
+        "--reference", "-r"
+            help = """
+                FASTA formatted reference genome
+                """
+            required     = true
+            arg_type     = String
+            range_tester = x -> isfile(x)
+        "--output", "-o"
+            help = """
+                File to output haplotype sequences to in FASTA format
+            """
+            required     = true
     end #add_arg_table
     #! format: on
 
