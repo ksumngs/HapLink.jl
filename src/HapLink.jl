@@ -69,7 +69,7 @@ function parse_arguments()
         "--output", "-o"
             help = """
                 File to output all variant calls to in VCF format
-            """
+                """
             required     = true
         "--quality", "-q"
             help = """
@@ -126,14 +126,14 @@ function parse_arguments()
         "--variants", "-v"
             help = """
                 VCF formmated file containing the variant calls to consider haplotypes from
-            """
+                """
             required     = true
             arg_type     = String
             range_tester = x -> isfile(x)
         "--output", "-o"
             help = """
                 File to output all haplotype calls to in YAML format
-            """
+                """
             required     = true
         "--significance", "-a"
             help = """
@@ -190,7 +190,7 @@ function parse_arguments()
         "--haplotypes", "-i"
             help = """
                 YAML file describing the haplotypes to create
-            """
+                """
                 required     = true
                 arg_type     = String
                 range_tester = x -> isfile(x)
@@ -204,7 +204,7 @@ function parse_arguments()
         "--output", "-o"
             help = """
                 File to output haplotype sequences to in FASTA format
-            """
+                """
             required     = true
     end #add_arg_table
     #! format: on
