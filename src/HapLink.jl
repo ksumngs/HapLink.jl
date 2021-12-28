@@ -11,6 +11,7 @@ using BioAlignments
 using BioSymbols
 using Combinatorics
 using Distributions
+using OrderedCollections
 using SHA
 using XAM
 using YAML
