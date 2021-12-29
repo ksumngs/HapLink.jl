@@ -214,16 +214,15 @@ function parse_arguments()
     args = parse_args(s)
 
     return args["%COMMAND%"], args[args["%COMMAND%"]]
-
 end #function
 
 Base.@ccallable function haplink()::Cint
     command, arguments = parse_arguments()
     if command == "variants"
         variants(arguments)
-    elseif command =="haplotypes"
+    elseif command == "haplotypes"
         haplotypes(arguments)
-    elseif command =="sequences"
+    elseif command == "sequences"
         sequences(arguments)
     else
         @error "Unknown command $command. Use 'variants', 'haplotypes', or 'sequences'."
@@ -235,29 +234,22 @@ end #function
 
 function variants(arguments::Dict{String,Any})
     # Read the argument table in as variables
-    bamfile        = arguments["bam"]
-    reffile        = arguments["reference"]
-    outfile        = arguments["output"]
-    quality        = arguments["quality"]
-    frequency      = arguments["frequency"]
-    position       = arguments["position"]
-    significance   = arguments["significance"]
-    depth          = arguments["depth"]
+    bamfile      = arguments["bam"]
+    reffile      = arguments["reference"]
+    outfile      = arguments["output"]
+    quality      = arguments["quality"]
+    frequency    = arguments["frequency"]
+    position     = arguments["position"]
+    significance = arguments["significance"]
+    depth        = arguments["depth"]
 
     # Call variants
     variants = callvariants(
-        countbasestats(bamfile, reffile),
-        depth,
-        quality,
-        position,
-        frequency,
-        significance,
+        countbasestats(bamfile, reffile), depth, quality, position, frequency, significance
     )
 
     # Save the variants to a VCF file
-    savevcf(
-        variants, outfile, reffile, depth, quality, position, significance
-    )
+    return savevcf(variants, outfile, reffile, depth, quality, position, significance)
 end #function
 
 function haplotypes(arguments::Dict{String,Any})
@@ -301,7 +293,7 @@ function haplotypes(arguments::Dict{String,Any})
     outdata = OrderedDict(
         "version" => VERSION,
         "settings" => arguments,
-        "haplotypes" => Dict.(collect(haplotypes))
+        "haplotypes" => Dict.(collect(haplotypes)),
     )
     YAML.write_file(outfile, outdata)
 

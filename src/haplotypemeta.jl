@@ -11,6 +11,6 @@ function Dict(hp::Pair{Haplotype,HaplotypeMeta})
         "linkage" => hp[2].linkage,
         "significance" => hp[2].significance,
         "name" => hp[2].name,
-        "snps" => Dict.(hp[1].mutations)
+        "snps" => Dict.(hp[1].mutations),
     )
 end #function
