@@ -48,7 +48,6 @@ jobs:
             precompile_execution_file="precompile_app.jl",
             executables=[
               "haplink" => "haplink",
-              "make-haplotype-fastas" => "make_haplotype_fastas"
             ],
             cpu_target="x86-64"
           )'
