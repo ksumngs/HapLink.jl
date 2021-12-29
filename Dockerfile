@@ -3,7 +3,7 @@
 FROM mgibio/bam-readcount:1.0.0
 
 ENV JULIA_VERSION 1.6.5
-ENV HAPLINK_VERSION 0.4.1
+ENV HAPLINK_VERSION 0.4.2
 
 RUN \
   apt-get update && \
