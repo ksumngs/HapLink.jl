@@ -71,9 +71,30 @@ jobs:
           SOURCE_TAG: ${{ steps.tag_name.outputs.SOURCE_TAG }}
         run: |
           Compress-Archive -Path .\build\* -DestinationPath .\HapLink-${SOURCE_TAG}_win.x86_64.zip
+      - id: news
+        shell: bash
+        run: |
+          TAG=${{ github.ref }}
+          VERSION=${TAG/v/}
+          VERSIONLINE=$(grep -n "## \[$VERSION\] - ....-..-..$" CHANGELOG.md | cut -d ':' -f1)
+          readarray -t HEADERLINES < <(grep -n "## \[.*\] - ....-..-..$" CHANGELOG.md | cut -d ':' -f1)
+          for LINENUM in "${HEADERLINES[@]}"; do
+            if [[ $LINENUM -gt $VERSIONLINE ]]; then
+              export NEXTLINE=$LINENUM
+              break
+            fi
+          done
+          LBOUND=$(( VERSIONLINE + 1 ))
+          UBOUND=$(( NEXTLINE - 1 ))
+          SPAN=$(( UBOUND - LBOUND ))
+          NEWS=$(head -n $UBOUND CHANGELOG.md | tail -n $SPAN)
+          echo $NEWS
+          echo "::set-output name=RELEASE_BODY::$NEWS"
       - uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ github.ref }}
           file_glob: true
           file: HapLink-*_{linux,mac,win}.x86_64.{tar.gz,zip}
+          body: |
+            ${{ steps.news.outputs.RELEASE_BODY }}
