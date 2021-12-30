@@ -20,6 +20,10 @@ function Haplotype(hapdict::Dict{String,Any})
     return Haplotype(v)
 end
 
+function Haplotype(::Nothing)
+    return Haplotype(Variant[])
+end #function
+
 function Base.show(io::IO, h::Haplotype)
     return print(
         io,

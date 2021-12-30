@@ -126,6 +126,10 @@ function Variant(varstring::AbstractString)
     return Variant(region, pos, id, refseq, altseq, qual, filter, info)
 end #function
 
+function Variant(::Nothing)
+    return nothing
+end #function
+
 function Base.show(io::IO, v::Variant)
     return print(
         io,
