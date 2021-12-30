@@ -56,3 +56,6 @@ haplotypes:
       quality: 30
       filter: PASS
       info:
+  - name: 75cec553
+    frequency: 0.1
+    snps:

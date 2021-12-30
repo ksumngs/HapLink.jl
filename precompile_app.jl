@@ -52,16 +52,5 @@ push!(ARGS, "example/output.fasta")
 HapLink.haplink()
 clear_args()
 
-push!(ARGS, "sequences")
-push!(ARGS, "--haplotypes")
-push!(ARGS, "example/reference.yaml")
-push!(ARGS, "--reference")
-push!(ARGS, "example/reference.fasta")
-push!(ARGS, "--output")
-push!(ARGS, "example/output.fasta")
-
-HapLink.haplink()
-clear_args()
-
 push!(ARGS, "--help")
 HapLink.haplink()
