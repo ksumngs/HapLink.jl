@@ -43,7 +43,7 @@ clear_args()
 
 push!(ARGS, "sequences")
 push!(ARGS, "--haplotypes")
-push!(ARGS, "example/output.yaml")
+push!(ARGS, "example/sample.yaml")
 push!(ARGS, "--reference")
 push!(ARGS, "example/reference.fasta")
 push!(ARGS, "--output")
