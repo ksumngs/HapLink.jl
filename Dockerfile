@@ -3,7 +3,7 @@
 FROM ubuntu:focal
 
 ENV JULIA_VERSION 1.6.5
-ENV HAPLINK_VERSION 0.4.3
+ENV HAPLINK_VERSION 0.5.0
 ENV JULIA_DEPOT_PATH /.julia
 
 # Install the build dependencies
