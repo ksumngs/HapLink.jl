@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.2
 
-FROM mgibio/bam-readcount:1.0.0
+FROM ubuntu:focal
 
 ENV JULIA_VERSION 1.6.5
 ENV HAPLINK_VERSION 0.4.3
@@ -39,7 +39,7 @@ RUN --mount=type=secret,id=SSHKEY \
   julia -e 'using Pkg; Pkg.activate("."); Pkg.instantiate()' && \
   julia -e 'using PackageCompiler; create_app(".", "build", precompile_execution_file="precompile_app.jl", executables=["haplink" => "haplink"], cpu_target="x86-64")'
 
-FROM mgibio/bam-readcount:1.0.0
+FROM ubuntu:focal
 
 COPY --from=0 /HapLink.jl/build/bin /usr/bin
 COPY --from=0 /HapLink.jl/build/lib /usr/lib
