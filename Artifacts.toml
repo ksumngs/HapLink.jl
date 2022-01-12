@@ -1,0 +1,9 @@
+[bam-readcounts]
+git-tree-sha1 = "fa18da413432a00f0177b2856dec3c8fcd1e5e32"
+arch = "x86_64"
+libc = "glibc"
+os = "linux"
+
+    [[bam-readcounts.download]]
+    url = "https://github.com/ksumngs/bam-readcount/releases/download/master/bam-readcount_ubuntu-latest.tar.gz"
+    sha256 = "b595b33c16c440cbe1d1bb4683e1daaaf595a16a6538311db316cc1eb85618fc"
