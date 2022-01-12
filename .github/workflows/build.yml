@@ -16,16 +16,6 @@ jobs:
           #- os: macos-latest
           #- os: windows-latest
     steps:
-      - uses: jwlawson/actions-setup-cmake@v1.9
-      - run: |
-          git clone https://github.com/genome/bam-readcount.git
-          cd bam-readcount
-          mkdir build
-          cd build
-          cmake ..
-          make && sudo make install
-          cd ../..
-          rm -rf bam-readcount
       - uses: actions/checkout@v2
       - id: tag_name
         shell: bash
