@@ -1,4 +1,5 @@
 using DataFrames
+using Pkg.Artifacts
 
 export countbasestats
 export transformbamcounts
@@ -12,6 +13,7 @@ alignment position. See [`transformbamcounts`](@ref) for a complete description 
 output DataFrame schema.
 """
 function countbasestats(bamfile::String, reffile::String)
+    bam_readcount = joinpath(artifact"bam-readcounts", "bam-readcount")
     bamanalysis = ""
     open(FASTA.Reader, reffile) do refreader
         for refrecord in refreader
@@ -19,7 +21,7 @@ function countbasestats(bamfile::String, reffile::String)
             seqlength = FASTA.seqlen(refrecord)
             bamanalysis = string(
                 bamanalysis,
-                readchomp(`bam-readcount -f $reffile $bamfile "$chromosome:1-$seqlength"`),
+                readchomp(`$bam_readcount -f $reffile $bamfile "$chromosome:1-$seqlength"`),
             )
         end #for
     end #do
