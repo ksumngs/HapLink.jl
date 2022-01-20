@@ -1,6 +1,7 @@
 ---
 name: Feature Request
 about: A new idea to make HapLink even more robust
+title: "[Feature]: "
 labels: enhancement
 ---
 
