@@ -1,17 +1,18 @@
 module HapLink
 
 using ArgParse
-using FASTX
-using Dates
-using HypothesisTests
-using DataFrames
-using FilePaths
-using BioSequences
 using BioAlignments
+using BioSequences
 using BioSymbols
 using Combinatorics
+using DataFrames
+using Dates
 using Distributions
+using FASTX
+using FilePaths
+using HypothesisTests
 using OrderedCollections
+using Random
 using SHA
 using XAM
 using YAML
