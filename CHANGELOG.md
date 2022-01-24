@@ -8,6 +8,10 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- `--seed` parameter for fixing random seed
+
 ## [0.5.0]
 
 ### Removed
