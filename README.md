@@ -37,9 +37,9 @@ If you need to use HapLink somewhere else, everything needed is available in a
 To install our Hot-and-Ready binaries, run the following command:
 
 ```bash
-mkdir -p ~/.local/opt/HapLink-0.5.0
-curl -L https://github.com/ksumngs/HapLink.jl/releases/download/v0.5.0/HapLink-v0.5.0_linux.x86_64.tar.gz | tar xzv -C ~/.local/opt/HapLink-0.5.0
-ln -s ~/.local/opt/HapLink-0.5.0/bin/haplink ~/.local/bin
+mkdir -p ~/.local/opt/HapLink-0.5.1
+curl -L https://github.com/ksumngs/HapLink.jl/releases/download/v0.5.1/HapLink-v0.5.1_linux.x86_64.tar.gz | tar xzv -C ~/.local/opt/HapLink-0.5.1
+ln -s ~/.local/opt/HapLink-0.5.1/bin/haplink ~/.local/bin
 ```
 
 ### Julia Package
@@ -48,7 +48,7 @@ HapLink is not in the General Registry (yet!), so install using the `URL#tag`
 syntax to use in the REPL.
 
 ```julia
-using Pkg; Pkg.add("https://github.com/ksumngs/HapLink#v0.5.0")
+using Pkg; Pkg.add("https://github.com/ksumngs/HapLink#v0.5.1")
 ```
 
 ## Usage
