@@ -270,6 +270,12 @@ function haplotypes(arguments::Dict{String,Any})
     minoverlap = arguments["overlap_min"]
     maxoverlap = arguments["overlap_max"]
     iterations = arguments["iterations"]
+    seed = arguments["seed"]
+
+    # Set the random seed, if specified
+    if !isnothing(seed)
+        Random.seed!(seed)
+    end #if
 
     # Read in the variants
     variantstrings = readlines(varfile)
