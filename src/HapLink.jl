@@ -186,6 +186,13 @@ function parse_arguments()
             required = false
             default  = 1000
             arg_type = Int64
+        "--seed", "-s"
+            help = """
+                Set the random seed for the maximum likelihood psuedo-read generation
+                process
+                """
+                required = false
+                arg_type = UInt64
     end #add_arg_table
 
     @add_arg_table! s["sequences"] begin
