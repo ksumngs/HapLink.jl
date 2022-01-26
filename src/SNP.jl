@@ -11,6 +11,16 @@ struct SNP{S<:NucleicAcid}
 end #struct
 
 """
+    SNP(chrom::String, pos::Int64, ref::S, alt::S) where S<:NucleicAcid
+
+A single-nuclotide polymorphism (SNP) located on the chromosome `chrom` at 1-based sequence
+postion `pos`, that alters `ref` into `alt`.
+"""
+function SNP(chrom::String, pos::Int64, ref::S, alt::S) where S<:NucleicAcid
+    return SNP(Interval(chrom, pos, pos), ref, alt)
+end #function
+
+"""
     SNP(v::VCF.Record)
 
 Create an object to represent the mutation in `v` without metadata
