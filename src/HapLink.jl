@@ -27,6 +27,7 @@ const VERSION = ArgParse.project_version(
     string(joinpath(parent(parent(Path(Base.find_package("HapLink")))), "Project.toml"))
 )
 
+include("SNP.jl")
 include("variant.jl")
 include("haplotype.jl")
 include("readcounts.jl")
