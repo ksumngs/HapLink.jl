@@ -3,6 +3,7 @@ using XAM
 
 export basesat
 export doescontain
+export depth
 
 #=
 samstrings = [
@@ -115,4 +116,33 @@ function doescontain(int::Interval, rec::BAM.Record)
     return seqname(int) == BAM.refname(rec) &&
            leftposition(int) >= BAM.position(rec) &&
            rightposition(int) <= BAM.rightposition(rec)
+end #function
+
+"""
+    depth(int::Interval, reads::AbstractVector{T}) where T <: Union{SAM.Record,BAM.Record}
+
+Calculate the number of `Record`s in `reads` that contain `int`
+
+# Example
+
+```jldoctest
+julia> using GenomicFeatures, XAM
+
+julia> # All SAM spec example sequences
+
+julia> samrecords = SAM.Record.([
+           "r001\\t99\\tref\\t7\\t30\\t8M2I4M1D3M\\t=\\t37\\t39\\tTTAGATAAAGGATACTG\\t*",
+           "r002\\t0\\tref\\t9\\t30\\t3S6M1P1I4M\\t*\\t0\\t0\\tAAAAGATAAGGATA\\t*",
+           "r003\\t0\\tref\\t9\\t30\\t5S6M\\t*\\t0\\t0\\tGCCTAAGCTAA\\t*\\tSA:Z:ref,29,-,6H5M,17,0;",
+           "r004\\t0\\tref\\t16\\t30\\t6M14N5M\\t*\\t0\\t0\\tATAGCTTCAGC\\t*",
+           "r003\\t2064\\tref\\t29\\t17\\t6H5M\\t*\\t0\\t0\\tTAGGC\\t*\\tSA:Z:ref,9,+,5S6M,30,1;",
+           "r001\\t147\\tref\\t37\\t30\\t9M\\t=\\t7\\t-39\\tCAGCGGCAT\\t*\\tNM:i:1"
+       ]);
+
+julia> depth(Interval("ref", 17, 18), samrecords)
+3
+```
+"""
+function depth(int::Interval, reads::AbstractVector{T}) where T <: Union{SAM.Record,BAM.Record}
+    return count(r -> doescontain(int, r), reads)
 end #function
