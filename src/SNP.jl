@@ -1,8 +1,8 @@
 using BioSymbols
 using GenomicFeatures
 
-struct SNP{S, T <: NucleicAcid}
-    location::Interval{S}
+struct SNP{S <: NucleicAcid}
+    location::Interval
     refbase::T
     altbase::T
 end #struct
