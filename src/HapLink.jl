@@ -29,6 +29,7 @@ const VERSION = ArgParse.project_version(
 
 include("SNP.jl")
 include("intervalstats.jl")
+include("snpstats.jl")
 include("variant.jl")
 include("haplotype.jl")
 include("readcounts.jl")
