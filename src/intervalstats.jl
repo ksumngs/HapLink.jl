@@ -2,6 +2,7 @@ using GenomicFeatures
 using XAM
 
 export basesat
+export doescontain
 
 #=
 samstrings = [
@@ -60,4 +61,58 @@ function basesat(int::Interval, rec::BAM.Record)
     poss = myref2seq.([BAM.alignment(rec)], leftposition(int):rightposition(int))
     nuctype = typeof(BAM.sequence(rec))
     return nuctype(map(i -> BAM.sequence(rec)[i], first.(poss)))
+end #function
+
+"""
+    doescontain(int::GenomicFeatures.Interval, rec::Union{SAM.Record,BAM.Record})
+
+Determines if `int` is fully included within the sequence of `rec`.
+
+Named `doescontain` to avoid name conflict with `Base.contains()`
+
+# Example
+
+This alignment is taken from the
+[SAM specification](https://samtools.github.io/hts-specs/SAMv1.pdf).
+
+```plaintext
+Coor    12345678901234  5678901234567890123456789012345
+ref     AGCATGTTAGATAA**GATAGCTGTGCTAGTAGGCAGTCAGCGCCAT
+
++r001/1       TTAGATAAAGGATACTG
+```
+
+| Interval  | Overlap | Result  |
+| --------- | ------- | ------- |
+| ref:10-17 | Full    | `true`  |
+| ref:14-25 | Partial | `false` |
+| ref:30-31 | None    | `false` |
+
+```jldoctest
+julia> using GenomicFeatures, XAM
+
+julia> # Use the SAM spec example record
+
+julia> samrecord = SAM.Record("r001\\t99\\tref\\t7\\t30\\t8M2I4M1D3M\\t=\\t37\\t39\\tTTAGATAAAGGATACTG\\t*");
+
+julia> doescontain(Interval("ref", 10, 17), samrecord)
+true
+
+julia> doescontain(Interval("ref", 14, 25), samrecord)
+false
+
+julia> doescontain(Interval("ref", 30, 31), samrecord)
+false
+```
+"""
+function doescontain(int::Interval, rec::SAM.Record)
+    return seqname(int) == SAM.refname(rec) &&
+           leftposition(int) >= SAM.position(rec) &&
+           rightposition(int) <= SAM.rightposition(rec)
+end #function
+
+function doescontain(int::Interval, rec::BAM.Record)
+    return seqname(int) == BAM.refname(rec) &&
+           leftposition(int) >= BAM.position(rec) &&
+           rightposition(int) <= BAM.rightposition(rec)
 end #function
