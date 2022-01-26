@@ -15,4 +15,5 @@ DocMeta.setdocmeta!(HapLink, :DocTestSetup, :(using HapLink); recursive=true)
     include("sequences.jl")
     include("haplotype.jl")
     doctest(HapLink)
+    include("snptests.jl")
 end
