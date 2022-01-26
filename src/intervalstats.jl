@@ -1,6 +1,8 @@
 using GenomicFeatures
 using XAM
 
+export basesat
+
 #=
 samstrings = [
     "r001\t99\tref\t7\t30\t8M2I4M1D3M\t=\t37\t39\tTTAGATAAAGGATACTG\t*",
