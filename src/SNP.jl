@@ -2,6 +2,8 @@ using BioSymbols
 using GenomicFeatures
 using VariantCallFormat
 
+export SNP
+
 struct SNP{S<:NucleicAcid}
     location::Interval
     refbase::S
