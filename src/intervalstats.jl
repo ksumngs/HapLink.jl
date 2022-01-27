@@ -53,7 +53,7 @@ GAT
 ```
 """
 function basesat(int::Interval, rec::SAM.Record)
-    poss = myref2seq.([SAM.alignment(rec)], leftposition(int):rightposition(int))
+    poss = ref2seq.([SAM.alignment(rec)], leftposition(int):rightposition(int))
     nuctype = typeof(SAM.sequence(rec))
     return nuctype(map(i -> SAM.sequence(rec)[i], first.(poss)))
 end #function
