@@ -43,6 +43,7 @@ julia> # All SAM spec example sequences, with an added mutation at position 17 i
 
 julia> samrecords = SAM.Record.([
            "r001\\t99\\tref\\t7\\t30\\t8M2I4M1D3M\\t=\\t37\\t39\\tTTAGATAAAGGACACTG\\t*",
+           "r002\\t0\\tref\\t9\\t30\\t3S6M1P1I4M\\t*\\t0\\t0\\tAAAAGATAAGGATA\\t*",
            "r003\\t0\\tref\\t9\\t30\\t5S6M\\t*\\t0\\t0\\tGCCTAAGCTAA\\t*\\tSA:Z:ref,29,-,6H5M,17,0;",
            "r004\\t0\\tref\\t16\\t30\\t6M14N5M\\t*\\t0\\t0\\tACAGCTTCAGC\\t*",
            "r003\\t2064\\tref\\t29\\t17\\t6H5M\\t*\\t0\\t0\\tTAGGC\\t*\\tSA:Z:ref,9,+,5S6M,30,1;",
@@ -53,26 +54,6 @@ julia> depth(SNP("ref", 17, DNA_T, DNA_C), samrecords)
 2
 ```
 """
-function depth(snp::SNP, reads::AbstractVector{SAM.Record})
-    if any(contains.(SAM.cigar.(reads), "P"))
-        @warn """
-            One or more of these reads contains a 'P' CIGAR operation, which is not yet
-            supported by BioAlignments.jl. These reads will be ignored.
-            """
-        cleanedreads = filter(r -> !contains(SAM.cigar(r), "P"), reads)
-        return count(r -> doescontain(snp, r), cleanedreads)
-    end #if
-    return count(r -> doescontain(snp, r), reads)
-end #function
-
-function depth(snp::SNP, reads::AbstractVector{BAM.Record})
-    if any(contains.(BAM.cigar.(reads), "P"))
-        @warn """
-            One or more of these reads contains a 'P' CIGAR operation, which is not yet
-            supported by BioAlignments.jl. These reads will be ignored.
-        """
-        cleanedreads = filter(r -> !contains(BAM.cigar(r), "P"), reads)
-        return count(r -> doescontain(snp, r), cleanedreads)
-    end #if
+function depth(snp::SNP, reads::AbstractVector{T}) where T <: Union{SAM.Record,BAM.Record}
     return count(r -> doescontain(snp, r), reads)
 end #function
