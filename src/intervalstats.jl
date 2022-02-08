@@ -1,9 +1,11 @@
 using GenomicFeatures
+using Statistics
 using XAM
 
 export basesat
 export doescontain
 export depth
+export mean_quality
 
 #=
 samstrings = [
@@ -119,4 +121,30 @@ julia> depth(Interval("ref", 17, 18), samrecords)
 """
 function depth(int::Interval, reads::AbstractVector{T}) where T <: Union{SAM.Record,BAM.Record}
     return count(r -> doescontain(int, r), reads)
+end #function
+
+"""
+    mean_quality(int::Interval, rec::Union{SAM.Record,BAM.Record})
+
+Calculates the mean PHRED quality across all of the basecalls in `int` for the read in
+`rec`. Only considers matching alignments, i.e. insertions and deletions are removed
+
+# Example
+
+```jldoctest
+julia> using GenomicFeatures, XAM
+
+julia> samrecord = SAM.Record(HapLink.Examples.SAMStrings[1]);
+
+julia> mean_quality(Interval("ref", 17, 17), samrecord)
+30.0
+
+julia> mean_quality(Interval("ref", 7, 21), samrecord)
+30.0
+```
+"""
+function mean_quality(int::Interval, rec::SAM.Record)
+    poss = ref2seq.([SAM.alignment(rec)], leftposition(int):rightposition(int))
+    matchposs = filter(p -> ismatchop(last(p)), poss)
+    return mean(SAM.quality(rec)[first.(matchposs)])
 end #function
