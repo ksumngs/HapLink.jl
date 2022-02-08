@@ -3,8 +3,9 @@ using Statistics
 using XAM
 
 export basesat
-export doescontain
 export depth
+export doescontain
+export fractional_position
 export mean_quality
 
 #=
@@ -179,4 +180,40 @@ julia> mean_quality(Interval("ref", 17, 17), mutrecords)
 function mean_quality(int::Interval, reads::AbstractVector{T}) where T <: Union{SAM.Record,BAM.Record}
     containingreads = filter(r -> doescontain(int, r), reads)
     return mean(mean_quality.([int], containingreads))
+end #function
+
+"""
+    fractional_position(int::Interval, rec::Union{SAM.Record,BAM.Record})
+
+Get the position of `int` as a fraction within the sequence of `rec`.
+
+# Example
+
+```jldoctest
+julia> using GenomicFeatures, XAM
+
+julia> samrecord = SAM.Record.(HapLink.Examples.SAMStrings[5]);
+
+julia> fractional_position(Interval("ref", 29, 29), samrecord)
+0.2
+
+julia> fractional_position(Interval("ref", 29, 33), samrecord)
+0.6
+
+julia> fractional_position(Interval("ref", 33, 33), samrecord)
+1.0
+```
+"""
+function fractional_position(int::Interval, rec::SAM.Record)
+    leftpos = first(ref2seq(SAM.alignment(rec), leftposition(int)))
+    rightpos = first(ref2seq(SAM.alignment(rec), rightposition(int)))
+    avgpos = mean([leftpos, rightpos])
+    return avgpos / SAM.seqlength(rec)
+end #function
+
+function fractional_position(int::Interval, rec::BAM.Record)
+    leftpos = first(ref2seq(BAM.alignment(rec), leftposition(int)))
+    rightpos = first(ref2seq(BAM.alignment(rec), rightposition(int)))
+    avgpos = mean([leftpos, rightpos])
+    return avgpos / BAM.seqlength(rec)
 end #function
