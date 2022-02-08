@@ -28,22 +28,7 @@ Gets the sequence of `rec` at the reference position of `int`.
 ```jldoctest
 julia> using BioSequences, BioSymbols, GenomicFeatures, XAM
 
-julia> # Create a record: this example comes from the SAMv1 spec
-
-julia> samrecord = SAM.Record("r001\\t99\\tref\\t7\\t30\\t8M2I4M1D3M\\t=\\t37\\t39\\tTTAGATAAAGGATACTG\\t*")
-XAM.SAM.Record:
-    template name: r001
-             flag: 99
-        reference: ref
-         position: 7
-  mapping quality: 30
-            CIGAR: 8M2I4M1D3M
-   next reference: =
-    next position: 37
-  template length: 39
-         sequence: TTAGATAAAGGATACTG
-     base quality: <missing>
-   auxiliary data:
+julia> samrecord = SAM.Record(HapLink.Examples.SAMStrings[1]);
 
 julia> location = Interval("ref", 15, 17);
 
@@ -92,9 +77,7 @@ ref     AGCATGTTAGATAA**GATAGCTGTGCTAGTAGGCAGTCAGCGCCAT
 ```jldoctest
 julia> using GenomicFeatures, XAM
 
-julia> # Use the SAM spec example record
-
-julia> samrecord = SAM.Record("r001\\t99\\tref\\t7\\t30\\t8M2I4M1D3M\\t=\\t37\\t39\\tTTAGATAAAGGATACTG\\t*");
+julia> samrecord = SAM.Record(HapLink.Examples.SAMStrings[1]);
 
 julia> doescontain(Interval("ref", 10, 17), samrecord)
 true
@@ -128,16 +111,7 @@ Calculate the number of `Record`s in `reads` that contain `int`
 ```jldoctest
 julia> using GenomicFeatures, XAM
 
-julia> # All SAM spec example sequences
-
-julia> samrecords = SAM.Record.([
-           "r001\\t99\\tref\\t7\\t30\\t8M2I4M1D3M\\t=\\t37\\t39\\tTTAGATAAAGGATACTG\\t*",
-           "r002\\t0\\tref\\t9\\t30\\t3S6M1P1I4M\\t*\\t0\\t0\\tAAAAGATAAGGATA\\t*",
-           "r003\\t0\\tref\\t9\\t30\\t5S6M\\t*\\t0\\t0\\tGCCTAAGCTAA\\t*\\tSA:Z:ref,29,-,6H5M,17,0;",
-           "r004\\t0\\tref\\t16\\t30\\t6M14N5M\\t*\\t0\\t0\\tATAGCTTCAGC\\t*",
-           "r003\\t2064\\tref\\t29\\t17\\t6H5M\\t*\\t0\\t0\\tTAGGC\\t*\\tSA:Z:ref,9,+,5S6M,30,1;",
-           "r001\\t147\\tref\\t37\\t30\\t9M\\t=\\t7\\t-39\\tCAGCGGCAT\\t*\\tNM:i:1"
-       ]);
+julia> samrecords = SAM.Record.(HapLink.Examples.SAMStrings);
 
 julia> depth(Interval("ref", 17, 18), samrecords)
 3
