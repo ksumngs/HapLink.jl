@@ -148,3 +148,9 @@ function mean_quality(int::Interval, rec::SAM.Record)
     matchposs = filter(p -> ismatchop(last(p)), poss)
     return mean(SAM.quality(rec)[first.(matchposs)])
 end #function
+
+function mean_quality(int::Interval, rec::BAM.Record)
+    poss = ref2seq.([BAM.alignment(rec)], leftposition(int):rightposition(int))
+    matchposs = filter(p -> ismatchop(last(p)), poss)
+    return mean(BAM.quality(rec)[first.(matchposs)])
+end #function
