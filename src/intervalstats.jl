@@ -154,3 +154,29 @@ function mean_quality(int::Interval, rec::BAM.Record)
     matchposs = filter(p -> ismatchop(last(p)), poss)
     return mean(BAM.quality(rec)[first.(matchposs)])
 end #function
+
+"""
+    mean_quality(int::Interval, reads::AbstractVector{T}) where T <: Union{SAM.Record,BAM.Record}
+
+Calculates the mean PHRED quality for `int` in the sequences of `reads`. Passing `int`s of
+more than one position will average the per-base scores and the per-read scores, and may
+yield unexpected results. Records within `reads` that do not contain `int` will be ignored.
+
+# Example
+
+```jldoctest
+julia> using GenomicFeatures, XAM
+
+julia> mutrecords = SAM.Record.(HapLink.Examples.MutStrings);
+
+julia> mean_quality(Interval("ref", 12, 12), mutrecords)
+30.0
+
+julia> mean_quality(Interval("ref", 17, 17), mutrecords)
+33.333333333333336
+```
+"""
+function mean_quality(int::Interval, reads::AbstractVector{T}) where T <: Union{SAM.Record,BAM.Record}
+    containingreads = filter(r -> doescontain(int, r), reads)
+    return mean(mean_quality.([int], containingreads))
+end #function
