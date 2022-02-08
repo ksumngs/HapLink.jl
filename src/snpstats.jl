@@ -1,8 +1,9 @@
 using XAM
 
-export doescontain
 export depth
+export doescontain
 export fractional_position
+export frequency
 
 """
     doescontain(snp::SNP, rec::Union{SAM.Record,BAM.Record})
@@ -95,4 +96,22 @@ julia> fractional_position(SNP("ref", 17, DNA_T, DNA_C), SAM.Record.(HapLink.Exa
 function fractional_position(snp::SNP, reads::AbstractVector{T}) where T <: Union{SAM.Record,BAM.Record}
     containingreads = filter(r -> doescontain(snp, r), reads)
     return mean(fractional_position.([snp.location], containingreads))
+end #function
+
+"""
+    frequency(snp::SNP, reads::AbstractVector{T}) where T <: Union{SAM.Record,BAM.Record}
+
+Calculate the relative depth of `snp` within `reads`.
+
+# Example
+
+```jldoctest
+julia> using BioSymbols, GenomicFeatures, XAM
+
+julia> frequency(SNP("ref", 17, DNA_T, DNA_C), SAM.Record.(HapLink.Examples.MutStrings))
+0.6666666666666666
+```
+"""
+function frequency(snp::SNP, reads::AbstractVector{T}) where T <: Union{SAM.Record,BAM.Record}
+    return depth(snp, reads) / depth(snp.location, reads)
 end #function
