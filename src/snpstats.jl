@@ -49,3 +49,27 @@ julia> depth(SNP("ref", 17, DNA_T, DNA_C), samrecords)
 function depth(snp::SNP, reads::AbstractVector{T}) where T <: Union{SAM.Record,BAM.Record}
     return count(r -> doescontain(snp, r), reads)
 end #function
+
+"""
+    mean_quality(snp::SNP, reads::AbstractVector{T}) where T <: Union{SAM.Record,BAM.Record}
+
+Calculates the mean PHRED quality of `snp` in the sequences of `reads`.
+
+# Example
+
+```jldoctest
+julia> using BioSymbols, GenomicFeatures, XAM
+
+julia> mutrecords = SAM.Record.(HapLink.Examples.MutStrings);
+
+julia> mean_quality(SNP("ref", 12, DNA_T, DNA_T), mutrecords) # reference
+30.0
+
+julia> mean_quality(SNP("ref", 17, DNA_T, DNA_C), mutrecords)
+35.0
+```
+"""
+function mean_quality(snp::SNP, reads::AbstractVector{T}) where T <: Union{SAM.Record,BAM.Record}
+    containingreads = filter(r -> doescontain(snp, r), reads)
+    return mean(mean_quality.([snp.location], containingreads))
+end #function
