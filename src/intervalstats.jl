@@ -217,3 +217,32 @@ function fractional_position(int::Interval, rec::BAM.Record)
     avgpos = mean([leftpos, rightpos])
     return avgpos / BAM.seqlength(rec)
 end #function
+
+"""
+    fractional_position(int::Interval, reads::AbstractVector{T}) where T <: Union{SAM.Record,BAM.Record}
+
+Finds the mean position as a fraction between 0 and 1 of `int` within a set of `reads`.
+Reads without `int` are ignored.
+
+# Example
+
+```jldoctest
+julia> using GenomicFeatures, XAM
+
+julia> fractional_position(Interval("ref", 9, 9), SAM.Record(HapLink.Examples.SAMStrings[1]))
+0.17647058823529413
+
+julia> fractional_position(Interval("ref", 9, 9), SAM.Record(HapLink.Examples.SAMStrings[2]))
+0.2857142857142857
+
+julia> fractional_position(Interval("ref", 9, 9), SAM.Record(HapLink.Examples.SAMStrings[3]))
+0.5454545454545454
+
+julia> fractional_position(Interval("ref", 9, 9), SAM.Record.(HapLink.Examples.SAMStrings))
+0.3358798064680418
+```
+"""
+function fractional_position(int::Interval, reads::AbstractVector{T}) where T <: Union{SAM.Record,BAM.Record}
+    containingreads = filter(r -> doescontain(int, r), reads)
+    return mean(fractional_position.([int], containingreads))
+end #function
