@@ -70,6 +70,10 @@ end #function
 # Forward interval methods
 @forward SNP.location BioGenerics.seqname, BioGenerics.leftposition, BioGenerics.rightposition, BioGenerics.metadata
 
+function Base.isless(a::SNP, b::SNP)
+    return location(a) < location(b) && refbase(a) < refbase(b) && altbase(a) < altbase(b)
+end #function
+
 """
     reference(s::SNP)
 
