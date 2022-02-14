@@ -17,18 +17,8 @@ julia> using BioSymbols, FASTX, GenomicFeatures
 
 julia> first(possible_snps([FASTA.Record(">ref\\nAGCATGTTAGATAAGATAGCTGTGCTAGTAGGCAGTCAGCGCCAT")]), 2)
 2-element Vector{SNP}:
- SNP{DNA}(GenomicFeatures.Interval{Nothing}:
-  sequence name: ref
-  leftmost position: 1
-  rightmost position: 1
-  strand: .
-  metadata: nothing, DNA_A, DNA_C)
- SNP{DNA}(GenomicFeatures.Interval{Nothing}:
-  sequence name: ref
-  leftmost position: 1
-  rightmost position: 1
-  strand: .
-  metadata: nothing, DNA_A, DNA_G)
+ ref:1 (A -> C)
+ ref:1 (A -> G)
 ```
 """
 function possible_snps(reference::AbstractVector{FASTA.Record})
