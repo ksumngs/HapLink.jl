@@ -1,5 +1,7 @@
+using BioGenerics
 using BioSymbols
 using GenomicFeatures
+using Lazy
 using VariantCallFormat
 
 export SNP
@@ -64,6 +66,9 @@ end #function
 function altbase(s::SNP)
     return s.altbase
 end #function
+
+# Forward interval methods
+@forward SNP.location BioGenerics.seqname, BioGenerics.leftposition, BioGenerics.rightposition, BioGenerics.metadata
 
 """
     reference(s::SNP)
