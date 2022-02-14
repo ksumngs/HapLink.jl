@@ -3,6 +3,7 @@ using BioSymbols
 using GenomicFeatures
 using Lazy
 using VariantCallFormat
+using XAM
 
 export SNP
 export altbase
@@ -127,5 +128,21 @@ function VariantCallFormat.VCF.Record(
             ],
             "\t"
         )
+    )
+end #function
+
+function VariantCallFormat.VCF.Record(
+    snp::SNP,
+    reads::AbstractVector{T};
+    id::Union{String,Nothing}=nothing,
+    filter::String="PASS"
+) where T <: Union{SAM.Record,BAM.Record}
+    return VCF.Record(
+        snp,
+        id=id,
+        qual=mean_quality(snp, reads),
+        filter=filter,
+        depth=depth(location(snp), reads),
+        altdepth=depth(snp, reads),
     )
 end #function
