@@ -86,3 +86,46 @@ Create a `SNP` representing the reference base of `s`.
 function reference(s::SNP)
     return SNP(s.location, s.refbase, s.refbase)
 end #function
+
+function VariantCallFormat.VCF.Record(
+    s::SNP;
+    id::Union{String,Nothing}=nothing,
+    qual::Union{Float64,Nothing}=nothing,
+    filter::String="PASS",
+    depth::Union{Int64,Nothing}=nothing,
+    altdepth::Union{Int64,Nothing}=nothing,
+    info::Dict{<:Any,<:Any}=Dict(),
+)
+
+    # Convert the id and quality
+    id_str = isnothing(id) ? "." : copy(id)
+    qual_str = isnothing(qual) ? "." : trunc(qual, digits=1)
+
+    # Copy the dictionary over
+    info_dict = copy(info)
+
+    # Add depth and altdepth to the dictionary
+    if !isnothing(depth)
+        info_dict["DP"] = depth
+    end #if
+    if !isnothing(altdepth)
+        info_dict["AD"] = altdepth
+    end #if
+
+    # Convert the snp and metadata to string, then to VCF.Record
+    return VCF.Record(
+        join(
+            [
+                seqname(s),
+                leftposition(s),
+                id_str,
+                refbase(s),
+                altbase(s),
+                qual_str,
+                filter,
+                join(["$(n[1])=$(n[2])" for n in info_dict], ";")
+            ],
+            "\t"
+        )
+    )
+end #function
