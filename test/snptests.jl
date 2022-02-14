@@ -7,6 +7,11 @@ using XAM
     # Set up a correct SNP
     snp = SNP(Interval("X", 1, 1), DNA_A, DNA_T)
 
+    # Check the accessor functions
+    @test location(snp) == Interval("X", 1, 1)
+    @test refbase(snp) == DNA_A
+    @test altbase(snp) == DNA_T
+
     # Check that we don't mix DNA and RNA
     @test_throws MethodError SNP(Interval("X", 1, 1), DNA_T, RNA_U)
 
