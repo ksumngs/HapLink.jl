@@ -74,6 +74,10 @@ function Base.isless(a::SNP, b::SNP)
     return location(a) < location(b) && refbase(a) < refbase(b) && altbase(a) < altbase(b)
 end #function
 
+function Base.show(io::IO, s::SNP)
+    print(io, "$(seqname(s)):$(leftposition(s)) ($(refbase(s)) -> $(altbase(s)))")
+end #function
+
 """
     reference(s::SNP)
 
