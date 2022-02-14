@@ -34,7 +34,7 @@ function basesat(int::Interval, rec::SAM.Record)
 end #function
 
 function basesat(int::Interval, rec::BAM.Record)
-    poss = myref2seq.([BAM.alignment(rec)], leftposition(int):rightposition(int))
+    poss = ref2seq.([BAM.alignment(rec)], leftposition(int):rightposition(int))
     nuctype = typeof(BAM.sequence(rec))
     return nuctype(map(i -> BAM.sequence(rec)[i], first.(poss)))
 end #function
