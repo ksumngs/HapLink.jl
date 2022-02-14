@@ -29,4 +29,7 @@ using XAM
 
     # Check that RNA is properly parsed
     @test typeof(SNP(VCF.Record("X\t1\t.\tA\tU\t30.0\tPASS\t"))) == SNP{RNA}
+
+    # Test that the VCF.Record conversion is done correctly
+    @test SNP(VCF.Record(snp)) == snp
 end
