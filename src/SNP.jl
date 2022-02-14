@@ -3,6 +3,9 @@ using GenomicFeatures
 using VariantCallFormat
 
 export SNP
+export altbase
+export location
+export refbase
 export reference
 
 struct SNP{S<:NucleicAcid}
@@ -49,6 +52,18 @@ function SNP(v::VCF.Record)
         nuctype(first(first(VCF.alt(v)))),
     )
 end #struct
+
+function location(s::SNP)
+    return s.location
+end #function
+
+function refbase(s::SNP)
+    return s.refbase
+end #function
+
+function altbase(s::SNP)
+    return s.altbase
+end #function
 
 """
     reference(s::SNP)
