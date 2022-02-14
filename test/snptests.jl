@@ -12,6 +12,12 @@ using XAM
     @test refbase(snp) == DNA_A
     @test altbase(snp) == DNA_T
 
+    # Check the forwarded accessor functions
+    @test seqname(snp) == "X"
+    @test leftposition(snp) == 1
+    @test rightposition(snp) == 1
+    @test isnothing(metadata(snp))
+
     # Check that we don't mix DNA and RNA
     @test_throws MethodError SNP(Interval("X", 1, 1), DNA_T, RNA_U)
 
