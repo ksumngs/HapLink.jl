@@ -74,7 +74,7 @@ end #function
 function doescontain(int::Interval, rec::BAM.Record)
     return seqname(int) == BAM.refname(rec) &&
            leftposition(int) >= BAM.position(rec) &&
-           rightposition(int) <= SAM.rightposition(rec) &&
+           rightposition(int) <= BAM.rightposition(rec) &&
            all(ismatchop.(last.(ref2seq.([BAM.alignment(rec)], leftposition(int):rightposition(int)))))
 end #function
 
