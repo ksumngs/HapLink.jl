@@ -310,13 +310,42 @@ function variants(arguments::Dict{String,Any})
     significance = arguments["significance"]
     depth        = arguments["depth"]
 
+    # Read in the BAM file
+    bamrecords = collect(BAM.Reader(open(bamfile, "r")))
+
+    # Read in the reference file
+    refrecords = collect(FASTA.Reader(open(reffile, "r")))
+
     # Call variants
     variants = callvariants(
-        countbasestats(bamfile, reffile), depth, quality, position, frequency, significance
+        possible_snps(refrecords),
+        bamrecords,
+        depth,
+        quality,
+        position,
+        frequency,
+        significance,
     )
 
+    #=
+    callvariants(
+        countbasestats(bamfile, reffile), depth, quality, position, frequency, significance
+    )
+    =#
+
     # Save the variants to a VCF file
-    return savevcf(variants, outfile, reffile, depth, quality, position, significance)
+    savevcf(
+        variants,
+        bamrecords,
+        outfile,
+        reffile,
+        depth,
+        quality,
+        position,
+        significance
+    )
+
+    return 0
 end #function
 
 function _consensus(arguments::Dict{String,Any})
