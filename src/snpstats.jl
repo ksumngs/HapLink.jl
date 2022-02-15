@@ -48,7 +48,7 @@ julia> depth(SNP("ref", 17, DNA_T, DNA_C), samrecords)
 2
 ```
 """
-function depth(snp::SNP, reads::AbstractVector{T}) where T <: Union{SAM.Record,BAM.Record}
+function depth(snp::SNP, reads::AbstractVector{T}) where {T<:Union{SAM.Record,BAM.Record}}
     return count(r -> doescontain(snp, r), reads)
 end #function
 
@@ -71,7 +71,9 @@ julia> mean_quality(SNP("ref", 17, DNA_T, DNA_C), mutrecords)
 35.0
 ```
 """
-function mean_quality(snp::SNP, reads::AbstractVector{T}) where T <: Union{SAM.Record,BAM.Record}
+function mean_quality(
+    snp::SNP, reads::AbstractVector{T}
+) where {T<:Union{SAM.Record,BAM.Record}}
     containingreads = filter(r -> doescontain(snp, r), reads)
     return mean(mean_quality.([snp.location], containingreads))
 end #function
@@ -93,7 +95,9 @@ julia> fractional_position(SNP("ref", 17, DNA_T, DNA_C), SAM.Record.(HapLink.Exa
 0.4732620320855615
 ```
 """
-function fractional_position(snp::SNP, reads::AbstractVector{T}) where T <: Union{SAM.Record,BAM.Record}
+function fractional_position(
+    snp::SNP, reads::AbstractVector{T}
+) where {T<:Union{SAM.Record,BAM.Record}}
     containingreads = filter(r -> doescontain(snp, r), reads)
     return mean(fractional_position.([snp.location], containingreads))
 end #function
@@ -112,6 +116,8 @@ julia> frequency(SNP("ref", 17, DNA_T, DNA_C), SAM.Record.(HapLink.Examples.MutS
 0.6666666666666666
 ```
 """
-function frequency(snp::SNP, reads::AbstractVector{T}) where T <: Union{SAM.Record,BAM.Record}
+function frequency(
+    snp::SNP, reads::AbstractVector{T}
+) where {T<:Union{SAM.Record,BAM.Record}}
     return depth(snp, reads) / depth(snp.location, reads)
 end #function
