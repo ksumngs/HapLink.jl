@@ -89,7 +89,9 @@ end #function
 Save a VCF file populated with `vars`
 
 # Arguments
-- `vars::AbstractVector{Variant}`: `Vector` of [`Variant`](@ref)s to write to file
+- `snps::AbstractVector{SNP}`: `Vector` of [`SNP`](@ref)s to write to file
+- `reads::AbstractVector{T} where T <: Union{SAM.Record,BAM.Record}`: `Vector` of reads
+    to get depth and quality stats on `snps` from
 - `savepath::AbstractString`: path of the VCF file to write to. Will be overwritten
 - `refpath::AbstractString`: path of the reference genome used to call variants. The
     absolute path will be added to the `##reference` metadata
@@ -107,47 +109,44 @@ Saves the variants in `vars` to a VCF file at `savepath`, adding the reference g
 significance cutoff `α` as metadata.
 """
 function savevcf(
-    vars::AbstractVector{Variant},
+    snps::AbstractVector{<:SNP},
+    reads::AbstractVector{T},
     savepath::AbstractString,
     refpath::AbstractString,
     D::Int,
     Q::Number,
     x::Float64,
     α::Float64,
-)
+) where {T <: Union{SAM.Record, BAM.Record}}
 
     # Convert read position to integer percent
     X = string(trunc(Int, x * 100))
 
-    # Open the file via clobbering
-    open(savepath, "w") do f
-        # Write headers
-        write(f, "##fileformat=VCFv4.2\n")
-        write(f, string("##filedate=", Dates.format(today(), "YYYYmmdd"), "\n"))
-        write(f, string("##source=HapLink.jlv", VERSION, "\n"))
-        write(f, string("##reference=file://", abspath(refpath), "\n"))
+    vheader = VCF.Header(
+        VCF.MetaInfo.(
+            split(
+                """
+                ##fileformat=VCFv4.2
+                ##filedate=$(Dates.format(today(), "YYYYmmdd"))
+                ##source=HapLink.jlv$(VERSION)
+                ##reference=file://$(abspath(refpath))
+                ##FILTER=<ID=d$D,Description="Variant depth below $D">
+                ##FILTER=<ID=q$Q,Description="Quality below $Q">
+                ##FILTER=<ID=x$X,Description="Position in outer $X% of reads">
+                ##FILTER=<ID=sg,Description="Not significant at alpha=$α level by Fisher's Exact Test">
+                ##INFO=<ID=DP,Number=1,Type=Integer,Description="Read Depth">
+                ##INFO=<ID=AD,Number=1,Type=Integer,Description="Alternate Depth">""",
+                "\n"
+            )
+        ),
+        ["."]
+    )
 
-        # Write filter metadata
-        write(f, "##FILTER=<ID=d$D,Description=\"Variant depth below $D\">\n")
-        write(f, "##FILTER=<ID=q$Q,Description=\"Quality below $Q\">\n")
-        write(f, "##FILTER=<ID=x$X,Description=\"Position in outer $X% of reads\">\n")
-        write(
-            f,
-            "##FILTER=<ID=sg,Description=\"Not significant at alpha=$α level by Fisher's Exact Test\">\n",
-        )
+    f = VCF.Writer(open(savepath, "w"), vheader)
 
-        # Add descriptions of the info tags I chose to include
-        # TODO: Find a way for these _not_ to be hard-coded in here
-        write(f, "##INFO=<ID=DP,Number=1,Type=Integer,Description=\"Read Depth\">\n")
-        write(f, "##INFO=<ID=AD,Number=1,Type=Integer,Description=\"Alternate Depth\">\n")
+    for snp in snps
+        write(f, VCF.Record(snp, reads))
+    end #for
 
-        # Write the header line?
-        # TODO: Check this header against VCF spec
-        write(f, "#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\n")
-
-        # Write every variant out
-        for var in vars
-            write(f, string(serialize_vcf(var), "\n"))
-        end #for
-    end #do
+    close(f)
 end #function
