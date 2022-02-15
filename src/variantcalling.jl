@@ -10,13 +10,16 @@ function phrederror(qual::Number)
 end #function
 
 """
-    callvariants(bamcounts::AbstractDataFrame, D_min::Int, Q_min::Int, x_min::Float64,
-        f_min::Float64, α::Float64)
+    callvariants(snps::AbstractVector{SNP}, reads::AbstractVector{T}, D_min::Int,
+        Q_min::Int, x_min::Float64, f_min::Float64,
+        α::Float64) where T <: Union{SAM.Record,BAM.Record}
 
 Based on the aligned basecalls and stats in `bamcounts`, call variants.
 
 # Arguments
-- `bamcounts::AbstractDataFrame`: `DataFrame` containing the output from `bam-readcount`
+- `snps::AbstractVector{SNP}`: `Vector` of possible `SNPs` that variants will be called from
+- `reads::AbstractVector{T} where T <: Union{SAM.Record,BAM.Record}`: A set of aligned
+    sequencing reads from which to verify variant calls
 - `D_min::Int`: minimum variant depth
 - `Q_min::Int`: minimum average PHRED-scaled quality at variant position
 - `x_min::Float64`: minimum average fractional distance from read end at variant position
@@ -24,48 +27,59 @@ Based on the aligned basecalls and stats in `bamcounts`, call variants.
 - `α::Float64`: significance level of variants by Fisher's Exact Test
 
 # Returns
-- `Vector{Variant}`: [`Variant`](@ref)s that passed all the above filters
+- `Vector{SNP}`: [`SNP`](@ref)s that passed all the above filters
 """
 function callvariants(
-    bamcounts::AbstractDataFrame,
+    snps::AbstractVector{<:SNP},
+    reads::AbstractVector{T},
     D_min::Int,
     Q_min::Int,
     x_min::Float64,
     f_min::Float64,
     α::Float64,
-)
+) where {T <: Union{SAM.Record, BAM.Record}}
 
     # Ensure we don't mutate the input reads
-    variantdata = copy(bamcounts)
-
-    # Exclude any non-variants i.e. reference bases
-    filter!(var -> var.base != var.reference_base, variantdata)
+    snpdata = copy(snps)
 
     # Simple metric filters
-    filter!(var -> var.count >= D_min, variantdata)
-    filter!(var -> var.avg_basequality >= Q_min, variantdata)
-    filter!(var -> var.avg_pos_as_fraction >= x_min, variantdata)
-    filter!(var -> (var.count / var.depth) >= f_min, variantdata)
+    # Depth
+    filter!(s -> depth(s, reads) >= D_min, snpdata)
+
+    # Quality
+    filter!(s -> mean_quality(s, reads) >= Q_min, snpdata)
+
+    # Position, converting 0 to 1 to 0 to 1 to 0
+    function pos_to_edge(x)
+        if x <= 0.5
+            return 2x
+        else
+            return 2*(1-x)
+        end
+    end #function
+    filter!(s -> pos_to_edge(fractional_position(s, reads)) >= x_min, snpdata)
+
+    filter!(s -> frequency(s, reads) >= f_min, snpdata)
 
     # Calculate the Fisher's Exact probability of a variant base appearing due to sequencing
     # errors. This method is perfectly identical to the way iVar calls variants (See
     # https://github.com/andersen-lab/ivar/blob/v1.3.1/src/call_variants.cpp#L139), but
     # implemented in a slightly different way
     filter!(
-        var ->
+        s ->
             pvalue(
                 FisherExactTest(
-                    round(Int, phrederror(var.avg_basequality) * var.depth),
-                    round(Int, (1 - phrederror(var.avg_basequality)) * var.depth),
-                    var.count,
-                    var.depth,
+                    round(Int, phrederror(mean_quality(s, reads)) * depth(s.location, reads)),
+                    round(Int, (1 - phrederror(mean_quality(s, reads))) * depth(s.location, reads)),
+                    depth(s, reads),
+                    depth(reference(s), reads),
                 ),
             ) <= α,
-        variantdata,
+        snpdata,
     )
 
     # Return variant objects based on the remaining variant calls
-    return Variant.(eachrow(variantdata))
+    return snpdata
 end #function
 
 """
