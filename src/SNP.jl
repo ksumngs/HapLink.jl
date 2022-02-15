@@ -23,7 +23,7 @@ end #struct
 A single-nuclotide polymorphism (SNP) located on the chromosome `chrom` at 1-based sequence
 postion `pos`, that alters `ref` into `alt`.
 """
-function SNP(chrom::String, pos::Int64, ref::S, alt::S) where S<:NucleicAcid
+function SNP(chrom::String, pos::Int64, ref::S, alt::S) where {S<:NucleicAcid}
     return SNP(Interval(chrom, pos, pos), ref, alt)
 end #function
 
@@ -69,14 +69,16 @@ function altbase(s::SNP)
 end #function
 
 # Forward interval methods
-@forward SNP.location BioGenerics.seqname, BioGenerics.leftposition, BioGenerics.rightposition, BioGenerics.metadata
+@forward SNP.location BioGenerics.seqname,
+BioGenerics.leftposition, BioGenerics.rightposition,
+BioGenerics.metadata
 
 function Base.isless(a::SNP, b::SNP)
     return location(a) < location(b) && refbase(a) < refbase(b) && altbase(a) < altbase(b)
 end #function
 
 function Base.show(io::IO, s::SNP)
-    print(io, "$(seqname(s)):$(leftposition(s)) ($(refbase(s)) -> $(altbase(s)))")
+    return print(io, "$(seqname(s)):$(leftposition(s)) ($(refbase(s)) -> $(altbase(s)))")
 end #function
 
 """
@@ -100,7 +102,7 @@ function VariantCallFormat.VCF.Record(
 
     # Convert the id and quality
     id_str = isnothing(id) ? "." : copy(id)
-    qual_str = isnothing(qual) ? "." : trunc(qual, digits=1)
+    qual_str = isnothing(qual) ? "." : trunc(qual; digits=1)
 
     # Copy the dictionary over
     info_dict = copy(info)
@@ -124,10 +126,10 @@ function VariantCallFormat.VCF.Record(
                 altbase(s),
                 qual_str,
                 filter,
-                join(["$(n[1])=$(n[2])" for n in info_dict], ";")
+                join(["$(n[1])=$(n[2])" for n in info_dict], ";"),
             ],
-            "\t"
-        )
+            "\t",
+        ),
     )
 end #function
 
@@ -135,10 +137,10 @@ function VariantCallFormat.VCF.Record(
     snp::SNP,
     reads::AbstractVector{T};
     id::Union{String,Nothing}=nothing,
-    filter::String="PASS"
-) where T <: Union{SAM.Record,BAM.Record}
+    filter::String="PASS",
+) where {T<:Union{SAM.Record,BAM.Record}}
     return VCF.Record(
-        snp,
+        snp;
         id=id,
         qual=mean_quality(snp, reads),
         filter=filter,

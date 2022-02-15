@@ -68,14 +68,26 @@ function doescontain(int::Interval, rec::SAM.Record)
     return seqname(int) == SAM.refname(rec) &&
            leftposition(int) >= SAM.position(rec) &&
            rightposition(int) <= SAM.rightposition(rec) &&
-           all(ismatchop.(last.(ref2seq.([SAM.alignment(rec)], leftposition(int):rightposition(int)))))
+           all(
+               ismatchop.(
+                   last.(
+                       ref2seq.([SAM.alignment(rec)], leftposition(int):rightposition(int))
+                   ),
+               ),
+           )
 end #function
 
 function doescontain(int::Interval, rec::BAM.Record)
     return seqname(int) == BAM.refname(rec) &&
            leftposition(int) >= BAM.position(rec) &&
            rightposition(int) <= BAM.rightposition(rec) &&
-           all(ismatchop.(last.(ref2seq.([BAM.alignment(rec)], leftposition(int):rightposition(int)))))
+           all(
+               ismatchop.(
+                   last.(
+                       ref2seq.([BAM.alignment(rec)], leftposition(int):rightposition(int))
+                   ),
+               ),
+           )
 end #function
 
 """
@@ -94,7 +106,9 @@ julia> depth(Interval("ref", 17, 18), samrecords)
 3
 ```
 """
-function depth(int::Interval, reads::AbstractVector{T}) where T <: Union{SAM.Record,BAM.Record}
+function depth(
+    int::Interval, reads::AbstractVector{T}
+) where {T<:Union{SAM.Record,BAM.Record}}
     return count(r -> doescontain(int, r), reads)
 end #function
 
@@ -151,7 +165,9 @@ julia> mean_quality(Interval("ref", 17, 17), mutrecords)
 33.333333333333336
 ```
 """
-function mean_quality(int::Interval, reads::AbstractVector{T}) where T <: Union{SAM.Record,BAM.Record}
+function mean_quality(
+    int::Interval, reads::AbstractVector{T}
+) where {T<:Union{SAM.Record,BAM.Record}}
     containingreads = filter(r -> doescontain(int, r), reads)
     return mean(mean_quality.([int], containingreads))
 end #function
@@ -216,7 +232,9 @@ julia> fractional_position(Interval("ref", 9, 9), SAM.Record.(HapLink.Examples.S
 0.3358798064680418
 ```
 """
-function fractional_position(int::Interval, reads::AbstractVector{T}) where T <: Union{SAM.Record,BAM.Record}
+function fractional_position(
+    int::Interval, reads::AbstractVector{T}
+) where {T<:Union{SAM.Record,BAM.Record}}
     containingreads = filter(r -> doescontain(int, r), reads)
     return mean(fractional_position.([int], containingreads))
 end #function
