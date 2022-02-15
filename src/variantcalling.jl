@@ -37,7 +37,7 @@ function callvariants(
     x_min::Float64,
     f_min::Float64,
     α::Float64,
-) where {T <: Union{SAM.Record, BAM.Record}}
+) where {T<:Union{SAM.Record,BAM.Record}}
 
     # Ensure we don't mutate the input reads
     snpdata = copy(snps)
@@ -54,7 +54,7 @@ function callvariants(
         if x <= 0.5
             return 2x
         else
-            return 2*(1-x)
+            return 2 * (1 - x)
         end
     end #function
     filter!(s -> pos_to_edge(fractional_position(s, reads)) >= x_min, snpdata)
@@ -69,8 +69,13 @@ function callvariants(
         s ->
             pvalue(
                 FisherExactTest(
-                    round(Int, phrederror(mean_quality(s, reads)) * depth(s.location, reads)),
-                    round(Int, (1 - phrederror(mean_quality(s, reads))) * depth(s.location, reads)),
+                    round(
+                        Int, phrederror(mean_quality(s, reads)) * depth(s.location, reads)
+                    ),
+                    round(
+                        Int,
+                        (1 - phrederror(mean_quality(s, reads))) * depth(s.location, reads),
+                    ),
                     depth(s, reads),
                     depth(reference(s), reads),
                 ),
@@ -117,7 +122,7 @@ function savevcf(
     Q::Number,
     x::Float64,
     α::Float64,
-) where {T <: Union{SAM.Record, BAM.Record}}
+) where {T<:Union{SAM.Record,BAM.Record}}
 
     # Convert read position to integer percent
     X = string(trunc(Int, x * 100))
@@ -136,10 +141,10 @@ function savevcf(
                 ##FILTER=<ID=sg,Description="Not significant at alpha=$α level by Fisher's Exact Test">
                 ##INFO=<ID=DP,Number=1,Type=Integer,Description="Read Depth">
                 ##INFO=<ID=AD,Number=1,Type=Integer,Description="Alternate Depth">""",
-                "\n"
-            )
+                "\n",
+            ),
         ),
-        ["."]
+        ["."],
     )
 
     f = VCF.Writer(open(savepath, "w"), vheader)
@@ -148,5 +153,5 @@ function savevcf(
         write(f, VCF.Record(snp, reads))
     end #for
 
-    close(f)
+    return close(f)
 end #function

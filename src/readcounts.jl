@@ -28,7 +28,9 @@ function possible_snps(reference::AbstractVector{FASTA.Record})
             alph = typeof(FASTA.sequence(chrom)[i]) == DNA ? ACGT : ACGU
             for N in alph
                 if N != FASTA.sequence(chrom)[i]
-                    push!(snps, SNP(FASTA.identifier(chrom), i, FASTA.sequence(chrom)[i], N))
+                    push!(
+                        snps, SNP(FASTA.identifier(chrom), i, FASTA.sequence(chrom)[i], N)
+                    )
                 end #if
             end #for
         end #for

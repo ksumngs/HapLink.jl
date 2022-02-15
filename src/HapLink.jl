@@ -334,16 +334,7 @@ function variants(arguments::Dict{String,Any})
     =#
 
     # Save the variants to a VCF file
-    savevcf(
-        variants,
-        bamrecords,
-        outfile,
-        reffile,
-        depth,
-        quality,
-        position,
-        significance
-    )
+    savevcf(variants, bamrecords, outfile, reffile, depth, quality, position, significance)
 
     return 0
 end #function
