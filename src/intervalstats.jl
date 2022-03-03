@@ -27,42 +27,27 @@ julia> basesat(location, samrecord)
 GAT
 ```
 """
-function basesat(int::Interval, rec::SAM.Record)
-    lpos = leftposition(int)
-    rpos = rightposition(int)
-    seqsize = rpos - lpos + 1
+@generated function basesat(int::Interval, rec::Union{BAM.Record,SAM.Record})
+    XAM = rec <: SAM.Record ? :SAM : :BAM
 
-    alignment = SAM.alignment(rec)
-    sequence = SAM.sequence(rec)
+    quote
+        lpos = leftposition(int)
+        rpos = rightposition(int)
+        seqsize = rpos - lpos + 1
 
-    outbases = Vector{NucleicAcid}(undef, seqsize)
+        alignment = $XAM.alignment(rec)
+        sequence = $XAM.sequence(rec)
 
-    for (i, pos) in enumerate(lpos:rpos)
-        refpos = first(ref2seq(alignment, pos))
-        outbases[i] = sequence[refpos]
-    end #for
+        outbases = Vector{NucleicAcid}(undef, seqsize)
 
-    NucType = typeof(sequence)
-    return NucType(outbases)
-end #function
+        for (i, pos) in enumerate(lpos:rpos)
+            refpos = first(ref2seq(alignment, pos))
+            outbases[i] = sequence[refpos]
+        end #for
 
-function basesat(int::Interval, rec::BAM.Record)
-    lpos = leftposition(int)
-    rpos = rightposition(int)
-    seqsize = rpos - lpos + 1
-
-    alignment = BAM.alignment(rec)
-    sequence = BAM.sequence(rec)
-
-    outbases = Vector{NucleicAcid}(undef, seqsize)
-
-    for (i, pos) in enumerate(lpos:rpos)
-        refpos = first(ref2seq(alignment, pos))
-        outbases[i] = sequence[refpos]
-    end #for
-
-    NucType = typeof(sequence)
-    return NucType(outbases)
+        NucType = typeof(sequence)
+        return NucType(outbases)
+    end #quote
 end #function
 
 """
