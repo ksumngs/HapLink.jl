@@ -223,18 +223,18 @@ julia> fractional_position(Interval("ref", 33, 33), samrecord)
 1.0
 ```
 """
-function fractional_position(int::Interval, rec::SAM.Record)
-    leftpos = first(ref2seq(SAM.alignment(rec), leftposition(int)))
-    rightpos = first(ref2seq(SAM.alignment(rec), rightposition(int)))
-    avgpos = mean([leftpos, rightpos])
-    return avgpos / SAM.seqlength(rec)
-end #function
+@generated function fractional_position(int::Interval, rec::Union{SAM.Record,BAM.Record})
+    XAM = rec <: SAM.Record ? :SAM : :BAM
 
-function fractional_position(int::Interval, rec::BAM.Record)
-    leftpos = first(ref2seq(BAM.alignment(rec), leftposition(int)))
-    rightpos = first(ref2seq(BAM.alignment(rec), rightposition(int)))
-    avgpos = mean([leftpos, rightpos])
-    return avgpos / BAM.seqlength(rec)
+    quote
+        alignment = $XAM.alignment(rec)
+
+        leftpos = first(ref2seq(alignment, leftposition(int)))
+        rightpos = first(ref2seq(alignment, rightposition(int)))
+        avgpos = mean([leftpos, rightpos])
+
+        return avgpos / $XAM.seqlength(rec)
+    end
 end #function
 
 """
