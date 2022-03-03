@@ -28,8 +28,17 @@ true
 ```
 """
 function doescontain(snp::SNP, rec::Union{SAM.Record,BAM.Record})
-    return doescontain(snp.location, rec) &&
-           first(basesat(snp.location, rec)) == snp.altbase
+    loc = location(snp)
+
+    if !doescontain(loc, rec)
+        return false
+    end #if
+
+    if first(basesat(loc, rec)) != altbase(snp)
+        return false
+    end #if
+
+    return true
 end #function
 
 """
