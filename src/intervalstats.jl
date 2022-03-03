@@ -265,5 +265,5 @@ function mean_fractional_position(
     int::Interval, reads::AbstractVector{T}
 ) where {T<:Union{SAM.Record,BAM.Record}}
     containingreads = filter(r -> doescontain(int, r), reads)
-    return mean(fractional_position.([int], containingreads))
+    return mean(ThreadsX.map(r -> fractional_position(int, r), containingreads))
 end #function
