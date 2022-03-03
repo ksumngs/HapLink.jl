@@ -1,5 +1,6 @@
 using GenomicFeatures
 using Statistics
+using ThreadsX
 using XAM
 
 export basesat
@@ -196,7 +197,7 @@ function mean_quality(
     int::Interval, reads::AbstractVector{T}
 ) where {T<:Union{SAM.Record,BAM.Record}}
     containingreads = filter(r -> doescontain(int, r), reads)
-    return mean(base_quality.([int], containingreads))
+    return mean(ThreadsX.map(r -> base_quality(int, r), containingreads))
 end #function
 
 """
