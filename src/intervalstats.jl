@@ -3,6 +3,7 @@ using Statistics
 using XAM
 
 export basesat
+export base_quality
 export depth
 export doescontain
 export fractional_position
@@ -127,7 +128,7 @@ function depth(
 end #function
 
 """
-    mean_quality(int::Interval, rec::Union{SAM.Record,BAM.Record})
+    base_quality(int::Interval, rec::Union{SAM.Record,BAM.Record})
 
 Calculates the mean PHRED quality across all of the basecalls in `int` for the read in
 `rec`. Only considers matching alignments, i.e. insertions and deletions are removed
@@ -139,23 +140,35 @@ julia> using GenomicFeatures, XAM
 
 julia> samrecord = SAM.Record(HapLink.Examples.SAMStrings[1]);
 
-julia> mean_quality(Interval("ref", 17, 17), samrecord)
+julia> base_quality(Interval("ref", 17, 17), samrecord)
 30.0
 
-julia> mean_quality(Interval("ref", 7, 21), samrecord)
+julia> base_quality(Interval("ref", 7, 21), samrecord)
 30.0
 ```
 """
-function mean_quality(int::Interval, rec::SAM.Record)
-    poss = ref2seq.([SAM.alignment(rec)], leftposition(int):rightposition(int))
-    matchposs = filter(p -> ismatchop(last(p)), poss)
-    return mean(SAM.quality(rec)[first.(matchposs)])
-end #function
+@generated function base_quality(int::Interval, rec::Union{SAM.Record,BAM.Record})
+    XAM = rec <: SAM.Record ? :SAM : :BAM
 
-function mean_quality(int::Interval, rec::BAM.Record)
-    poss = ref2seq.([BAM.alignment(rec)], leftposition(int):rightposition(int))
-    matchposs = filter(p -> ismatchop(last(p)), poss)
-    return mean(BAM.quality(rec)[first.(matchposs)])
+    quote
+        lpos = leftposition(int)
+        rpos = rightposition(int)
+        seqsize = rpos - lpos + 1
+
+        alignment = $XAM.alignment(rec)
+        qualities = $XAM.quality(rec)
+
+        outquals = Vector{Union{Missing,Float64}}(missing, seqsize)
+
+        for (i, pos) in enumerate(lpos:rpos)
+            refpos, op = ref2seq(alignment, pos)
+            if ismatchop(op)
+                outquals[i] = qualities[refpos]
+            end #if
+        end #for
+
+        return mean(collect(skipmissing(outquals)))
+    end #quote
 end #function
 
 """
@@ -183,7 +196,7 @@ function mean_quality(
     int::Interval, reads::AbstractVector{T}
 ) where {T<:Union{SAM.Record,BAM.Record}}
     containingreads = filter(r -> doescontain(int, r), reads)
-    return mean(mean_quality.([int], containingreads))
+    return mean(base_quality.([int], containingreads))
 end #function
 
 """
