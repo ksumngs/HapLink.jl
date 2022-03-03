@@ -79,18 +79,28 @@ false
     XAM = rec <: SAM.Record ? :SAM : :BAM
 
     quote
-        return seqname(int) == $XAM.refname(rec) &&
-            leftposition(int) >= $XAM.position(rec) &&
-            rightposition(int) <= $XAM.rightposition(rec) &&
-            all(
-                ismatchop.(
-                    last.(
-                        ref2seq.(
-                            [$XAM.alignment(rec)], leftposition(int):rightposition(int)
-                        )
-                    ),
-                ),
-            )
+        if seqname(int) != $XAM.refname(rec)
+            return false
+        end #if
+
+        lpos = leftposition(int)
+        if lpos < $XAM.position(rec)
+            return false
+        end #if
+
+        rpos = rightposition(int)
+        if rightposition(int) > $XAM.rightposition(rec)
+            return false
+        end #if
+
+        aln = $XAM.alignment(rec)
+        for pos in lpos:rpos
+            if !ismatchop(last(ref2seq(aln, pos)))
+                return false
+            end #if
+        end #for
+
+        return true
     end #quote
 end #function
 
