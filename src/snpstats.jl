@@ -131,5 +131,5 @@ julia> frequency(SNP("ref", 17, DNA_T, DNA_C), SAM.Record.(HapLink.Examples.MutS
 function frequency(
     snp::SNP, reads::AbstractVector{T}
 ) where {T<:Union{SAM.Record,BAM.Record}}
-    return depth(snp, reads) / depth(snp.location, reads)
+    return depth(snp, reads) / depth(location(snp), reads)
 end #function
