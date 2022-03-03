@@ -126,7 +126,7 @@ julia> depth(Interval("ref", 17, 18), samrecords)
 function depth(
     int::Interval, reads::AbstractVector{T}
 ) where {T<:Union{SAM.Record,BAM.Record}}
-    return count(r -> doescontain(int, r), reads)
+    return ThreadsX.count(r -> doescontain(int, r), reads)
 end #function
 
 """
