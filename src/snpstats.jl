@@ -2,7 +2,7 @@ using XAM
 
 export depth
 export doescontain
-export fractional_position
+export mean_fractional_position
 export frequency
 
 """
@@ -79,7 +79,7 @@ function mean_quality(
 end #function
 
 """
-    fractional_position(snp::SNP, reads::AbstractVector{T}) where T <: Union{SAM.Record,BAM.Record}
+    mean_fractional_position(snp::SNP, reads::AbstractVector{T}) where T <: Union{SAM.Record,BAM.Record}
 
 Finds the mean position as a fraction  between 0 and 1 of `snp` within a set of `reads`.
 
@@ -88,14 +88,14 @@ Finds the mean position as a fraction  between 0 and 1 of `snp` within a set of 
 ```jldoctest
 julia> using BioSymbols, GenomicFeatures, XAM
 
-julia> fractional_position(SNP("ref", 9, DNA_A, DNA_A), SAM.Record.(HapLink.Examples.MutStrings))
+julia> mean_fractional_position(SNP("ref", 9, DNA_A, DNA_A), SAM.Record.(HapLink.Examples.MutStrings))
 0.3358798064680418
 
-julia> fractional_position(SNP("ref", 17, DNA_T, DNA_C), SAM.Record.(HapLink.Examples.MutStrings))
+julia> mean_fractional_position(SNP("ref", 17, DNA_T, DNA_C), SAM.Record.(HapLink.Examples.MutStrings))
 0.4732620320855615
 ```
 """
-function fractional_position(
+function mean_fractional_position(
     snp::SNP, reads::AbstractVector{T}
 ) where {T<:Union{SAM.Record,BAM.Record}}
     containingreads = filter(r -> doescontain(snp, r), reads)
