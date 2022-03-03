@@ -1,3 +1,4 @@
+using ThreadsX
 using XAM
 
 export depth
@@ -58,7 +59,7 @@ julia> depth(SNP("ref", 17, DNA_T, DNA_C), samrecords)
 ```
 """
 function depth(snp::SNP, reads::AbstractVector{T}) where {T<:Union{SAM.Record,BAM.Record}}
-    return count(r -> doescontain(snp, r), reads)
+    return ThreadsX.count(r -> doescontain(snp, r), reads)
 end #function
 
 """
