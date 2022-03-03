@@ -85,7 +85,8 @@ function mean_quality(
     snp::SNP, reads::AbstractVector{T}
 ) where {T<:Union{SAM.Record,BAM.Record}}
     containingreads = filter(r -> doescontain(snp, r), reads)
-    return mean(base_quality.([snp.location], containingreads))
+    loc = location(snp)
+    return mean(ThreadsX.map(r -> base_quality(loc, r), containingreads))
 end #function
 
 """
