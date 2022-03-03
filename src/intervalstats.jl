@@ -28,15 +28,41 @@ GAT
 ```
 """
 function basesat(int::Interval, rec::SAM.Record)
-    poss = ref2seq.([SAM.alignment(rec)], leftposition(int):rightposition(int))
-    nuctype = typeof(SAM.sequence(rec))
-    return nuctype(map(i -> SAM.sequence(rec)[i], first.(poss)))
+    lpos = leftposition(int)
+    rpos = rightposition(int)
+    seqsize = rpos - lpos + 1
+
+    alignment = SAM.alignment(rec)
+    sequence = SAM.sequence(rec)
+
+    outbases = Vector{NucleicAcid}(undef, seqsize)
+
+    for (i, pos) in enumerate(lpos:rpos)
+        refpos = first(ref2seq(alignment, pos))
+        outbases[i] = sequence[refpos]
+    end #for
+
+    NucType = typeof(sequence)
+    return NucType(outbases)
 end #function
 
 function basesat(int::Interval, rec::BAM.Record)
-    poss = ref2seq.([BAM.alignment(rec)], leftposition(int):rightposition(int))
-    nuctype = typeof(BAM.sequence(rec))
-    return nuctype(map(i -> BAM.sequence(rec)[i], first.(poss)))
+    lpos = leftposition(int)
+    rpos = rightposition(int)
+    seqsize = rpos - lpos + 1
+
+    alignment = BAM.alignment(rec)
+    sequence = BAM.sequence(rec)
+
+    outbases = Vector{NucleicAcid}(undef, seqsize)
+
+    for (i, pos) in enumerate(lpos:rpos)
+        refpos = first(ref2seq(alignment, pos))
+        outbases[i] = sequence[refpos]
+    end #for
+
+    NucType = typeof(sequence)
+    return NucType(outbases)
 end #function
 
 """
