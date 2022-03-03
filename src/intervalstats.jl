@@ -8,6 +8,7 @@ export base_quality
 export depth
 export doescontain
 export fractional_position
+export mean_fractional_position
 export mean_quality
 
 """
@@ -237,7 +238,7 @@ function fractional_position(int::Interval, rec::BAM.Record)
 end #function
 
 """
-    fractional_position(int::Interval, reads::AbstractVector{T}) where T <: Union{SAM.Record,BAM.Record}
+    mean_fractional_position(int::Interval, reads::AbstractVector{T}) where T <: Union{SAM.Record,BAM.Record}
 
 Finds the mean position as a fraction between 0 and 1 of `int` within a set of `reads`.
 Reads without `int` are ignored.
@@ -256,11 +257,11 @@ julia> fractional_position(Interval("ref", 9, 9), SAM.Record(HapLink.Examples.SA
 julia> fractional_position(Interval("ref", 9, 9), SAM.Record(HapLink.Examples.SAMStrings[3]))
 0.5454545454545454
 
-julia> fractional_position(Interval("ref", 9, 9), SAM.Record.(HapLink.Examples.SAMStrings))
+julia> mean_fractional_position(Interval("ref", 9, 9), SAM.Record.(HapLink.Examples.SAMStrings))
 0.3358798064680418
 ```
 """
-function fractional_position(
+function mean_fractional_position(
     int::Interval, reads::AbstractVector{T}
 ) where {T<:Union{SAM.Record,BAM.Record}}
     containingreads = filter(r -> doescontain(int, r), reads)
