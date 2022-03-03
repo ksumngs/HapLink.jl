@@ -57,7 +57,7 @@ function callvariants(
             return 2 * (1 - x)
         end
     end #function
-    filter!(s -> pos_to_edge(fractional_position(s, reads)) >= x_min, snpdata)
+    filter!(s -> pos_to_edge(mean_fractional_position(s, reads)) >= x_min, snpdata)
 
     filter!(s -> frequency(s, reads) >= f_min, snpdata)
 
