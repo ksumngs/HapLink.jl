@@ -110,7 +110,8 @@ function mean_fractional_position(
     snp::SNP, reads::AbstractVector{T}
 ) where {T<:Union{SAM.Record,BAM.Record}}
     containingreads = filter(r -> doescontain(snp, r), reads)
-    return mean(fractional_position.([snp.location], containingreads))
+    loc = location(snp)
+    return mean(ThreadsX.map(r -> fractional_position(loc, r), containingreads))
 end #function
 
 """
