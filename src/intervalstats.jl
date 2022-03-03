@@ -75,30 +75,23 @@ julia> doescontain(Interval("ref", 23, 26), SAM.Record(HapLink.Examples.SAMStrin
 false
 ```
 """
-function doescontain(int::Interval, rec::SAM.Record)
-    return seqname(int) == SAM.refname(rec) &&
-           leftposition(int) >= SAM.position(rec) &&
-           rightposition(int) <= SAM.rightposition(rec) &&
-           all(
-               ismatchop.(
-                   last.(
-                       ref2seq.([SAM.alignment(rec)], leftposition(int):rightposition(int))
-                   ),
-               ),
-           )
-end #function
+@generated function doescontain(int::Interval, rec::Union{SAM.Record,BAM.Record})
+    XAM = rec <: SAM.Record ? :SAM : :BAM
 
-function doescontain(int::Interval, rec::BAM.Record)
-    return seqname(int) == BAM.refname(rec) &&
-           leftposition(int) >= BAM.position(rec) &&
-           rightposition(int) <= BAM.rightposition(rec) &&
-           all(
-               ismatchop.(
-                   last.(
-                       ref2seq.([BAM.alignment(rec)], leftposition(int):rightposition(int))
-                   ),
-               ),
-           )
+    quote
+        return seqname(int) == $XAM.refname(rec) &&
+            leftposition(int) >= $XAM.position(rec) &&
+            rightposition(int) <= $XAM.rightposition(rec) &&
+            all(
+                ismatchop.(
+                    last.(
+                        ref2seq.(
+                            [$XAM.alignment(rec)], leftposition(int):rightposition(int)
+                        )
+                    ),
+                ),
+            )
+    end #quote
 end #function
 
 """
