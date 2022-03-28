@@ -9,6 +9,7 @@ export sumsliced
     find_haplotypes(
         variants::AbstractVector{Variant},
         bamfile::AbstractString,
+        reffile::AbstractString,
         D::Int,
         α::Float64,
         haplotypemethod
@@ -23,6 +24,7 @@ the haplotypes being converted into genomes via `haplotypemethod`.
     combined into `Haplotype` objects and tested for validity
 - `bamfile::AbstractString`: The path to a BAM file containing reads to check for the
     presence of haplotypes
+- `reffile::AbstractString`: The path to the reference genome in FASTA format
 - `D::Int`: The minimum number of times a haplotype must be present in the reads according
     to `haplotypemethod`
 - `α::Float64`: The maximum ``Χ``-squared ``p``-value at which to consider a haplotype
@@ -38,6 +40,7 @@ the haplotypes being converted into genomes via `haplotypemethod`.
 function find_haplotypes(
     variants::AbstractVector{Variant},
     bamfile::AbstractString,
+    reffile::AbstractString,
     D::Int,
     α::Float64,
     haplotypemethod,
@@ -124,10 +127,18 @@ function find_haplotypes(
     # Declare a place to put the haplotypes plus their calculations
     happlusmeta = Dict{Haplotype,HaplotypeMeta}()
 
+    # Get reference sequence
+    ref_reader = open(FASTA.Reader, reffile)
+    ref_record = first(collect(ref_reader))
+    close(ref_reader)
+
     # Add the haplotypes with their metadata into the returned output
     for hap in returnedhaplotypes
         happlusmeta[hap[1]] = HaplotypeMeta(
-            last(hap[2]) / sum(hap[2]), linkage(hap[2])[1], linkage(hap[2])[2], nothing
+            last(hap[2]) / sum(hap[2]),
+            linkage(hap[2])[1],
+            linkage(hap[2])[2],
+            FASTA.identifier(mutate(ref_record, hap[1])),
         )
     end #for
 

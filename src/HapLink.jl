@@ -309,7 +309,7 @@ function haplotypes(arguments::Dict{String,Any})
     end #if
 
     # Get the haplotypes and most of the statstics
-    haplotypes = find_haplotypes(variants, bamfile, depth, significance, hapmethod)
+    haplotypes = find_haplotypes(variants, bamfile, reffile, depth, significance, hapmethod)
 
     # Write the found haplotypes to file
     outdata = OrderedDict(
