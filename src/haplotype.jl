@@ -37,6 +37,13 @@ function Base.show(io::IO, h::Haplotype)
     )
 end #function
 
+function Base.isless(h1::Haplotype, h2::Haplotype)
+    # Haplotypes with more variants are larger in magnitude
+    # Otherwise rank based on the first variant position
+    return length(h1.mutations) < length(h2.mutations) &&
+           first(sort(h1.mutations)) < first(sort(h2.mutations))
+end #function
+
 function mutations(h::Haplotype)
     return h.mutations
 end #function

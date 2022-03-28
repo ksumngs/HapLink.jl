@@ -8,6 +8,11 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Changed
+
+- `haplink haplotypes` now requires a reference genome passed via `--reference`
+    ([PR#25](https://github.com/ksumngs/HapLink.jl/pull/25))
+
 ## [0.5.1] - 2022-01-24
 
 ### Added
