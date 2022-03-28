@@ -133,6 +133,13 @@ function parse_arguments()
             required     = true
             arg_type     = String
             range_tester = x -> isfile(x)
+        "--reference", "-r"
+            help = """
+                FASTA formatted reference genome
+                """
+            required     = true
+            arg_type     = String
+            range_tester = x -> isfile(x)
         "--output", "-o"
             help = """
                 File to output all haplotype calls to in YAML format
@@ -264,6 +271,7 @@ function haplotypes(arguments::Dict{String,Any})
     # Read the argument table in as variables
     bamfile = arguments["bam"]
     varfile = arguments["variants"]
+    reffile = arguments["reference"]
     outfile = arguments["output"]
     significance = arguments["significance"]
     depth = arguments["depth"]
