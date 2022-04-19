@@ -59,12 +59,12 @@ struct Variant
 end #struct
 
 function Variant(data::DataFrameRow)
-    CHROM   = data.chr
-    POS     = data.position
-    ID      = "."
-    QUAL    = data.avg_basequality
-    FILTER  = :PASS
-    INFO    = Dict("DP" => data.depth, "AD" => data.count)
+    CHROM = data.chr
+    POS = data.position
+    ID = "."
+    QUAL = data.avg_basequality
+    FILTER = :PASS
+    INFO = Dict("DP" => data.depth, "AD" => data.count)
     refbase = data.reference_base
     altbase = data.base
 
@@ -85,13 +85,13 @@ function Variant(data::DataFrameRow)
 end #function
 
 function Variant(vardict::Dict{Any,Any})
-    region  = vardict["chromosome"]
-    pos     = vardict["position"]
-    id      = vardict["identifier"]
+    region = vardict["chromosome"]
+    pos = vardict["position"]
+    id = vardict["identifier"]
     refbase = vardict["referencebase"]
     altbase = vardict["alternatebase"]
-    qual    = vardict["quality"]
-    filter  = Symbol(vardict["filter"])
+    qual = vardict["quality"]
+    filter = Symbol(vardict["filter"])
 
     refseq = LongDNASeq(refbase)
     altseq = LongDNASeq(altbase)

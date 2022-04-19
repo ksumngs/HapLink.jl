@@ -458,7 +458,7 @@ Heavily inspired by Holy, Tim "Multidimensional algorithms and iteration"
 <https://julialang.org/blog/2016/02/iteration/#filtering_along_a_specified_dimension_exploiting_multiple_indexes>
 """
 function sumsliced(A::AbstractArray, dim::Int, pos::Int=1)
-    i_pre  = CartesianIndices(size(A)[1:(dim - 1)])
+    i_pre = CartesianIndices(size(A)[1:(dim - 1)])
     i_post = CartesianIndices(size(A)[(dim + 1):end])
     return sum(A[i_pre, pos, i_post])
 end #function
