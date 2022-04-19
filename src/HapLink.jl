@@ -301,14 +301,14 @@ end #function
 
 function variants(arguments::Dict{String,Any})
     # Read the argument table in as variables
-    bamfile      = arguments["bam"]
-    reffile      = arguments["reference"]
-    outfile      = arguments["output"]
-    quality      = arguments["quality"]
-    frequency    = arguments["frequency"]
-    position     = arguments["position"]
+    bamfile = arguments["bam"]
+    reffile = arguments["reference"]
+    outfile = arguments["output"]
+    quality = arguments["quality"]
+    frequency = arguments["frequency"]
+    position = arguments["position"]
     significance = arguments["significance"]
-    depth        = arguments["depth"]
+    depth = arguments["depth"]
 
     # Read in the BAM file
     bamrecords = collect(BAM.Reader(open(bamfile, "r")))
