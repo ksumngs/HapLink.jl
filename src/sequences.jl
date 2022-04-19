@@ -130,7 +130,7 @@ When mutating a `FASTA.Record`, the new record is given a new unique identifier 
 description based on the SHA1 hash of the complete genotype.
 """
 function mutate(record::FASTA.Record, haplotype::Haplotype)
-    newseq = mutate(sequence(record), haplotype)
+    newseq = mutate(FASTA.sequence(record), haplotype)
     sequencehash = bytes2hex(sha1(string(newseq)))
     newid = sequencehash[1:8]
     newdesc = string(description(record), ", variant ", sequencehash)
