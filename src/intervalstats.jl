@@ -167,6 +167,7 @@ end #function
 
 """
     mean_quality(int::Interval, reads::AbstractVector{T}) where T <: Union{SAM.Record,BAM.Record}
+    mean_quality(int::Interval, reads::AbstractPath)
 
 Calculates the mean PHRED quality for `int` in the sequences of `reads`. Passing `int`s of
 more than one position will average the per-base scores and the per-read scores, and may
@@ -191,6 +192,10 @@ function mean_quality(
 ) where {T<:Union{SAM.Record,BAM.Record}}
     containingreads = filter(r -> doescontain(int, r), reads)
     return mean(ThreadsX.map(r -> base_quality(int, r), containingreads))
+end #function
+
+FilePaths.@compat function mean_quality(int::Interval, reads::AbstractPath)
+    return mean_quality(int, _indexed_records(int, reads))
 end #function
 
 """
