@@ -1,7 +1,3 @@
-using DataFrames
-
-export callvariants
-
 """
     phrederror(quality::Number)
 

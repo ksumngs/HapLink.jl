@@ -25,6 +25,7 @@ export basesat
 export chromosome
 export consensus_sequence
 export consensus_variants
+export callvariants
 export depth
 export doescontain
 export fractional_position
