@@ -10,17 +10,27 @@ using Dates
 using Distributions
 using FASTX
 using FilePaths
+using GenomicFeatures
 using HypothesisTests
 using OrderedCollections
 using Random
 using SHA
+using Statistics
+using ThreadsX
 using XAM
 using YAML
 
+export base_quality
+export basesat
 export chromosome
 export consensus_sequence
 export consensus_variants
+export depth
+export doescontain
+export fractional_position
 export frequency
+export mean_fractional_position
+export mean_quality
 export read_vcf
 
 const VERSION = ArgParse.project_version(

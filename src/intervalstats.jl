@@ -1,16 +1,3 @@
-using GenomicFeatures
-using Statistics
-using ThreadsX
-using XAM
-
-export basesat
-export base_quality
-export depth
-export doescontain
-export fractional_position
-export mean_fractional_position
-export mean_quality
-
 """
     basesat(int::GenomicFeatures.Interval, rec::Union{SAM.Record, BAM.Record})
 
