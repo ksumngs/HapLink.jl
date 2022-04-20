@@ -302,9 +302,8 @@ FilePaths.@compat function _indexed_records(int::Interval, bamfile::AbstractPath
     # There is no index file
     if isnothing(bai_path)
         # Get the right record type
-        xam = _is_sam(bamfile) ? :SAM : :BAM
-        @eval records(f) = collect($xam.Reader(open(string(f), "r")))
-        return records(bamfile)
+        reader = _is_sam(bamfile) ? SAM.Reader : BAM.Reader
+        return collect(reader(open(string(bamfile), "r")))
     else
         bam_of_int = open(BAM.Reader, string(bamfile); index=string(bai_path))
         containing_reads = collect(eachoverlap(bam_of_int, int))
