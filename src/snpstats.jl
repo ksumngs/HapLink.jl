@@ -125,3 +125,7 @@ function frequency(
 ) where {T<:Union{SAM.Record,BAM.Record}}
     return depth(snp, reads) / depth(location(snp), reads)
 end #function
+
+FilePaths.@compat function _indexed_records(snp::SNP, bamfile::AbstractPath)
+    return _indexed_records(location(snp), bamfile)
+end #function
