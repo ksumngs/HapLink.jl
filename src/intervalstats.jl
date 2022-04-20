@@ -96,8 +96,9 @@ end #function
 
 """
     depth(int::Interval, reads::AbstractVector{T}) where T <: Union{SAM.Record,BAM.Record}
+    depth(int::Interval, bamfile::AbstractPath)
 
-Calculate the number of `Record`s in `reads` that contain `int`
+Calculate the number of `Record`s in `reads` or `bamfile` that contain `int`
 
 # Example
 
@@ -114,6 +115,24 @@ function depth(
     int::Interval, reads::AbstractVector{T}
 ) where {T<:Union{SAM.Record,BAM.Record}}
     return ThreadsX.count(r -> doescontain(int, r), reads)
+end #function
+
+FilePaths.@compat function depth(int::Interval, bamfile::AbstractPath)
+    # Find the index file
+    bai_path = _find_bam_index(bamfile)
+
+    # There is no index file
+    if isnothing(bai_path)
+        # Get the right record type
+        xam = _is_sam(bamfile) ? :SAM : :BAM
+        @eval records(f) = collect($xam.Reader(open(string(f), "r")))
+        return depth(int, records(bamfile))
+    else
+        bam_of_int = open(BAM.Reader, string(bamfile); index=string(bai_path))
+        containing_reads = collect(eachoverlap(bam_of_int, int))
+        close(bam_of_int)
+        return ThreadsX.count(r -> doescontain(int, r), containing_reads)
+    end #if
 end #function
 
 """
