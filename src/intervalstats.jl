@@ -266,3 +266,17 @@ FilePaths.@compat function _is_sam(file::AbstractPath)
 
     return false
 end #function
+
+FilePaths.@compat function _find_bam_index(bampath::AbstractPath)
+    # Check for a '.bam.bai' extension
+    baipath = Path("$bampath.bai")
+    isfile(baipath) && return baipath
+
+    # Check for a swapped extension
+    baipath = Path("$(first(splitext(bampath))).bai")
+    isfile(baipath) && return baipath
+
+    # Couldn't find an index
+    @warn "Couldn't find an index file for $bampath. Analysis will be significantly slower"
+    return nothing
+end #function
