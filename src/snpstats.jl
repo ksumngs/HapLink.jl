@@ -93,6 +93,7 @@ end #function
 
 """
     mean_fractional_position(snp::SNP, reads::AbstractVector{T}) where T <: Union{SAM.Record,BAM.Record}
+    mean_fractional_position(snp::SNP, reads::AbstractPath)
 
 Finds the mean position as a fraction  between 0 and 1 of `snp` within a set of `reads`.
 
@@ -114,6 +115,10 @@ function mean_fractional_position(
     containingreads = filter(r -> doescontain(snp, r), reads)
     loc = location(snp)
     return mean(ThreadsX.map(r -> fractional_position(loc, r), containingreads))
+end #function
+
+FilePaths.@compat function mean_fractional_position(snp::SNP, reads::AbstractPath)
+    return mean_fractional_position(snp, _indexed_records(snp, reads))
 end #function
 
 """
