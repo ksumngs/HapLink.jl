@@ -265,6 +265,10 @@ function mean_fractional_position(
     return mean(ThreadsX.map(r -> fractional_position(int, r), containingreads))
 end #function
 
+FilePaths.@compat function mean_fractional_position(int::Interval, reads::AbstractPath)
+    return mean_fractional_position(int, _indexed_records(int, reads))
+end #function
+
 FilePaths.@compat function _is_sam(file::AbstractPath)
     for line in readlines(string(file))
         if startswith(line, '@')
