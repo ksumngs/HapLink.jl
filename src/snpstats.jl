@@ -1,11 +1,3 @@
-using ThreadsX
-using XAM
-
-export depth
-export doescontain
-export mean_fractional_position
-export frequency
-
 """
     doescontain(snp::SNP, rec::Union{SAM.Record,BAM.Record})
 
