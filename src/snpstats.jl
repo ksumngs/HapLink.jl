@@ -123,6 +123,7 @@ end #function
 
 """
     frequency(snp::SNP, reads::AbstractVector{T}) where T <: Union{SAM.Record,BAM.Record}
+    frequency(snp::SNP, reads::AbstractPath)
 
 Calculate the relative depth of `snp` within `reads`.
 
@@ -138,6 +139,10 @@ julia> frequency(SNP("ref", 17, DNA_T, DNA_C), SAM.Record.(HapLink.Examples.MutS
 function frequency(
     snp::SNP, reads::AbstractVector{T}
 ) where {T<:Union{SAM.Record,BAM.Record}}
+    return depth(snp, reads) / depth(location(snp), reads)
+end #function
+
+FilePaths.@compat function frequency(snp::SNP, reads::AbstractPath)
     return depth(snp, reads) / depth(location(snp), reads)
 end #function
 
