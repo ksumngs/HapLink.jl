@@ -254,3 +254,15 @@ function mean_fractional_position(
     containingreads = filter(r -> doescontain(int, r), reads)
     return mean(ThreadsX.map(r -> fractional_position(int, r), containingreads))
 end #function
+
+FilePaths.@compat function _is_sam(file::AbstractPath)
+    for line in readlines(string(file))
+        if startswith(line, '@')
+            if startswith(line, "@SQ")
+                return true
+            end #if
+        end #if
+    end #for
+
+    return false
+end #function
