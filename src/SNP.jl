@@ -148,3 +148,9 @@ function VariantCallFormat.VCF.Record(
         altdepth=depth(snp, reads),
     )
 end #function
+
+function VariantCallFormat.VCF.Record(record::DataFrameRow)
+    return VCF.Record(
+        record.snp; qual=record.quality, altdepth=record.depth, depth=record.totaldepth
+    )
+end #function
