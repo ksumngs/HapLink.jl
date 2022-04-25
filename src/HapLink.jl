@@ -120,6 +120,42 @@ function parse_arguments()
             range_tester = x -> x >= 1
     end #add_arg_table
 
+    # Add arguments for the consensus sequence generation command
+    @add_arg_table! s["consensus"] begin
+        "--reference", "-r"
+            help = """
+                FASTA formatted reference genome
+                """
+            required = true
+            arg_type = String
+            range_tester = x -> isfile(x)
+        "--variants", "-v"
+            help = """
+                VCF formatted variant calls
+                """
+            required = true
+            arg_type = String
+            range_tester = x -> isfile(x)
+        "--output", "-o"
+            help = """
+                File to output consensus sequence to in FASTA format
+                """
+            required = true
+        "--frequency", "-t"
+            help = """
+                Minimum frequency at which a variant must appear to be included in the
+                consensus sequence
+                """
+            required = false
+            default = 0.5
+            arg_type = Float64
+            range_tester = x -> (x >= 0) && (x <= 1)
+        "--prefix", "-p"
+            help = "The prefix (sample identifier) to label the sequence as"
+            required = false
+            default = nothing
+    end #add_arg_table
+
     # Add arguments for the haplotype calling command
     @add_arg_table s["haplotypes"] begin
         "--bam", "-i"
