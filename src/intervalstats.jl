@@ -114,7 +114,7 @@ julia> depth(Interval("ref", 17, 18), samrecords)
 function depth(
     int::Interval, reads::AbstractVector{T}
 ) where {T<:Union{SAM.Record,BAM.Record}}
-    return ThreadsX.count(r -> doescontain(int, r), reads)
+    return count(r -> doescontain(int, r), reads)
 end #function
 
 FilePaths.@compat function depth(int::Interval, bamfile::AbstractPath)
@@ -191,7 +191,7 @@ function mean_quality(
     int::Interval, reads::AbstractVector{T}
 ) where {T<:Union{SAM.Record,BAM.Record}}
     containingreads = filter(r -> doescontain(int, r), reads)
-    return mean(ThreadsX.map(r -> base_quality(int, r), containingreads))
+    return mean(map(r -> base_quality(int, r), containingreads))
 end #function
 
 FilePaths.@compat function mean_quality(int::Interval, reads::AbstractPath)
@@ -262,7 +262,7 @@ function mean_fractional_position(
     int::Interval, reads::AbstractVector{T}
 ) where {T<:Union{SAM.Record,BAM.Record}}
     containingreads = filter(r -> doescontain(int, r), reads)
-    return mean(ThreadsX.map(r -> fractional_position(int, r), containingreads))
+    return mean(map(r -> fractional_position(int, r), containingreads))
 end #function
 
 FilePaths.@compat function mean_fractional_position(int::Interval, reads::AbstractPath)

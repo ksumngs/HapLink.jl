@@ -8,7 +8,7 @@ function phrederror(qual::Number)
 end #function
 
 """
-    callvariants(snps::AbstractVector{SNP}, reads::AbstractVector{T}, D_min::Int,
+    callvariants(snps::AbstractVector{SNP}, reads::AbstractPath, D_min::Int,
         Q_min::Int, x_min::Float64, f_min::Float64,
         α::Float64) where T <: Union{SAM.Record,BAM.Record}
 
@@ -17,8 +17,7 @@ Based on the aligned basecalls and stats in `bamcounts`, call variants.
 # Arguments
 
   - `snps::AbstractVector{SNP}`: `Vector` of possible `SNPs` that variants will be called from
-  - `reads::AbstractVector{T} where T <: Union{SAM.Record,BAM.Record}`: A set of aligned
-    sequencing reads from which to verify variant calls
+  - `reads::AbstractPath`: The path to an alignment file (SAM or BAM format) to call variants from
   - `D_min::Int`: minimum variant depth
   - `Q_min::Int`: minimum average PHRED-scaled quality at variant position
   - `x_min::Float64`: minimum average fractional distance from read end at variant position
@@ -27,17 +26,17 @@ Based on the aligned basecalls and stats in `bamcounts`, call variants.
 
 # Returns
 
-  - `Vector{SNP}`: [`SNP`](@ref)s that passed all the above filters
+  - `Vector{VCF.Record}`: `VCF.Record`s that passed all the above filters
 """
 function callvariants(
     snps::AbstractVector{<:SNP},
-    reads::AbstractVector{T},
+    reads::AbstractString,
     D_min::Int,
     Q_min::Int,
     x_min::Float64,
     f_min::Float64,
     α::Float64,
-) where {T<:Union{SAM.Record,BAM.Record}}
+)
 
     # Setup a cache for the possible snps
     snpdata = DataFrame("snp" => snps)
