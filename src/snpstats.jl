@@ -52,7 +52,7 @@ julia> depth(SNP("ref", 17, DNA_T, DNA_C), samrecords)
 ```
 """
 function depth(snp::SNP, reads::AbstractVector{T}) where {T<:Union{SAM.Record,BAM.Record}}
-    return ThreadsX.count(r -> doescontain(snp, r), reads)
+    return count(r -> doescontain(snp, r), reads)
 end #function
 
 FilePaths.@compat function depth(snp::SNP, reads::AbstractPath)
@@ -84,7 +84,7 @@ function mean_quality(
 ) where {T<:Union{SAM.Record,BAM.Record}}
     containingreads = filter(r -> doescontain(snp, r), reads)
     loc = location(snp)
-    return mean(ThreadsX.map(r -> base_quality(loc, r), containingreads))
+    return mean(map(r -> base_quality(loc, r), containingreads))
 end #function
 
 FilePaths.@compat function mean_quality(snp::SNP, reads::AbstractPath)
@@ -114,7 +114,7 @@ function mean_fractional_position(
 ) where {T<:Union{SAM.Record,BAM.Record}}
     containingreads = filter(r -> doescontain(snp, r), reads)
     loc = location(snp)
-    return mean(ThreadsX.map(r -> fractional_position(loc, r), containingreads))
+    return mean(map(r -> fractional_position(loc, r), containingreads))
 end #function
 
 FilePaths.@compat function mean_fractional_position(snp::SNP, reads::AbstractPath)

@@ -321,16 +321,13 @@ function variants(arguments::Dict{String,Any})
     significance = arguments["significance"]
     depth = arguments["depth"]
 
-    # Read in the BAM file
-    bamrecords = collect(BAM.Reader(open(bamfile, "r")))
-
     # Read in the reference file
     refrecords = collect(FASTA.Reader(open(reffile, "r")))
 
     # Call variants
     variants = callvariants(
         possible_snps(refrecords),
-        bamrecords,
+        bamfile,
         depth,
         quality,
         position,
