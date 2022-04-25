@@ -45,6 +45,9 @@ function parse_arguments()
         "variants"
             help = "Call variants"
             action = :command
+        "consensus"
+            help = "Create consensus sequence"
+            action = :command
         "haplotypes"
             help = "Call haplotypes"
             action = :command
