@@ -310,6 +310,30 @@ function variants(arguments::Dict{String,Any})
     return savevcf(variants, outfile, reffile, depth, quality, position, significance)
 end #function
 
+function _consensus(arguments::Dict{String,Any})
+    reffile = Path(arguments["reference"])
+    varfile = Path(arguments["variants"])
+    outfile = Path(arguments["output"])
+    frequency = arguments["frequency"]
+    prefix = arguments["prefix"]
+
+    if isnothing(prefix)
+        prefix = filename(varfile)
+    end #if
+
+    variants = read_vcf(varfile)
+
+    refseq = FASTA.sequence(_first_record(reffile))
+
+    conseq = consensus(refseq, variants; freq=frequency)
+
+    FASTA.Writer(open(outfile, "w")) do f
+        write(f, FASTA.Record("$(prefix)_CONSENSUS", conseq))
+    end #do
+
+    return nothing
+end #function
+
 function haplotypes(arguments::Dict{String,Any})
     # Read the argument table in as variables
     bamfile = arguments["bam"]
