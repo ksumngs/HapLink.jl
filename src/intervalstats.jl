@@ -312,6 +312,17 @@ FilePaths.@compat function _indexed_records(int::Interval, bamfile::AbstractPath
     end #if
 end #function
 
+xamtypes = [:SAM, :BAM]
+for _xam in xamtypes
+    @eval function Base.convert(
+        ::Type{GenomicFeatures.Interval{$_xam.Record}}, r::$_xam.Record
+    )
+        return Interval{$_xam.Record}(
+            $_xam.refname(r), $_xam.position(r), $_xam.rightposition(r), '.', r
+        )
+    end #function
+end #for
+
 @generated function GenomicFeatures.Interval(r::Union{BAM.Record,SAM.Record})
     XAM = r <: SAM.Record ? :SAM : :BAM
     quote
