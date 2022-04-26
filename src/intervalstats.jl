@@ -311,3 +311,10 @@ FilePaths.@compat function _indexed_records(int::Interval, bamfile::AbstractPath
         return containing_reads
     end #if
 end #function
+
+@generated function GenomicFeatures.Interval(r::Union{BAM.Record,SAM.Record})
+    XAM = r <: SAM.Record ? :SAM : :BAM
+    quote
+        return Interval($XAM.refname(r), $XAM.position(r), $XAM.rightposition(r))
+    end #quote
+end #function
