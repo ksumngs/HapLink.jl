@@ -263,7 +263,7 @@ julia> mean_fractional_position(Interval("ref", 9, 9), SAM.Record.(HapLink.Examp
 function mean_fractional_position(
     int::Interval, reads::AbstractVector{T}
 ) where {T<:Union{SAM.Record,BAM.Record}}
-    containingreads = filter(r -> doescontain(int, r), reads)
+    containingreads = map(r -> metadata(last(r)), eachoverlap([int], reads))
     return mean(map(r -> fractional_position(int, r), containingreads))
 end #function
 
