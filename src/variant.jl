@@ -228,3 +228,14 @@ function serialize_vcf(v::Variant)
         join([string(n[1], "=", n[2]) for n in v.info], ";"),
     )
 end #function
+
+"""
+    function read_vcf(vcf::AbstractPath)
+
+Convert the variant calls in `vcf` into [`Variant`](@ref)s
+"""
+function read_vcf(vcf::Union{AbstractString,AbstractPath})
+    variantstrings = readlines(string(vcf))
+    filter!(v -> !startswith(v, '#'), variantstrings)
+    return Variant.(variantstrings)
+end #function
