@@ -17,6 +17,8 @@ using SHA
 using XAM
 using YAML
 
+export consensus
+
 const VERSION = ArgParse.project_version(
     string(joinpath(parent(parent(Path(Base.find_package("HapLink")))), "Project.toml"))
 )
@@ -28,6 +30,7 @@ include("sequences.jl")
 include("variantcalling.jl")
 include("haplotypecalling.jl")
 include("haplotypemeta.jl")
+include("consensus.jl")
 
 function parse_arguments()
     s = ArgParseSettings(;
