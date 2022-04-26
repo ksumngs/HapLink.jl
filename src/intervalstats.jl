@@ -192,8 +192,7 @@ julia> mean_quality(Interval("ref", 17, 17), mutrecords)
 function mean_quality(
     int::Interval, reads::AbstractVector{T}
 ) where {T<:Union{SAM.Record,BAM.Record}}
-    containingreads = map(r -> metadata(last(r)), eachoverlap([int], reads))
-    return mean(map(r -> base_quality(int, r), containingreads))
+    return mean(map(r -> base_quality(int, r), _containing(int, reads)))
 end #function
 
 FilePaths.@compat function mean_quality(int::Interval, reads::AbstractPath)
@@ -263,8 +262,7 @@ julia> mean_fractional_position(Interval("ref", 9, 9), SAM.Record.(HapLink.Examp
 function mean_fractional_position(
     int::Interval, reads::AbstractVector{T}
 ) where {T<:Union{SAM.Record,BAM.Record}}
-    containingreads = map(r -> metadata(last(r)), eachoverlap([int], reads))
-    return mean(map(r -> fractional_position(int, r), containingreads))
+    return mean(map(r -> fractional_position(int, r), _containing(int, reads)))
 end #function
 
 FilePaths.@compat function mean_fractional_position(int::Interval, reads::AbstractPath)
@@ -330,4 +328,10 @@ end #for
     quote
         return Interval($XAM.refname(r), $XAM.position(r), $XAM.rightposition(r))
     end #quote
+end #function
+
+function _containing(
+    int::Interval, reads::AbstractVector{T}
+) where {T<:Union{SAM.Record,BAM.Record}}
+    return map(r -> metadata(last(r)), eachoverlap([int], reads))
 end #function
