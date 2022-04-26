@@ -114,7 +114,9 @@ julia> depth(Interval("ref", 17, 18), samrecords)
 function depth(
     int::Interval, reads::AbstractVector{T}
 ) where {T<:Union{SAM.Record,BAM.Record}}
-    return count(r -> doescontain(int, r), reads)
+    locs = IntervalCollection(Interval.(reads), true)
+    cov = coverage(locs)
+    return Int(metadata(last(first(eachoverlap([int], cov)))))
 end #function
 
 FilePaths.@compat function depth(int::Interval, bamfile::AbstractPath)
