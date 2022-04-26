@@ -192,7 +192,7 @@ julia> mean_quality(Interval("ref", 17, 17), mutrecords)
 function mean_quality(
     int::Interval, reads::AbstractVector{T}
 ) where {T<:Union{SAM.Record,BAM.Record}}
-    containingreads = filter(r -> doescontain(int, r), reads)
+    containingreads = map(r -> metadata(last(r)), eachoverlap([int], reads))
     return mean(map(r -> base_quality(int, r), containingreads))
 end #function
 
