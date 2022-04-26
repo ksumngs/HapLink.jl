@@ -198,3 +198,13 @@ Check to see if reference posision `i` is available in `record`
 function containsposition(record::BAM.Record, i::Int)
     return i >= BAM.position(record) && i <= BAM.rightposition(record)
 end
+
+FilePaths.@compat function _first_record(fasta::AbstractPath)
+    reader = FASTA.Reader(open(fasta, "r"))
+    record = first(reader)
+    if !isempty(reader)
+        @warn "Reference $fasta contains more than one sequence. Only the first will be used"
+    end #if
+    close(reader)
+    return record
+end #function
