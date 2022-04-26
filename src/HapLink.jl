@@ -330,9 +330,7 @@ function haplotypes(arguments::Dict{String,Any})
     end #if
 
     # Read in the variants
-    variantstrings = readlines(varfile)
-    filter!(v -> !startswith(v, '#'), variantstrings)
-    variants = Variant.(variantstrings)
+    variants = read_vcf(varfile)
 
     if occursin("ml", method)
         # Create a read matching algorithm
