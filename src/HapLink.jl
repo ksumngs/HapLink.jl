@@ -371,9 +371,7 @@ function sequences(arguments::Dict{String,Any})
     haplodata = YAML.load_file(hfile)["haplotypes"]
     haplotypes = Haplotype.(map(f -> Variant.(f["snps"]), haplodata))
 
-    rreader = open(FASTA.Reader, rfile)
-    refrec = collect(rreader)[1]
-    close(rreader)
+    refrec = _first_record(rfile)
 
     newrecords = unique(mutate.([refrec], haplotypes))
 
