@@ -278,12 +278,14 @@ Base.@ccallable function haplink()::Cint
     command, arguments = parse_arguments()
     if command == "variants"
         variants(arguments)
+    elseif command == "consensus"
+        _consensus(arguments)
     elseif command == "haplotypes"
         haplotypes(arguments)
     elseif command == "sequences"
         sequences(arguments)
     else
-        @error "Unknown command $command. Use 'variants', 'haplotypes', or 'sequences'."
+        @error "Unknown command $command. Use 'variants', 'consensus', 'haplotypes', or 'sequences'."
         return 1
     end #if
 
