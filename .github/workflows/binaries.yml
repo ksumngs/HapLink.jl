@@ -2,16 +2,20 @@ name: Binary Builder
 on:
   push:
     tags:
-      - 'v[0-9]+.*'
+      - "v[0-9]+.*"
 jobs:
   binary_build:
     name: Build Binaries
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - id: get-version
+        uses: WyriHaximus/github-action-get-previous-tag@v1
       - uses: julia-actions/setup-julia@v1
         with:
-          version: '1.6'
+          version: "1.6"
           arch: x64
       - uses: julia-actions/julia-buildpkg@v1
       - run: |
@@ -29,7 +33,7 @@ jobs:
             cpu_target="x86-64"
           )'
       - env:
-          TAG: ${{ github.ref }}
+          TAG: ${{ steps.get-version.outputs.tag }}
         run: |
           tar cv -C build . | gzip -9 > HapLink-${TAG}_linux.x86_64.tar.gz
       - uses: ffurrer2/extract-release-notes@v1
@@ -37,7 +41,7 @@ jobs:
       - uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          tag: ${{ github.ref }}
+          tag: ${{ steps.get-version.outputs.tag }}
           file_glob: true
           file: HapLink-*_{linux,mac,win}.x86_64.{tar.gz,zip}
           body: |
@@ -55,14 +59,11 @@ jobs:
           username: ${{ secrets.QUAY_USERNAME }}
           password: ${{ secrets.QUAY_PASSWORD }}
       - id: get-version
-        run: |
-          VERSION=${{ github.ref }}
-          VERSION=${VERSION/v/}
-          echo "::set-output name=VERSION::$VERSION"
+        uses: WyriHaximus/github-action-get-previous-tag@v1
       - uses: docker/build-push-action@v2
         with:
           context: .
           push: true
-          tags:
-            quay.io/millironx/haplink:${{ steps.get-version.outputs.VERSION }}
+          tags: |
+            quay.io/millironx/haplink:${{ steps.get-version.outputs.tag }}
             quay.io/millironx/haplink:latest
