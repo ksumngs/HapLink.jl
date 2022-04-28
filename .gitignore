@@ -27,3 +27,4 @@ Manifest.toml
 # Files generated during compilation/testing
 build
 example/output.*
+example/reference.fasta.fai
