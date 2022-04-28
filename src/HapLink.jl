@@ -398,11 +398,21 @@ function sequences(arguments::Dict{String,Any})
     ffile = arguments["output"]
 
     haplodata = YAML.load_file(hfile)["haplotypes"]
-    haplotypes = Haplotype.(map(f -> Variant.(f["snps"]), haplodata))
+    consensus_snps = first(filter(d -> d["name"] == "CONSENSUS", haplodata))["snps"]
+    consensus_hap = Haplotype(Variant.(consensus_snps))
+
+    otherhaps = filter(d -> d["name"] != "CONSENSUS", haplodata)
+    haplotypes = Haplotype.(map(f -> Variant.(f["snps"]), otherhaps))
 
     refrec = _first_record(rfile)
 
-    newrecords = unique(mutate.([refrec], haplotypes))
+    conrec = FASTA.Record(
+        FASTA.identifier(refrec),
+        FASTA.description(refrec),
+        mutate(FASTA.sequence(refrec), consensus_hap),
+    )
+
+    newrecords = unique(mutate.([conrec], haplotypes))
 
     open(FASTA.Writer, ffile) do f
         for r in newrecords
