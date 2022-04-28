@@ -13,5 +13,6 @@ DocMeta.setdocmeta!(HapLink, :DocTestSetup, :(using HapLink); recursive=true)
 @testset "HapLink.jl" begin
     include("variant.jl")
     include("sequences.jl")
+    include("haplotype.jl")
     doctest(HapLink)
 end
