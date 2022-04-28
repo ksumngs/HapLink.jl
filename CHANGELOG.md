@@ -13,6 +13,11 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 - `haplink consensus` command to generate consensus sequences from variant calls
   ([#29](https://github.com/ksumngs/HapLink.jl/pull/29))
 
+### Changed
+
+- `haplink haplotypes` now calls haplotypes based on the consensus sequence
+  ([#30](https://github.com/ksumngs/HapLink.jl/pull/30))
+
 ## [0.6.1] - 2022-03-28
 
 ### Fixed
