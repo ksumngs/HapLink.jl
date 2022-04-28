@@ -11,3 +11,6 @@
 # Test multiple mutations
 @test consensus(REFERENCE, [var1, var2, var3]) ==
     dna"AGCATGTTATATAAGATAGGTGTGCTAGTAGGCAGTCAGCGCCAT"
+
+@test consensus_variants([var1, var2, var3]) == [var2, var3]
+@test consensus_variants([var1, var2, var3]; freq=0.69) == [var2]
