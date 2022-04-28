@@ -62,8 +62,19 @@ function find_haplotypes(
     for variantpair in variantpairs
         pairedhaplotype = Haplotype(variantpair)
         hapcount = occurrence_matrix(haplotypemethod(pairedhaplotype, bamfile))
-        if linkage(hapcount)[2] <= α && last(hapcount) >= D
-            linkedvariantpairhaplotypes[pairedhaplotype] = hapcount
+        if last(hapcount) >= D
+            # If any of the entries are zero, then the linkage will be undefined
+            # As a heuristic in this case, consider linkage to be significant if the number
+            # of fully-linked reads is greater than the sum of the rest of the reads
+            if any(iszero.(hapcount))
+                if last(hapcount) > sum(hapcount[eachindex(hapcount)[1:(end - 1)]])
+                    linkedvariantpairhaplotypes[pairedhaplotype] = hapcount
+                end
+            else
+                if last(linkage(hapcount)) <= α
+                    linkedvariantpairhaplotypes[pairedhaplotype] = hapcount
+                end
+            end
         end #if
     end #for
 
