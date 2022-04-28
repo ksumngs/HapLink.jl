@@ -151,6 +151,18 @@ function Base.isless(v1::Variant, v2::Variant)
     return v1.chromosome <= v2.chromosome && v1.position < v2.position
 end #function
 
+function Base.:(==)(v1::Variant, v2::Variant)
+    v1.chromosome == v2.chromosome || return false
+    v1.position == v2.position || return false
+    v1.identifier == v2.identifier || return false
+    v1.referencebase == v2.referencebase || return false
+    v1.alternatebase == v2.alternatebase || return false
+    v1.quality == v2.quality || return false
+    v1.filter == v2.filter || return false
+    v1.info == v2.info || return false
+    return true
+end #function
+
 function Dict(v::Variant)
     return OrderedDict(key => getfield(v, key) for key in fieldnames(Variant))
 end #function
