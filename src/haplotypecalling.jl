@@ -128,9 +128,7 @@ function find_haplotypes(
     happlusmeta = Dict{Haplotype,HaplotypeMeta}()
 
     # Get reference sequence
-    ref_reader = open(FASTA.Reader, reffile)
-    ref_record = first(collect(ref_reader))
-    close(ref_reader)
+    ref_record = _first_record(reffile)
 
     # Add the haplotypes with their metadata into the returned output
     for hap in returnedhaplotypes
