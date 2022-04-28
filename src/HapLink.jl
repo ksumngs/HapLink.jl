@@ -17,6 +17,7 @@ using SHA
 using XAM
 using YAML
 
+export chromosome
 export consensus
 export read_vcf
 
