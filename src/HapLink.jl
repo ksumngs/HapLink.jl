@@ -17,7 +17,10 @@ using SHA
 using XAM
 using YAML
 
-export consensus
+export chromosome
+export consensus_sequence
+export consensus_variants
+export frequency
 export read_vcf
 
 const VERSION = ArgParse.project_version(
@@ -327,7 +330,7 @@ function _consensus(arguments::Dict{String,Any})
 
     refseq = FASTA.sequence(_first_record(reffile))
 
-    conseq = consensus(refseq, variants; freq=frequency)
+    conseq = consensus_sequence(refseq, variants; freq=frequency)
 
     FASTA.Writer(open(outfile, "w")) do f
         write(f, FASTA.Record("$(prefix)_CONSENSUS", conseq))
@@ -395,11 +398,21 @@ function sequences(arguments::Dict{String,Any})
     ffile = arguments["output"]
 
     haplodata = YAML.load_file(hfile)["haplotypes"]
-    haplotypes = Haplotype.(map(f -> Variant.(f["snps"]), haplodata))
+    consensus_snps = first(filter(d -> d["name"] == "CONSENSUS", haplodata))["snps"]
+    consensus_hap = Haplotype(Variant.(consensus_snps))
+
+    otherhaps = filter(d -> d["name"] != "CONSENSUS", haplodata)
+    haplotypes = Haplotype.(map(f -> Variant.(f["snps"]), otherhaps))
 
     refrec = _first_record(rfile)
 
-    newrecords = unique(mutate.([refrec], haplotypes))
+    conrec = FASTA.Record(
+        FASTA.identifier(refrec),
+        FASTA.description(refrec),
+        mutate(FASTA.sequence(refrec), consensus_hap),
+    )
+
+    newrecords = unique(mutate.([conrec], haplotypes))
 
     open(FASTA.Writer, ffile) do f
         for r in newrecords

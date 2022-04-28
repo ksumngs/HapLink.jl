@@ -45,10 +45,14 @@ function find_haplotypes(
     α::Float64,
     haplotypemethod,
 )
+    # Find the consensus-level variants
+    convar = consensus_variants(variants)
+    conhap = Haplotype(convar)
+    remaining_variants = filter(v -> !(v in convar), variants)
 
     # Find every possible pair of variants. These may be valid haplotypes in their own
     # right, but for right now, we are just going to use them to find linkage between pairs
-    variantpairs = combinations(variants, 2)
+    variantpairs = combinations(remaining_variants, 2)
 
     # Create a place to store linked pairs and their statistics
     linkedvariantpairhaplotypes = Dict{Haplotype,Matrix{Int}}()
@@ -58,8 +62,19 @@ function find_haplotypes(
     for variantpair in variantpairs
         pairedhaplotype = Haplotype(variantpair)
         hapcount = occurrence_matrix(haplotypemethod(pairedhaplotype, bamfile))
-        if linkage(hapcount)[2] <= α && last(hapcount) >= D
-            linkedvariantpairhaplotypes[pairedhaplotype] = hapcount
+        if last(hapcount) >= D
+            # If any of the entries are zero, then the linkage will be undefined
+            # As a heuristic in this case, consider linkage to be significant if the number
+            # of fully-linked reads is greater than the sum of the rest of the reads
+            if any(iszero.(hapcount))
+                if last(hapcount) > sum(hapcount[eachindex(hapcount)[1:(end - 1)]])
+                    linkedvariantpairhaplotypes[pairedhaplotype] = hapcount
+                end
+            else
+                if last(linkage(hapcount)) <= α
+                    linkedvariantpairhaplotypes[pairedhaplotype] = hapcount
+                end
+            end
         end #if
     end #for
 
@@ -106,31 +121,25 @@ function find_haplotypes(
             returnedhaplotypes[haplotype] = linkedvariantpairhaplotypes[haplotype]
         else
             hapcount = occurrence_matrix(haplotypemethod(haplotype, bamfile))
-            if linkage(hapcount)[2] <= α && last(hapcount) >= D
-                returnedhaplotypes[haplotype] = hapcount
+            if last(hapcount) >= D
+                if any(iszero.(hapcount))
+                    if last(hapcount) > sum(hapcount[eachindex(hapcount)[1:(end - 1)]])
+                        returnedhaplotypes[haplotype] = hapcount
+                    end #if
+                else
+                    if (last(linkage(hapcount)) <= α)
+                        returnedhaplotypes[haplotype] = hapcount
+                    end #if
+                end #if
             end #if
         end #if
-    end #for
-
-    # Add the single-variant haplotypes back in
-    confirmedlinkedvariants = unique(
-        cat(mutations.(collect(keys(returnedhaplotypes)))...; dims=1)
-    )
-    singlevariants = filter(v -> !(v in confirmedlinkedvariants), variants)
-    for var in singlevariants
-        varhap = Haplotype(var)
-        altdepth = alternatedepth(var)
-        refdepth = totaldepth(var) - altdepth
-        returnedhaplotypes[varhap] = [refdepth altdepth]
     end #for
 
     # Declare a place to put the haplotypes plus their calculations
     happlusmeta = Dict{Haplotype,HaplotypeMeta}()
 
     # Get reference sequence
-    ref_reader = open(FASTA.Reader, reffile)
-    ref_record = first(collect(ref_reader))
-    close(ref_reader)
+    ref_record = _first_record(reffile)
 
     # Add the haplotypes with their metadata into the returned output
     for hap in returnedhaplotypes
@@ -141,6 +150,11 @@ function find_haplotypes(
             FASTA.identifier(mutate(ref_record, hap[1])),
         )
     end #for
+
+    # Add the consensus sequence to the return dictionary
+    # The frequency of the consensus is
+    confreq = isempty(convar) ? 1 : min(frequency.(convar)...)
+    happlusmeta[conhap] = HaplotypeMeta(confreq, 1, 0, "CONSENSUS")
 
     return happlusmeta
 end #function

@@ -44,6 +44,27 @@ function Base.isless(h1::Haplotype, h2::Haplotype)
            first(sort(h1.mutations)) < first(sort(h2.mutations))
 end #function
 
+function Base.:(==)(h1::Haplotype, h2::Haplotype)
+    if length(mutations(h1)) != length(mutations(h2))
+        return false
+    end #if
+
+    m1 = sort(mutations(h1))
+    m2 = sort(mutations(h2))
+
+    for i in eachindex(m1)
+        if m1[i] != m2[i]
+            return false
+        end #if
+    end #for
+
+    return true
+end #function
+
+function Base.hash(hap::Haplotype, h::UInt)
+    return hash(Haplotype, hash(sort(mutations(hap)), h))
+end
+
 function mutations(h::Haplotype)
     return h.mutations
 end #function
