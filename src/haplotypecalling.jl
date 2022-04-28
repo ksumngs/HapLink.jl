@@ -121,8 +121,16 @@ function find_haplotypes(
             returnedhaplotypes[haplotype] = linkedvariantpairhaplotypes[haplotype]
         else
             hapcount = occurrence_matrix(haplotypemethod(haplotype, bamfile))
-            if linkage(hapcount)[2] <= α && last(hapcount) >= D
-                returnedhaplotypes[haplotype] = hapcount
+            if last(hapcount) >= D
+                if any(iszero.(hapcount))
+                    if last(hapcount) > sum(hapcount[eachindex(hapcount)[1:(end - 1)]])
+                        returnedhaplotypes[haplotype] = hapcount
+                    end #if
+                else
+                    if (last(linkage(hapcount)) <= α)
+                        returnedhaplotypes[haplotype] = hapcount
+                    end #if
+                end #if
             end #if
         end #if
     end #for
