@@ -45,10 +45,14 @@ function find_haplotypes(
     α::Float64,
     haplotypemethod,
 )
+    # Find the consensus-level variants
+    convar = consensus_variants(variants)
+    conhap = Haplotype(convar)
+    remaining_variants = filter(v -> !(v in convar), variants)
 
     # Find every possible pair of variants. These may be valid haplotypes in their own
     # right, but for right now, we are just going to use them to find linkage between pairs
-    variantpairs = combinations(variants, 2)
+    variantpairs = combinations(remaining_variants, 2)
 
     # Create a place to store linked pairs and their statistics
     linkedvariantpairhaplotypes = Dict{Haplotype,Matrix{Int}}()
@@ -117,7 +121,7 @@ function find_haplotypes(
     confirmedlinkedvariants = unique(
         cat(mutations.(collect(keys(returnedhaplotypes)))...; dims=1)
     )
-    singlevariants = filter(v -> !(v in confirmedlinkedvariants), variants)
+    singlevariants = filter(v -> !(v in confirmedlinkedvariants), remaining_variants)
     for var in singlevariants
         varhap = Haplotype(var)
         altdepth = alternatedepth(var)
@@ -140,6 +144,11 @@ function find_haplotypes(
             FASTA.identifier(mutate(ref_record, hap[1])),
         )
     end #for
+
+    # Add the consensus sequence to the return dictionary
+    # The frequency of the consensus is
+    confreq = isempty(convar) ? 1 : min(frequency.(convar)...)
+    happlusmeta[conhap] = HaplotypeMeta(confreq, 1, 0, "CONSENSUS")
 
     return happlusmeta
 end #function
