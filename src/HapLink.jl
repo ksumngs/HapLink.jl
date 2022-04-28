@@ -19,6 +19,7 @@ using YAML
 
 export chromosome
 export consensus
+export consensus_variants
 export read_vcf
 
 const VERSION = ArgParse.project_version(
