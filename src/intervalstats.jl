@@ -163,7 +163,12 @@ julia> base_quality(Interval("ref", 7, 21), samrecord)
             end #if
         end #for
 
-        return mean(collect(skipmissing(outquals)))
+        existingquals = skipmissing(outquals)
+        if isempty(existingquals)
+            return missing
+        else
+            return mean(existingquals)
+        end #if
     end #quote
 end #function
 
@@ -192,7 +197,7 @@ julia> mean_quality(Interval("ref", 17, 17), mutrecords)
 function mean_quality(
     int::Interval, reads::AbstractVector{T}
 ) where {T<:Union{SAM.Record,BAM.Record}}
-    return mean(map(r -> base_quality(int, r), _containing(int, reads)))
+    return mean(skipmissing(map(r -> base_quality(int, r), _containing(int, reads))))
 end #function
 
 FilePaths.@compat function mean_quality(int::Interval, reads::AbstractPath)
