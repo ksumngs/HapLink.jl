@@ -155,6 +155,10 @@ function Dict(v::Variant)
     return OrderedDict(key => getfield(v, key) for key in fieldnames(Variant))
 end #function
 
+function chromosome(v::Variant)
+    return v.chromosome
+end #function
+
 function varposition(v::Variant)
     return v.position
 end #function
