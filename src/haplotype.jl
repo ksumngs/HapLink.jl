@@ -61,6 +61,10 @@ function Base.:(==)(h1::Haplotype, h2::Haplotype)
     return true
 end #function
 
+function Base.hash(hap::Haplotype, h::UInt)
+    return hash(Haplotype, hash(sort(mutations(hap)), h))
+end
+
 function mutations(h::Haplotype)
     return h.mutations
 end #function
