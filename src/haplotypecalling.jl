@@ -113,6 +113,7 @@ function find_haplotypes(
     end #for
 
     # Add the single-variant haplotypes back in
+    # TODO: Rethink -- are single sub-consensus variants actually haplotypes?
     confirmedlinkedvariants = unique(
         cat(mutations.(collect(keys(returnedhaplotypes)))...; dims=1)
     )
