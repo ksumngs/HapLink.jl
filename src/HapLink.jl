@@ -18,7 +18,7 @@ using XAM
 using YAML
 
 export chromosome
-export consensus
+export consensus_sequence
 export consensus_variants
 export read_vcf
 
@@ -329,7 +329,7 @@ function _consensus(arguments::Dict{String,Any})
 
     refseq = FASTA.sequence(_first_record(reffile))
 
-    conseq = consensus(refseq, variants; freq=frequency)
+    conseq = consensus_sequence(refseq, variants; freq=frequency)
 
     FASTA.Writer(open(outfile, "w")) do f
         write(f, FASTA.Record("$(prefix)_CONSENSUS", conseq))

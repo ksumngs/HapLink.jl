@@ -1,10 +1,12 @@
 """
-    consensus(refseq::LongDNASeq, vars::AbstractArray{Variant}; freq::Float64=0.5)
+    consensus_sequence(refseq::LongDNASeq, vars::AbstractArray{Variant}; freq::Float64=0.5)
 
 Generate the consensus sequence of `refseq` when mutated by `vars`, excluding any items from
 `vars` that have a variant frequency less than `freq`.
 """
-function consensus(refseq::LongDNASeq, vars::AbstractArray{Variant}; freq::Float64=0.5)
+function consensus_sequence(
+    refseq::LongDNASeq, vars::AbstractArray{Variant}; freq::Float64=0.5
+)
     consensus_seq = copy(refseq)
     return mutate(consensus_seq, Haplotype(consensus_variants(vars; freq=freq)))
 end #function
