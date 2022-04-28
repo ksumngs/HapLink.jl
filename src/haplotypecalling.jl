@@ -135,19 +135,6 @@ function find_haplotypes(
         end #if
     end #for
 
-    # Add the single-variant haplotypes back in
-    # TODO: Rethink -- are single sub-consensus variants actually haplotypes?
-    confirmedlinkedvariants = unique(
-        cat(mutations.(collect(keys(returnedhaplotypes)))...; dims=1)
-    )
-    singlevariants = filter(v -> !(v in confirmedlinkedvariants), remaining_variants)
-    for var in singlevariants
-        varhap = Haplotype(var)
-        altdepth = alternatedepth(var)
-        refdepth = totaldepth(var) - altdepth
-        returnedhaplotypes[varhap] = [refdepth altdepth]
-    end #for
-
     # Declare a place to put the haplotypes plus their calculations
     happlusmeta = Dict{Haplotype,HaplotypeMeta}()
 
