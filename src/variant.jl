@@ -171,6 +171,10 @@ function alternatedepth(v::Variant)
     return v.info["AD"]
 end #function
 
+function frequency(v::Variant)
+    return alternatedepth(v) / totaldepth(v)
+end #function
+
 """
     serialize_yaml(v::Variant)
 
