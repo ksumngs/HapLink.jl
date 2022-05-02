@@ -495,6 +495,14 @@ git-tree-sha1 = "9cc2955f2a254b18be655a4ee70bc4031b2b189e"
 uuid = "7b38b023-a4d7-4c5e-8d43-3f3097f304eb"
 version = "0.3.0"
 
+[[SequenceVariation]]
+deps = ["BioAlignments", "BioSequences", "BioSymbols"]
+git-tree-sha1 = "858310feaa03442e2380e4eb5302fb69a744c4f5"
+repo-rev = "master"
+repo-url = "https://github.com/jakobnissen/SequenceVariation.jl"
+uuid = "eef6e190-9969-4f06-a38f-35a110a8fdc8"
+version = "0.1.0"
+
 [[Serialization]]
 uuid = "9e88b42a-f829-5b0c-bbe9-9e923198166b"
 
