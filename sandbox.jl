@@ -6,9 +6,22 @@
 # TODO: Try to export `Variation`s to VCF
 
 using BioAlignments
+using BioSymbols
 using FASTX
 using SequenceVariation
 using XAM
+
+edits(v::Variant) = v.edits
+Base.:(==)(x::Variation, y::Variation) = x.ref == y.ref && x.edit == y.edit
+Base.hash(x::Variation, h::UInt) = hash(Variation, hash((x.ref, x.edit), h))
+
+function variations(v::Variant)
+    variations = Variation[]
+    for e in v.edits
+        push!(variations, Variation(v.ref, e))
+    end #for
+    return variations
+end #function
 
 bam_file = "example/sample.bam"
 bai_file = "example/sample.bam.bai"
@@ -46,4 +59,19 @@ open(BAM.Reader, bam_file; index=bai_file) do reader
     end #while
 end #do
 
-println(all_variants)
+all_variations = cat(variations.(all_variants)...; dims=1)
+unique_variations = unique(all_variations)
+
+for v in unique_variations
+    containing_variants = filter(var -> v in var, all_variants)
+    if !isempty(containing_variants)
+        if v.edit.x isa Substitution{<:BioSymbol}
+            pos = v.edit.pos
+            ref = v.ref
+            altdepth = count(var -> v in var, all_variants)
+            println(
+                "reference\t$pos\t.\t$(ref[pos])\t$(v.edit.x.x)\t.\tPASS\tAD=$(altdepth)"
+            )
+        end #if
+    end #if
+end #for
