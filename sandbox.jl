@@ -6,6 +6,7 @@
 # TODO: Try to export `Variation`s to VCF
 
 using BioAlignments
+using BioSequences
 using BioSymbols
 using FASTX
 using SequenceVariation
@@ -22,6 +23,16 @@ function variations(v::Variant)
     end #for
     return variations
 end #function
+
+read01 = AlignedSequence(dna"TTTATCTGTGTGAACTTCTTGGCTTAGTTT", Alignment("30M", 1, 6))
+read02 = AlignedSequence(dna"CTGTGTGAACTTCTTGGCTTAGTATCGTTG", Alignment("30M", 1, 11))
+refseq = dna"ACAACTTTATCTCTCTCAACTTCTTCCCTTACTATCCTTCACAACAATCCACACATTACTGCACTTTAAACACTTTTTTA"
+
+aln01 = PairwiseAlignment(read01, refseq)
+aln02 = PairwiseAlignment(read02, refseq)
+
+var01 = Variant(aln01)
+var02 = Variant(aln02)
 
 bam_file = "example/sample.bam"
 bai_file = "example/sample.bam.bai"
