@@ -497,9 +497,7 @@ version = "0.3.0"
 
 [[SequenceVariation]]
 deps = ["BioAlignments", "BioSequences", "BioSymbols"]
-git-tree-sha1 = "858310feaa03442e2380e4eb5302fb69a744c4f5"
-repo-rev = "master"
-repo-url = "https://github.com/jakobnissen/SequenceVariation.jl"
+path = "/home/tchristensen/.julia/dev/SequenceVariation"
 uuid = "eef6e190-9969-4f06-a38f-35a110a8fdc8"
 version = "0.1.0"
 
