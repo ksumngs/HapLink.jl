@@ -78,14 +78,16 @@ open(BAM.Reader, bam_file; index=bai_file) do reader
                 aligned_seq = AlignedSequence(BAM.sequence(record), BAM.alignment(record))
                 paired_alignment = PairwiseAlignment(aligned_seq, ref_strand)
 
-                push!(all_variants, Variant(paired_alignment))
+                this_variant = Variant(paired_alignment)
+                this_variations = variations(this_variant)
+
+                push!(all_variants, this_variant)
             end #if
         end #if
     end #while
 end #do
 
-all_variations = cat(variations.(all_variants)...; dims=1)
-unique_variations = unique(all_variations)
+unique_variations = unique(variations(all_variants))
 
 for v in unique_variations
     containing_variants = filter(var -> v in var, all_variants)
