@@ -24,6 +24,20 @@ function variations(v::Variant)
     return variations
 end #function
 
+function variations(vs::AbstractVector{Variant})
+    nvar = sum([length(v.edits) for v in vs])
+    all_variations = Vector{Variation}(undef, nvar)
+    i = 1
+
+    for v in vs
+        for var in variations(v)
+            all_variations[i] = var
+            i += 1
+        end #for
+    end #for
+    return all_variations
+end #function
+
 read01 = AlignedSequence(dna"TTTATCTGTGTGAACTTCTTGGCTTAGTTT", Alignment("30M", 1, 6))
 read02 = AlignedSequence(dna"CTGTGTGAACTTCTTGGCTTAGTATCGTTG", Alignment("30M", 1, 11))
 refseq = dna"ACAACTTTATCTCTCTCAACTTCTTCCCTTACTATCCTTCACAACAATCCACACATTACTGCACTTTAAACACTTTTTTA"
