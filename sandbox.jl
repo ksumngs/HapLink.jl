@@ -153,7 +153,7 @@ end #do
 
 reference_names = FASTA.identifier.(ref_records)
 
-all_variants = Variant[]
+all_variants = VariationInfo[]
 
 record = BAM.Record()
 open(BAM.Reader, bam_file; index=bai_file) do reader
@@ -168,31 +168,8 @@ open(BAM.Reader, bam_file; index=bai_file) do reader
                         filter(r -> FASTA.identifier(r) == BAM.refname(record), ref_records)
                     ),
                 )
-
-                aligned_seq = AlignedSequence(BAM.sequence(record), BAM.alignment(record))
-                paired_alignment = PairwiseAlignment(aligned_seq, ref_strand)
-
-                this_variant = Variant(paired_alignment)
-                this_variations = variations(this_variant)
-
-                push!(all_variants, this_variant)
+                push!(all_variants, annotated_variations(record, ref_strand)...)
             end #if
         end #if
     end #while
 end #do
-
-unique_variations = unique(variations(all_variants))
-
-for v in unique_variations
-    containing_variants = filter(var -> v in var, all_variants)
-    if !isempty(containing_variants)
-        if v.edit.x isa Substitution{<:BioSymbol}
-            pos = v.edit.pos
-            ref = v.ref
-            altdepth = count(var -> v in var, all_variants)
-            println(
-                "reference\t$pos\t.\t$(ref[pos])\t$(v.edit.x.x)\t.\tPASS\tAD=$(altdepth)"
-            )
-        end #if
-    end #if
-end #for
