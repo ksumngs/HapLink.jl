@@ -6,6 +6,7 @@
 # TODO: Try to export `Variation`s to VCF
 
 using BioAlignments
+using BioGenerics
 using BioSequences
 using BioSymbols
 using FASTX
@@ -36,6 +37,10 @@ function variations(vs::AbstractVector{Variant})
         end #for
     end #for
     return all_variations
+end #function
+
+function BioGenerics.leftposition(v::Variation)
+    return v.edit.pos
 end #function
 
 read01 = AlignedSequence(
