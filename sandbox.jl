@@ -44,6 +44,10 @@ function BioGenerics.leftposition(v::Variation)
     return v.edit.pos
 end #function
 
+function readpos(v::Variation, a::Union{Alignment,AlignedSequence,PairwiseAlignment})
+    return first(ref2seq(a, leftposition(v)))
+end #function
+
 struct VariationInfo{S<:BioSequence,T<:BioSymbol}
     variation::Variation{S,T}
     readpos::Float64
