@@ -58,6 +58,44 @@ function relativepos(v::Variation, b::BAM.Record)
     end #if
 end #function
 
+function substitution_quality(v::Variation, b::BAM.Record)
+    return BAM.quality(b)[first(ref2seq(BAM.alignment(b), leftposition(v)))]
+end #function
+
+function insertion_quality(v::Variation, b::BAM.Record)
+    if leftposition(v) <= BAM.position(b)
+        startpos = first(ref2seq(BAM.alignment(b), BAM.position(b)))
+        endpos = first(ref2seq(BAM.alignment(b), leftposition(v) + 1))
+    elseif leftposition(v) >= BAM.rightposition(b)
+        startpos = first(ref2seq(BAM.alignment(b), leftposition(v) - 1))
+        endpos = first(ref2seq(BAM.alignment(b), BAM.rightposition(b)))
+    else
+        startpos = first(ref2seq(BAM.alignment(b), leftposition(v)))
+        endpos = first(ref2seq(BAM.alignment(b), leftposition(v) + 1)) - 1
+    end #if
+
+    return mean(BAM.quality(b)[startpos:endpos])
+end #function
+
+function deletion_quality(v::Variation, b::BAM.Record)
+    leftpos = first(ref2seq(BAM.alignment(b), leftposition(v) - 1))
+    rightpos = first(ref2seq(BAM.alignment(b), leftposition(v) + length(v.edit.x)))
+
+    return mean(BAM.quality(b)[leftpos:rightpos])
+end #function
+
+function quality(v::Variation, b::BAM.Record)
+    if v.edit.x isa Substitution
+        return substitution_quality(v, b)
+    elseif v.edit.x isa Insertion
+        return insertion_quality(v, b)
+    elseif v.edit.x isa Deletion
+        return deletion_quality(v, b)
+    else
+        return NaN
+    end #if
+end #function
+
 struct VariationInfo{S<:BioSequence,T<:BioSymbol}
     variation::Variation{S,T}
     readpos::Float64
