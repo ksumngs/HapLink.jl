@@ -17,9 +17,9 @@ Base.:(==)(x::Variation, y::Variation) = x.ref == y.ref && x.edit == y.edit
 Base.hash(x::Variation, h::UInt) = hash(Variation, hash((x.ref, x.edit), h))
 
 function variations(v::Variant)
-    variations = Variation[]
-    for e in v.edits
-        push!(variations, Variation(v.ref, e))
+    variations = Vector{Variation}(undef, length(v.edits))
+    for (i, e) in enumerate(v.edits)
+        variations[i] = Variation(v.ref, e)
     end #for
     return variations
 end #function
