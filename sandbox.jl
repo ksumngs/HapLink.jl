@@ -10,6 +10,7 @@ using BioGenerics
 using BioSequences
 using BioSymbols
 using FASTX
+using GenomicFeatures: Strand
 using SequenceVariation
 using XAM
 
@@ -42,6 +43,18 @@ end #function
 function BioGenerics.leftposition(v::Variation)
     return v.edit.pos
 end #function
+
+struct VariationInfo{S<:BioSequence,T<:BioSymbol}
+    variation::Variation{S,T}
+    readpos::Float64
+    quality::Float64
+    strand::Strand
+end #struct
+
+variation(vi::VariationInfo) = vi.variation
+readpos(vi::VariationInfo) = vi.readpos
+quality(vi::VariationInfo) = vi.quality
+strand(vi::VariationInfo) = vi.strand
 
 read01 = AlignedSequence(
     dna"TTTATCTGTGTGAACTTCTTGGCTTAGTTT", Alignment("15M2P15M12H", 1, 6)
