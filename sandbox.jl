@@ -108,6 +108,28 @@ readpos(vi::VariationInfo) = vi.readpos
 quality(vi::VariationInfo) = vi.quality
 strand(vi::VariationInfo) = vi.strand
 
+function annotated_variations(query::BAM.Record, reference::NucleotideSeq)
+    aligned_seq = AlignedSequence(BAM.sequence(query), BAM.alignment(query))
+    paired_alignment = PairwiseAlignment(aligned_seq, reference)
+
+    query_variant = Variant(paired_alignment)
+
+    query_variations = VariationInfo[]
+
+    for variation in variations(query_variant)
+        push!(
+            query_variations,
+            VariationInfo(
+                variation,
+                relativepos(variation, query),
+                Float64(quality(variation, query)),
+                BAM.ispositivestrand(query) ? Strand('+') : Strand('-'),
+            ),
+        )
+    end #for
+    return query_variations
+end #function
+
 read01 = AlignedSequence(
     dna"TTTATCTGTGTGAACTTCTTGGCTTAGTTT", Alignment("15M2P15M12H", 1, 6)
 )
