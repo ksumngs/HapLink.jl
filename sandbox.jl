@@ -12,6 +12,7 @@ using BioSymbols
 using FASTX
 using GenomicFeatures: Strand
 using SequenceVariation
+using Statistics
 using XAM
 
 edits(v::Variant) = v.edits
