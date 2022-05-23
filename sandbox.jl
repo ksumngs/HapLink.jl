@@ -38,7 +38,9 @@ function variations(vs::AbstractVector{Variant})
     return all_variations
 end #function
 
-read01 = AlignedSequence(dna"TTTATCTGTGTGAACTTCTTGGCTTAGTTT", Alignment("30M", 1, 6))
+read01 = AlignedSequence(
+    dna"TTTATCTGTGTGAACTTCTTGGCTTAGTTT", Alignment("15M2P15M12H", 1, 6)
+)
 read02 = AlignedSequence(dna"CTGTGTGAACTTCTTGGCTTAGTATCGTTG", Alignment("30M", 1, 11))
 refseq = dna"ACAACTTTATCTCTCTCAACTTCTTCCCTTACTATCCTTCACAACAATCCACACATTACTGCACTTTAAACACTTTTTTA"
 
