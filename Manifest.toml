@@ -51,11 +51,11 @@ version = "0.1.1"
 
 [[BioAlignments]]
 deps = ["BioGenerics", "BioSequences", "BioSymbols", "IntervalTrees", "LinearAlgebra"]
-git-tree-sha1 = "fcc3ec5fbdeeba2a05b2ca15cb518d31f3f308dc"
+git-tree-sha1 = "29e735a07a5f03e76f0ce99f2293cecd946c3729"
 repo-rev = "operations-fix"
 repo-url = "https://github.com/MillironX/BioAlignments.jl"
 uuid = "00701ae9-d1dc-5365-b64a-a3a3ebf5695e"
-version = "2.0.0"
+version = "2.1.0"
 
 [[BioCore]]
 deps = ["Automa", "BufferedStreams", "YAML"]
