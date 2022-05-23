@@ -48,6 +48,16 @@ function readpos(v::Variation, a::Union{Alignment,AlignedSequence,PairwiseAlignm
     return first(ref2seq(a, leftposition(v)))
 end #function
 
+function relativepos(v::Variation, b::BAM.Record)
+    if leftposition(v) <= BAM.position(b)
+        return 0.0
+    elseif leftposition(v) >= BAM.rightposition(b)
+        return 1.0
+    else
+        return readpos(v, BAM.alignment(b)) / (BAM.rightposition(b) - BAM.position(b))
+    end #if
+end #function
+
 struct VariationInfo{S<:BioSequence,T<:BioSymbol}
     variation::Variation{S,T}
     readpos::Float64
