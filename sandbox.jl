@@ -174,3 +174,40 @@ open(BAM.Reader, bam_file; index=bai_file) do reader
         end #if
     end #while
 end #do
+
+variation_pos_pileup = Dict{Variation,Vector{Float64}}()
+variation_quality_pileup = Dict{Variation,Vector{Float64}}()
+variation_strand_pileup = Dict{Variation,Vector{Strand}}()
+
+variation_pos_avg = Dict{Variation,Float64}()
+variation_quality_avg = Dict{Variation,Float64}()
+variation_strand_avg = Dict{Variation,Float64}()
+variation_altdepth = Dict{Variation,Int}()
+
+for var in all_variants
+    variation_pos_pileup[variation(var)] = Float64[]
+    variation_quality_pileup[variation(var)] = Float64[]
+    variation_strand_pileup[variation(var)] = Strand[]
+end #for
+
+for var in all_variants
+    push!(variation_pos_pileup[variation(var)], readpos(var))
+    push!(variation_quality_pileup[variation(var)], quality(var))
+    push!(variation_strand_pileup[variation(var)], strand(var))
+end #for
+
+for (var, poss) in variation_pos_pileup
+    variation_altdepth[var] = length(poss)
+    variation_pos_avg[var] = mean(poss)
+end #for
+
+for (var, quals) in variation_quality_pileup
+    variation_quality_avg[var] = mean(quals)
+end #for
+
+for (var, strd) in variation_strand_pileup
+    n_pos = count(s -> s == Strand('+'), strd)
+    N = length(strd)
+
+    variation_strand_avg[var] = n_pos / N
+end #for
