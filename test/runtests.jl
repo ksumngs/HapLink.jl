@@ -1,19 +1,44 @@
-using BioSequences
-using Documenter
+using BioAlignments:
+    EDNAFULL,
+    AlignedSequence,
+    PairwiseAlignment,
+    AffineGapScoreModel,
+    GlobalAlignment,
+    cigar,
+    pairalign
+using BioGenerics: leftposition
+using BioSequences: BioSequence, @rna_str, ungap!
+using Documenter: DocMeta, doctest
 using HapLink
+using SequenceVariation: Variant, Variation, variations
 using Test
+using XAM: SAM, BAM
 
-const REFERENCE = dna"AGCATGTTAGATAAGATAGCTGTGCTAGTAGGCAGTCAGCGCCAT"
-var1 = Variant("ref", 10, "var1", dna"G", dna"A", 30, :PASS, Dict(["DP" => 10, "AD" => 6]))
-var2 = Variant("ref", 10, "var2", dna"G", dna"T", 30, :PASS, Dict(["DP" => 10, "AD" => 7]))
-var3 = Variant("ref", 20, "var3", dna"C", dna"G", 30, :PASS, Dict(["DP" => 10, "AD" => 6]))
+const DNA_MODEL = AffineGapScoreModel(EDNAFULL; gap_open=-12, gap_extend=-3)
+align(a::BioSequence, b::BioSequence) = pairalign(GlobalAlignment(), a, b, DNA_MODEL).aln
+function sam(a::PairwiseAlignment)
+    return SAM.Record(
+        "*\t0\tREFERENCE\t$(a.a.aln.firstref)\t255\t$(cigar(a.a.aln))\t*\t0\t0\t$(a.a.seq)\t*\tXs:Z:HapLink",
+    )
+end #function
 
-DocMeta.setdocmeta!(HapLink, :DocTestSetup, :(using HapLink); recursive=true)
+# Sequences from Japanese Encephalitis Virus full genome positions NC_001437:5979-7016 with
+# an additional two-base deletion in genotype III
+#! format: off
+const REFERENCE    = ungap!(rna"CAUCAGGGCUGACUGGA---UUGCCAAGCAUGGCACU")
+const GENOTYPE_I   = ungap!(rna"CAUCAGGACUGACCGGA---UUGCCAAGCAUGGCACU")
+const GENOTYPE_II  = ungap!(rna"CACCAGGAUUGACUGGA---UUGCCAA--AUGGCGCU")
+const GENOTYPE_III = ungap!(rna"CAUCAGGACUGACUGGA---UUGCCAAGCAUGGCACU")
+const GENOTYPE_V   = ungap!(rna"CAUCCAGCGUGCCUGGAAGUCUGUCAAGCCUGGCGCU")
+#! format: on
+
+const GENOTYPES = [REFERENCE, GENOTYPE_I, GENOTYPE_II, GENOTYPE_III, GENOTYPE_V]
+const ALIGNMENTS = align.(GENOTYPES, [REFERENCE])
+const VARIANTS = Variant.(ALIGNMENTS)
+const VARIATIONS = unique!(variations(VARIANTS))
+const SAMS = sam.(ALIGNMENTS)
 
 @testset "HapLink.jl" begin
-    include("variant.jl")
-    include("sequences.jl")
-    include("haplotype.jl")
-    doctest(HapLink)
-    include("snptests.jl")
-end
+    include("doctests.jl")
+    include("variation.jl")
+end #testset
