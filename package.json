@@ -1,0 +1,22 @@
+{
+  "devDependencies": {
+    "husky": "^8.0.0",
+    "lint-staged": "^13.0.2",
+    "markdownlint-cli2": "^0.4.0",
+    "prettier": "^2.7.1",
+    "prettier-plugin-sh": "^0.11.0",
+    "prettier-plugin-toml": "^0.3.1"
+  },
+  "scripts": {
+    "prepare": "husky install"
+  },
+  "lint-staged": {
+    "*.jl": "julia -e 'using JuliaFormatter; format(\".\"; verbose=true)'",
+    "*.md": [
+      "julia -e 'using JuliaFormatter; format(\".\"; verbose=true, format_markdown=true)'",
+      "markdownlint-cli2-fix",
+      "prettier --write"
+    ],
+    "**/*": "prettier --write --ignore-unknown"
+  }
+}
