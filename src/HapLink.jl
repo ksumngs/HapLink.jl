@@ -1,6 +1,11 @@
 module HapLink
 
 using ArgParse: ArgParseSettings, @add_arg_table!, project_version
+using BioAlignments: Alignment, AlignedSequence, PairwiseAlignment, ref2seq
+using BioGenerics: BioGenerics, leftposition, rightposition
+using BioSequences: BioSequence, NucleotideSeq
+using BioSymbols: BioSymbol
+using FilePaths: Path
 using SequenceVariation:
     SequenceVariation,
     Deletion,
@@ -10,12 +15,10 @@ using SequenceVariation:
     Variation,
     mutation,
     variations
-using BioSymbols: BioSymbol
+using Statistics: mean
 using XAM: BAM, SAM
-using BioAlignments: Alignment, AlignedSequence, PairwiseAlignment, ref2seq
-using BioGenerics: BioGenerics, leftposition
-using FilePaths: Path
 
+export quality
 export relativepos
 export seqpos
 

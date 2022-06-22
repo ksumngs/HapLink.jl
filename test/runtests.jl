@@ -12,6 +12,7 @@ using Documenter: DocMeta, doctest
 using HapLink
 using Random: randstring, seed!
 using SequenceVariation: Variant, Variation, variations
+using Statistics: mean
 using Test
 using XAM: SAM, BAM
 

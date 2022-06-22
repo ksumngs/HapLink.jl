@@ -12,4 +12,5 @@ These methods extend the functionality of [`SequenceVariation.Variation`](https:
 ```@docs
 seqpos
 relativepos
+quality(::Variation, ::Union{SAM.Record,BAM.Record})
 ```

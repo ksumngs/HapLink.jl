@@ -70,3 +70,74 @@ after `r`.
         end #if
     end #quote
 end #function
+
+@generated function _subqual(v::Variation, r::Union{SAM.Record,BAM.Record})
+    XAM = _xam_switch(r)
+
+    quote
+        # Substitution quality: basecall quality of substituted base
+        # ref    GATTACA
+        #        ||| |||
+        # seq    GATAACA  => qscore = '%' = 4
+        # qscore "#$%&'(
+        return $XAM.quality(r)[first(ref2seq($XAM.alignment(r), leftposition(v)))]
+    end #quote
+end #function
+
+@generated function _insqual(v::Variation, r::Union{SAM.Record,BAM.Record})
+    XAM = _xam_switch(r)
+
+    quote
+        if leftposition(v) <= $XAM.position(r)
+            # Insertion quality if insertion starts before alignment: basecall quality of
+            # read from first base until last inserted base
+            # ref    --GATTACA
+            #          |||||||
+            # seq    GGGATTACA => qscore = mean('#$') = mean([1,2]) = 1.5
+            # qscore "#$%&'()*
+            startpos = 1
+            endpos = first(ref2seq($XAM.alignment(r), leftposition(v))) - 1
+        elseif leftposition(v) >= $XAM.rightposition(r)
+            startpos = first(ref2seq($XAM.alignment(r), leftposition(v) - 1)) + 1
+            endpos = length($XAM.quality(r))
+        else
+            # Insertion quality: basecall quality of inserted bases
+            # ref    GAT--TACA
+            #        |||  ||||
+            # seq    GATGGTACA  => qscore = mean('%&') = mean([4,5]) = 4.5
+            # qscore "#$%&'()*
+            startpos = first(ref2seq($XAM.alignment(r), leftposition(v) - 1)) + 1
+            endpos = first(ref2seq($XAM.alignment(r), leftposition(v))) - 1
+        end #if
+
+        return mean($XAM.quality(r)[startpos:endpos])
+    end #quote
+end #function
+
+@generated function _delqual(v::Variation, r::Union{SAM.Record,BAM.Record})
+    XAM = _xam_switch(r)
+
+    quote
+        leftpos = first(ref2seq($XAM.alignment(r), leftposition(v) - 1))
+        rightpos = first(ref2seq($XAM.alignment(r), leftposition(v) + length(mutation(v))))
+
+        return mean($XAM.quality(r)[leftpos:rightpos])
+    end #quote
+end #function
+
+"""
+    quality(v::Variation, r::Union{SAM.Record,BAM.Record}) -> Float64
+
+Get the phred-scalled basecall quality of `v` within the sequencing read of `r`.
+"""
+function quality(v::Variation, r::Union{SAM.Record,BAM.Record})
+    if mutation(v) isa Substitution
+        return _subqual(v, r)
+    elseif mutation(v) isa Insertion
+        return _insqual(v, r)
+    elseif mutation(v) isa Deletion
+        return _delqual(v, r)
+    else
+        return NaN
+    end #if
+end #function
