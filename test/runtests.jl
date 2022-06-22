@@ -7,7 +7,7 @@ using BioAlignments:
     cigar,
     pairalign
 using BioGenerics: leftposition
-using BioSequences: BioSequence, @rna_str, ungap!
+using BioSequences: BioSequence, @dna_str, ungap!
 using Documenter: DocMeta, doctest
 using HapLink
 using SequenceVariation: Variant, Variation, variations
@@ -25,11 +25,11 @@ end #function
 # Sequences from Japanese Encephalitis Virus full genome positions NC_001437:5979-7016 with
 # an additional two-base deletion in genotype III
 #! format: off
-const REFERENCE    = ungap!(rna"CAUCAGGGCUGACUGGA---UUGCCAAGCAUGGCACU")
-const GENOTYPE_I   = ungap!(rna"CAUCAGGACUGACCGGA---UUGCCAAGCAUGGCACU")
-const GENOTYPE_II  = ungap!(rna"CACCAGGAUUGACUGGA---UUGCCAA--AUGGCGCU")
-const GENOTYPE_III = ungap!(rna"CAUCAGGACUGACUGGA---UUGCCAAGCAUGGCACU")
-const GENOTYPE_V   = ungap!(rna"CAUCCAGCGUGCCUGGAAGUCUGUCAAGCCUGGCGCU")
+const REFERENCE    = ungap!(dna"CATCAGGGCTGACTGGA---TTGCCAAGCATGGCACT")
+const GENOTYPE_I   = ungap!(dna"CATCAGGACTGACCGGA---TTGCCAAGCATGGCACT")
+const GENOTYPE_II  = ungap!(dna"CACCAGGATTGACTGGA---TTGCCAA--ATGGCGCT")
+const GENOTYPE_III = ungap!(dna"CATCAGGACTGACTGGA---TTGCCAAGCATGGCACT")
+const GENOTYPE_V   = ungap!(dna"CATCCAGCGTGCCTGGAAGTCTGTCAAGCCTGGCGCT")
 #! format: on
 
 const GENOTYPES = [REFERENCE, GENOTYPE_I, GENOTYPE_II, GENOTYPE_III, GENOTYPE_V]

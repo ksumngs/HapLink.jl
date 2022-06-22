@@ -6,7 +6,7 @@
         # Test for each type of Variation that should be present in the list
         @test Variation(REFERENCE, "G8A") in variations(VARIANTS)
         @test Variation(REFERENCE, "Δ25-26") in variations(VARIANTS)
-        @test Variation(REFERENCE, "19GUC") in variations(VARIANTS)
+        @test Variation(REFERENCE, "19GTC") in variations(VARIANTS)
     end #testset
 
     @testset "seqpos" begin
