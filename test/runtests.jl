@@ -9,6 +9,7 @@ using BioAlignments:
 using BioGenerics: leftposition
 using BioSequences: BioSequence, @dna_str, ungap!
 using Documenter: DocMeta, doctest
+using GenomicFeatures: Strand, STRAND_POS
 using HapLink
 using Random: randstring, seed!
 using SequenceVariation: Variant, Variation, variations
@@ -57,4 +58,5 @@ const SAMS = sam.(ALIGNMENTS)
 @testset "HapLink.jl" begin
     include("doctests.jl")
     include("variation.jl")
+    include("variationinfo.jl")
 end #testset

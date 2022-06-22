@@ -15,7 +15,10 @@ makedocs(;
     ),
     pages=[
         "Home" => "index.md",
-        "API Reference" => ["Variation Extensions" => "api/variation.md"],
+        "API Reference" => [
+            "Variation Extensions" => "api/variation.md",
+            "VariationInfo" => "api/variationinfo.md",
+        ],
     ],
 )
 deploydocs(; repo="github.com/ksumngs/HapLink.jl", devbranch="master")
