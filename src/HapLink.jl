@@ -19,6 +19,8 @@ using FilePaths: Path
 export relativepos
 export seqpos
 
+_xam_switch(r::Union{Type{SAM.Record},Type{BAM.Record}}) = r <: SAM.Record ? :SAM : :BAM
+
 include("variation.jl")
 
 const VERSION = project_version(
