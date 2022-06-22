@@ -57,7 +57,7 @@ out-of-bounds of `r`, then will return `0` for positions before `r` and `1` for 
 after `r`.
 """
 @generated function relativepos(v::Variation, r::Union{SAM.Record,BAM.Record})
-    XAM = r <: SAM.Record ? :SAM : :BAM
+    XAM = _xam_switch(r)
 
     quote
         if leftposition(v) <= $XAM.position(r)
