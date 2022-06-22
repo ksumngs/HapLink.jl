@@ -25,4 +25,12 @@ const INSERTION = Variation(REFERENCE, "19GTC")
         @test relativepos(DELETION, SAMS[3]) == 24 / 33
         @test relativepos(INSERTION, SAMS[end]) == 19 / 33
     end #testset
+
+    @testset "quality" begin
+        # The quality strings are constructed such that the quality corresponds to the
+        # sequence position
+        @test quality(SUBSTITUTION, SAMS[2]) == 8
+        @test quality(DELETION, SAMS[3]) == 24.5
+        @test quality(INSERTION, SAMS[end]) == 20
+    end #testset
 end #testset
