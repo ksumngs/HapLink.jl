@@ -6,6 +6,7 @@ using BioGenerics: BioGenerics, leftposition, rightposition
 using BioSequences: BioSequence, NucleotideSeq
 using BioSymbols: BioSymbol
 using FilePaths: Path
+using GenomicFeatures: Interval, Strand
 using SequenceVariation:
     SequenceVariation,
     Deletion,
@@ -18,13 +19,19 @@ using SequenceVariation:
 using Statistics: mean
 using XAM: BAM, SAM
 
+export VariationInfo
 export quality
+export readpos
 export relativepos
 export seqpos
+export strand
+export variation
+export variationinfos
 
 _xam_switch(r::Union{Type{SAM.Record},Type{BAM.Record}}) = r <: SAM.Record ? :SAM : :BAM
 
 include("variation.jl")
+include("variationinfo.jl")
 
 const VERSION = project_version(
     string(joinpath(parent(parent(Path(Base.find_package("HapLink")))), "Project.toml"))
