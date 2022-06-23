@@ -57,7 +57,7 @@ out-of-bounds of `r`, then will return `0` for positions before `r` and `1` for 
 after `r`.
 """
 @generated function relativepos(v::Variation, r::Union{SAM.Record,BAM.Record})
-    XAM = _xam_switch(r)
+    XAM = _xam_record_switch(r)
 
     quote
         if leftposition(v) <= $XAM.position(r)
@@ -72,7 +72,7 @@ after `r`.
 end #function
 
 @generated function _subqual(v::Variation, r::Union{SAM.Record,BAM.Record})
-    XAM = _xam_switch(r)
+    XAM = _xam_record_switch(r)
 
     quote
         # Substitution quality: basecall quality of substituted base
@@ -85,7 +85,7 @@ end #function
 end #function
 
 @generated function _insqual(v::Variation, r::Union{SAM.Record,BAM.Record})
-    XAM = _xam_switch(r)
+    XAM = _xam_record_switch(r)
 
     quote
         if leftposition(v) <= $XAM.position(r)
@@ -115,7 +115,7 @@ end #function
 end #function
 
 @generated function _delqual(v::Variation, r::Union{SAM.Record,BAM.Record})
-    XAM = _xam_switch(r)
+    XAM = _xam_record_switch(r)
 
     quote
         leftpos = first(ref2seq($XAM.alignment(r), leftposition(v) - 1))
