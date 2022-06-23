@@ -5,7 +5,8 @@ using BioAlignments: Alignment, AlignedSequence, PairwiseAlignment, ref2seq
 using BioGenerics: BioGenerics, leftposition, rightposition
 using BioSequences: BioSequence, NucleotideSeq
 using BioSymbols: BioSymbol
-using FilePaths: Path
+using FASTX: FASTA.Reader
+using FilePaths: AbstractPath, Path
 using GenomicFeatures: Interval, Strand
 using SequenceVariation:
     SequenceVariation,
@@ -28,6 +29,7 @@ export strand
 export variation
 export variationinfos
 
+include("fasta.jl")
 include("xam.jl")
 include("variation.jl")
 include("variationinfo.jl")
