@@ -28,8 +28,7 @@ export strand
 export variation
 export variationinfos
 
-_xam_switch(r::Union{Type{SAM.Record},Type{BAM.Record}}) = r <: SAM.Record ? :SAM : :BAM
-
+include("xam.jl")
 include("variation.jl")
 include("variationinfo.jl")
 
