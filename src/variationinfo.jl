@@ -57,7 +57,7 @@ variation call found within `query` as a `Vector{VariationInfo}`
 @generated function variationinfos(
     query::Union{SAM.Record,BAM.Record}, reference::NucleotideSeq
 )
-    XAM = _xam_switch(query)
+    XAM = _xam_record_switch(query)
 
     quote
         aligned_seq = AlignedSequence($XAM.sequence(query), $XAM.alignment(query))
