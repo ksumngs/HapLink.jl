@@ -67,19 +67,24 @@ variation call found within `query` as a `Vector{VariationInfo}`
 
         query_variations = VariationInfo[]
 
-        for variation in variations(query_variant)
-            push!(
-                query_variations,
-                VariationInfo(
-                    variation,
-                    relativepos(variation, query),
-                    Float64(quality(variation, query)),
-                    # Note: ispositivestrand is implemented for BAM records, but not for
-                    # SAM records, so inline the logic here
-                    $XAM.flag(query) & 0x10 == 0 ? Strand('+') : Strand('-'),
-                ),
-            )
-        end #for
+        try
+            for variation in variations(query_variant)
+                push!(
+                    query_variations,
+                    VariationInfo(
+                        variation,
+                        relativepos(variation, query),
+                        Float64(quality(variation, query)),
+                        # Note: ispositivestrand is implemented for BAM records, but not for
+                        # SAM records, so inline the logic here
+                        $XAM.flag(query) & 0x10 == 0 ? Strand('+') : Strand('-'),
+                    ),
+                )
+            end #for
+        catch
+            tname = $XAM.tempname(query)
+            @warn "Could not parse variations from $tname"
+        end #try
         return query_variations
     end #quote
 end #function
