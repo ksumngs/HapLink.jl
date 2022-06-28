@@ -21,6 +21,7 @@ using Statistics: mean
 using XAM: BAM, SAM
 
 export VariationInfo
+export interval
 export quality
 export readpos
 export relativepos
