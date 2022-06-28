@@ -50,8 +50,12 @@ strand(vi::VariationInfo) = vi.strand
     variationinfos(
         query::Union{SAM.Record,BAM.Record}, reference::NucleotideSeq
     ) -> Vector{VariationInfo}
+    variationinfos(
+        query::Union{AbstractString,AbstractPath},
+        reference::Union{AbstractString,AbstractPath}
+    ) -> Vector{VariationInfo}
 
-Calls `Variation`s based on the alignment in `query` against `reference`, and returns every
+Calls `Variation`s based on the alignments in `query` against `reference`, and returns every
 variation call found within `query` as a `Vector{VariationInfo}`
 """
 @generated function variationinfos(
@@ -86,5 +90,37 @@ variation call found within `query` as a `Vector{VariationInfo}`
             @warn "Could not parse variations from $tname"
         end #try
         return query_variations
+    end #quote
+end #function
+
+function variationinfos(
+    query::Union{AbstractString,AbstractPath}, reference::Union{AbstractString,AbstractPath}
+)
+    refrecord = _first_record(reference)
+    readtype = _issam(query) ? SAM.Reader : BAM.Reader
+    reader = open(readtype, query)
+    vi = _varinfos(reader, refrecord)
+    return vi
+end #struct
+
+@generated function _varinfos(reader::Union{SAM.Reader,BAM.Reader}, ref::FASTA.Record)
+    XAM = _xam_reader_switch(reader)
+
+    quote
+        all_variation_infos = VariationInfo[]
+        record = $XAM.Record()
+
+        while !eof(reader)
+            empty!(record)
+            read!(reader, record)
+
+            if $XAM.ismapped(record) &&
+                $XAM.flag(record) & 0x900 == 0 && # is primary line
+                $XAM.refname(record) == FASTA.identifier(ref)
+                push!(all_variation_infos, variationinfos(record, FASTA.sequence(ref))...)
+            end #if
+        end #while
+
+        return all_variation_infos
     end #quote
 end #function
