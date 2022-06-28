@@ -17,3 +17,10 @@ function _issam(file::Union{AbstractPath,AbstractString})
 
     return false
 end #function
+
+@generated function interval(r::Union{SAM.Record,BAM.Record})
+    XAM = _xam_record_switch(r)
+    quote
+        return Interval($XAM.refname(r), $XAM.position(r), $XAM.rightposition(r))
+    end #quote
+end #function
