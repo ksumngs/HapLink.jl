@@ -6,7 +6,7 @@ using BioGenerics: BioGenerics, leftposition, rightposition
 using BioSequences: BioSequence, NucleotideSeq
 using BioSymbols: BioSymbol
 using FASTX: FASTA.Reader
-using FilePaths: AbstractPath, Path
+using FilePaths: FilePaths, AbstractPath, Path
 using GenomicFeatures: Interval, Strand
 using SequenceVariation:
     SequenceVariation,
