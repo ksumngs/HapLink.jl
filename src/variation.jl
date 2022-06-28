@@ -141,3 +141,7 @@ function quality(v::Variation, r::Union{SAM.Record,BAM.Record})
         return NaN
     end #if
 end #function
+
+function interval(v::Variation, refname::AbstractString)
+    return Interval(refname, Int(leftposition(v)), Int(rightposition(v)))
+end #function
