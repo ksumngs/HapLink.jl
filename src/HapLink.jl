@@ -2,10 +2,10 @@ module HapLink
 
 using ArgParse: ArgParseSettings, @add_arg_table!, project_version
 using BioAlignments: Alignment, AlignedSequence, PairwiseAlignment, ref2seq
-using BioGenerics: BioGenerics, leftposition, rightposition
+using BioGenerics: BioGenerics, leftposition, rightposition, metadata
 using BioSequences: BioSequence, NucleotideSeq
 using BioSymbols: BioSymbol
-using FASTX: FASTA.Reader
+using FASTX: FASTA
 using FilePaths: FilePaths, AbstractPath, Path
 using GenomicFeatures: Interval, Strand, eachoverlap
 using SequenceVariation:
@@ -21,7 +21,12 @@ using Statistics: mean
 using XAM: BAM, SAM
 
 export VariationInfo
+export VariationPileup
+export altdepth
+export depth
+export frequency
 export interval
+export pileup
 export quality
 export readpos
 export relativepos
@@ -35,6 +40,7 @@ include("xam.jl")
 include("variation.jl")
 include("interval.jl")
 include("variationinfo.jl")
+include("variationpileup.jl")
 
 const VERSION = project_version(
     string(joinpath(parent(parent(Path(Base.find_package("HapLink")))), "Project.toml"))
