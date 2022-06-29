@@ -7,7 +7,7 @@ using BioSequences: BioSequence, NucleotideSeq
 using BioSymbols: BioSymbol
 using FASTX: FASTA.Reader
 using FilePaths: FilePaths, AbstractPath, Path
-using GenomicFeatures: Interval, Strand
+using GenomicFeatures: Interval, Strand, eachoverlap
 using SequenceVariation:
     SequenceVariation,
     Deletion,
@@ -33,6 +33,7 @@ export variationinfos
 include("fasta.jl")
 include("xam.jl")
 include("variation.jl")
+include("interval.jl")
 include("variationinfo.jl")
 
 const VERSION = project_version(
