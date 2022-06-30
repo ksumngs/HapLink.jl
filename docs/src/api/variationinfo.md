@@ -14,10 +14,10 @@ VariationInfo
 ## Getter methods
 
 ```@docs
-variation
-readpos
+variation(::VariationInfo)
+readpos(::VariationInfo)
 quality(::VariationInfo)
-strand
+strand(::VariationInfo)
 ```
 
 ## Miscellaneous
