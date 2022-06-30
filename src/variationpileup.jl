@@ -16,6 +16,21 @@ function altdepth(vp::VariationPileup)
 end #function
 frequency(vp::VariationPileup) = altdepth(vp) / depth(vp)
 
+function Base.:(==)(x::VariationPileup, y::VariationPileup)
+    return variation(x) == variation(y) &&
+           depth(x) == depth(y) &&
+           readpos(x) == readpos(y) &&
+           quality(x) == quality(y) &&
+           strand(x) == strand(y)
+end #function
+
+function Base.hash(x::VariationPileup, h::UInt)
+    return hash(
+        VariationPileup,
+        hash((variation(x), depth(x), readpos(x), quality(x), strand(x)), h),
+    )
+end
+
 function _depth_dict(sam::Union{AbstractString,AbstractPath}, ref::FASTA.Record)
     dd = Dict{Interval,UInt}()
 
