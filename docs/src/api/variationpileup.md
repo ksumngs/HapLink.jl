@@ -19,8 +19,15 @@ depth(::VariationPileup)
 readpos(::VariationPileup)
 quality(::VariationPileup)
 strand(::VariationPileup)
+
+```
+
+## Pileup calculations
+
+```@docs
 altdepth(::VariationPileup)
 frequency(::VariationPileup)
+strand_bias(::VariationPileup)
 ```
 
 ## Miscellaneous
