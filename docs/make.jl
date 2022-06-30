@@ -18,6 +18,7 @@ makedocs(;
         "API Reference" => [
             "Variation Extensions" => "api/variation.md",
             "VariationInfo" => "api/variationinfo.md",
+            "VariationPileup" => "api/variationpileup.md",
         ],
     ],
 )
