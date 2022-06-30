@@ -71,6 +71,16 @@ Gets the alternate allele frequency of `vp.variation`
 """
 frequency(vp::VariationPileup) = altdepth(vp) / depth(vp)
 
+"""
+    strand_bias(vp::VariationPileup)
+
+Gets the frequency of positive strands that `variation` appears on relative to all
+`variation` reads
+"""
+function strand_bias(vp::VariationPileup)
+    return count(s -> s == STRAND_POS, strand(vp)) / altdepth(vp)
+end #function
+
 function Base.:(==)(x::VariationPileup, y::VariationPileup)
     return variation(x) == variation(y) &&
            depth(x) == depth(y) &&

@@ -7,7 +7,7 @@ using BioSequences: BioSequence, NucleotideSeq
 using BioSymbols: BioSymbol
 using FASTX: FASTA
 using FilePaths: FilePaths, AbstractPath, Path
-using GenomicFeatures: Interval, Strand, eachoverlap
+using GenomicFeatures: Interval, Strand, STRAND_POS, eachoverlap
 using SequenceVariation:
     SequenceVariation,
     Deletion,
@@ -32,6 +32,7 @@ export readpos
 export relativepos
 export seqpos
 export strand
+export strand_bias
 export variation
 export variationinfos
 
