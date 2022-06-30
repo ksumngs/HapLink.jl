@@ -6,6 +6,16 @@ Base.@kwdef struct VariationPileup
     strand::Vector{Strand} = Strand[]
 end #struct
 
+variation(vp::VariationPileup) = vp.variation
+depth(vp::VariationPileup) = vp.depth
+readpos(vp::VariationPileup) = vp.readpos
+quality(vp::VariationPileup) = vp.quality
+strand(vp::VariationPileup) = vp.strand
+function altdepth(vp::VariationPileup)
+    return min(length(readpos(vp)), length(quality(vp)), length(strand(vp)))
+end #function
+frequency(vp::VariationPileup) = altdepth(vp) / depth(vp)
+
 function _depth_dict(sam::Union{AbstractString,AbstractPath}, ref::FASTA.Record)
     dd = Dict{Interval,UInt}()
 
