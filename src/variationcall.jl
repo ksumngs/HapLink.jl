@@ -52,3 +52,12 @@ readpos(vc::VariationCall) = vc.readpos
 p_value(vc::VariationCall) = vc.pvalue
 
 frequency(vc::VariationCall) = altdepth(vc) / depth(vc)
+
+"""
+    _phrederror(quality::Number)
+
+Converts a PHRED33-scaled error number into the expected fractional error of basecall
+"""
+function _phrederror(qual::Number)
+    return 10^(-1 * qual / 10)
+end #function
