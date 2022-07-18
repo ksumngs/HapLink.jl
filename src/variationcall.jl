@@ -63,6 +63,18 @@ function _phrederror(qual::Number)
 end #function
 
 """
+    _pos_to_edge(pos::Number)
+
+Converts `pos` from a number between 0 (beginning) and 1 (end) to a number ranging from 0
+(beginning) to 1 (middle) to 0 (end), i.e. convert a relative position to a relative
+distance from the edge.
+"""
+function _pos_to_edge(pos::Number)
+    pos > 0 && pos < 1 || error("`pos` must be between 0 and 1")
+    return min(pos, 1 - pos)
+end #function
+
+"""
     variation_test(depth::Int, altdepth::Int, quality::Float64)
 
 Conducts a Fisher's Exact Test to deterimine the likelihood of a variant with total `depth`
