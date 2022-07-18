@@ -61,3 +61,17 @@ Converts a PHRED33-scaled error number into the expected fractional error of bas
 function _phrederror(qual::Number)
     return 10^(-1 * qual / 10)
 end #function
+
+"""
+    variation_test(depth::Int, altdepth::Int, quality::Float64)
+
+Conducts a Fisher's Exact Test to deterimine the likelihood of a variant with total `depth`
+and variation depth `altdepth` occuring, given an average basecall `quality`. Returns the
+``p``-value of the test.
+"""
+function variation_test(depth::Int, altdepth::Int, quality::Float64)
+    refdepth = depth - altdepth
+    expected_altdepth = round(Int, _phrederror(quality) * depth)
+    expected_refdepth = round(Int, (1 - _phrederror(quality)) * depth)
+    return pvalue(FisherExactTest(expected_altdepth, expected_refdepth, depth, refdepth))
+end #function
