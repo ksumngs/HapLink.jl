@@ -28,3 +28,16 @@ Base.@kwdef struct VariationCall
     readpos::Union{Nothing,Float64} = nothing
     pvalue::Union{Nothing,Float64} = nothing
 end #struct
+
+function VariationCall(vp::VariationPileup)
+    v = variation(vp)
+    q = mean(quality(vp))
+    f = String[]
+    d = depth(vp)
+    s = strand_bias(vp)
+    a = UInt(altdepth(vp))
+    x = mean(readpos(vp))
+    p = variation_test(Int(d), Int(a), q)
+
+    return VariationCall(v, q, f, d, s, a, x, p)
+end #function
