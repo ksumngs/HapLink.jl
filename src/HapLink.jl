@@ -16,9 +16,12 @@ using SequenceVariation:
     Substitution,
     Variant,
     Variation,
+    altbases,
     mutation,
+    refbases,
     variations
 using Statistics: mean
+using VariantCallFormat: VCF
 using XAM: BAM, SAM
 
 export VariationCall
@@ -41,6 +44,7 @@ export strand_bias
 export variation
 export variation_test
 export variationinfos
+export vcf
 
 include("fasta.jl")
 include("xam.jl")

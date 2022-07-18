@@ -54,6 +54,38 @@ p_value(vc::VariationCall) = vc.pvalue
 frequency(vc::VariationCall) = altdepth(vc) / depth(vc)
 
 """
+    vcf(vc::VariationCall, refname::AbstractString) -> VCF.Record
+
+Converts `vc` into a `VCF.Record`. `refname` is required and used as the `CHROM` field in
+the record.
+"""
+function vcf(vc::VariationCall, refname::AbstractString)
+    chrom = refname
+    pos = leftposition(variation(vc))
+    id = "."
+    ref = refbases(variation(vc))
+    alt = altbases(variation(vc))
+
+    filt = join(filters(vc), ";")
+
+    qual = isnothing(quality(vc)) ? "." : quality(vc)
+
+    info = Dict()
+    info["DP"] = isnothing(depth(vc)) ? "." : depth(vc)
+    info["SB"] = isnothing(strand_bias(vc)) ? "." : strand_bias(vc)
+    info["AD"] = isnothing(altdepth(vc)) ? "." : altdepth(vc)
+    info["AF"] = isnothing(frequency(vc)) ? "." : frequency(vc)
+    info["RP"] = isnothing(readpos(vc)) ? "." : readpos(vc)
+    info["PVAL"] = isnothing(p_value(vc)) ? "." : p_value(vc)
+
+    info_string = join(["$k=$v" for (k, v) in info], ";")
+
+    vcf_string = join([chrom, pos, id, ref, alt, qual, filt, info_string], "\t")
+
+    return VCF.Record(vcf_string)
+end #function
+
+"""
     _phrederror(quality::Number)
 
 Converts a PHRED33-scaled error number into the expected fractional error of basecall
