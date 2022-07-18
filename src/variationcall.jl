@@ -87,3 +87,98 @@ function variation_test(depth::Int, altdepth::Int, quality::Float64)
     expected_refdepth = round(Int, (1 - _phrederror(quality)) * depth)
     return pvalue(FisherExactTest(expected_altdepth, expected_refdepth, depth, refdepth))
 end #function
+
+"""
+    _push_filter!(
+        vc::VariationCall,
+        label::Char,
+        value::Union{Nothing,Number},
+        filter::Function=(var, val) -> true,
+    )
+
+Adds a FILTER entry to `vc` of the form `"\$label\$value"` if `filter` returns true.
+
+# Arguments
+- `vc::VariationCall`: The [`VariationCall`](@ref) to annotate
+- `label::Char`: The first character of the filter text to add
+- `value::Union{Nothing,Number}`: The value to compare `vc` against, and to append to the
+    filter text. If set to `nothing`, `_push_filter!` will return without evaluating or
+    adding any filters, which may be useful for processing multiple inputs
+- `filter::Function=(var, val) -> true`: A function handle to determine if a filter should
+    be applied or not. Note that this function must return `true` **if and only if** the
+    filter should be added to `vc`. The function will be passed `vc` and `value`. Defaults
+    to always applying filters regardless of the values of `vc` and `value`.
+"""
+function _push_filter!(
+    vc::VariationCall,
+    label::Char,
+    value::Union{Nothing,Number},
+    filter::Function=(var, val) -> true,
+)
+    if isnothing(value)
+        return nothing
+    end #if
+
+    filttext = "$label$value"
+    if filter(vc, value)
+        push!(vc.filter, filttext)
+    end #if
+
+    return filttext
+end #function
+
+"""
+    call_variant(
+        pileup::VariationPileup,
+        α::Float64;
+        D::Union{Nothing,Int}=nothing,
+        Q::Union{Nothing,Float64}=nothing,
+        X::Union{Nothing,Float64}=nothing,
+        F::Union{Nothing,Float64}=nothing,
+        S::Union{Nothing,Float64}=nothing,
+    ) -> VariationCall
+
+Calls variant from a `pileup`.
+
+# Arguments
+- `pileup::VariationPileup`: The pileup to call variants from
+- `α::Float64`: Fisher's Exact Test significance (``α``) level to call variants
+
+# Keywords
+
+!!! note
+    Leave any keyword undefined to skip filtering based on that field
+
+- `D::Union{Nothing,Int}=nothing`: Minimum total read depth for a variant to be called
+- `Q::Union{Nothing,Float64}=nothing`: Minimum average Phred quality for a variant to be
+    called
+- `X::Union{Nothing,Float64}=nothing`: Maximum average distance variant can be from read
+    edge to be called
+- `F::Union{Nothing,Float64}=nothing`: Minimum alternate frequency for a variant to be
+    called
+- `S::Union{Nothing,Float64}=nothing`: Maximum proportion of the number of times variant can
+    appear on one strand versus the other
+"""
+function call_variant(
+    pileup::VariationPileup,
+    α::Float64;
+    D::Union{Nothing,Int}=nothing,
+    Q::Union{Nothing,Float64}=nothing,
+    X::Union{Nothing,Float64}=nothing,
+    F::Union{Nothing,Float64}=nothing,
+    S::Union{Nothing,Float64}=nothing,
+)
+    vc = VariationCall(pileup)
+    _push_filter!(vc, 'd', D, (var, val) -> altdepth(var) < val)
+    _push_filter!(vc, 'q', Q, (var, val) -> quality(var) < val)
+    _push_filter!(vc, 'x', X, (var, val) -> _pos_to_edge(readpos(var)) < val)
+    _push_filter!(vc, 'f', F, (var, val) -> frequency(var) < val)
+    _push_filter!(vc, 's', S, (var, val) -> _pos_to_edge(strand_bias(var)) < val)
+    _push_filter!(vc, 'a', α, (var, val) -> p_value(var) > val)
+
+    if isempty(filters(vc))
+        push!(vc.filter, "PASS")
+    end #if
+
+    return vc
+end #function
