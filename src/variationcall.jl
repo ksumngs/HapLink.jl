@@ -41,3 +41,14 @@ function VariationCall(vp::VariationPileup)
 
     return VariationCall(v, q, f, d, s, a, x, p)
 end #function
+
+variation(vc::VariationCall) = vc.variation
+quality(vc::VariationCall) = vc.quality
+filters(vc::VariationCall) = vc.filter
+depth(vc::VariationCall) = vc.depth
+strand_bias(vc::VariationCall) = vc.strandbias
+altdepth(vc::VariationCall) = vc.altdepth
+readpos(vc::VariationCall) = vc.readpos
+p_value(vc::VariationCall) = vc.pvalue
+
+frequency(vc::VariationCall) = altdepth(vc) / depth(vc)

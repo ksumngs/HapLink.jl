@@ -25,8 +25,10 @@ export VariationInfo
 export VariationPileup
 export altdepth
 export depth
+export filters
 export frequency
 export interval
+export p_value
 export pileup
 export quality
 export readpos
