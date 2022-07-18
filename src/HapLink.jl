@@ -25,6 +25,7 @@ export VariationCall
 export VariationInfo
 export VariationPileup
 export altdepth
+export call_variant
 export depth
 export filters
 export frequency
