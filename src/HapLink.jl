@@ -20,6 +20,7 @@ using SequenceVariation:
 using Statistics: mean
 using XAM: BAM, SAM
 
+export VariationCall
 export VariationInfo
 export VariationPileup
 export altdepth
@@ -42,6 +43,7 @@ include("variation.jl")
 include("interval.jl")
 include("variationinfo.jl")
 include("variationpileup.jl")
+include("variationcall.jl")
 
 const VERSION = project_version(
     string(joinpath(parent(parent(Path(Base.find_package("HapLink")))), "Project.toml"))
