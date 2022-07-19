@@ -497,9 +497,7 @@ version = "0.3.0"
 
 [[SequenceVariation]]
 deps = ["BioAlignments", "BioGenerics", "BioSequences", "BioSymbols"]
-git-tree-sha1 = "a3364e475209d76904e336a98adf7a03100843d9"
-repo-rev = "feature/variations-from-variant"
-repo-url = "https://github.com/MillironX/SequenceVariation.jl"
+git-tree-sha1 = "a29bfbb3b7d0c184514756e33ba66fdb207cc813"
 uuid = "eef6e190-9969-4f06-a38f-35a110a8fdc8"
 version = "0.1.0"
 
