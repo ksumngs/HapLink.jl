@@ -1,6 +1,6 @@
 module HapLink
 
-using ArgParse: ArgParseSettings, @add_arg_table!, project_version
+using ArgParse: ArgParseSettings, @add_arg_table!, parse_args, project_version
 using BioAlignments: Alignment, AlignedSequence, PairwiseAlignment, ref2seq
 using BioGenerics: BioGenerics, leftposition, rightposition, metadata
 using BioSequences: BioSequence, NucleotideSeq
@@ -58,5 +58,116 @@ include("variationcall.jl")
 const VERSION = project_version(
     string(joinpath(parent(parent(Path(Base.find_package("HapLink")))), "Project.toml"))
 )
+
+function _parse_arguments()
+    s = ArgParseSettings(;
+        prog="haplink",
+        description="A haplotype caller for long sequencing reads using linkage disequilibrium",
+        version=VERSION,
+        add_version=true,
+    )
+    # Disable Julia formatter as it doesn't understand the nested table syntax of ArgParse
+    #! format: off
+
+    # Declare the HapLink commands
+    @add_arg_table! s begin
+        "variants"
+            help = "Call variants"
+            action = :command
+    end #add_arg_table
+
+    # Add arguments for the variant calling command
+    @add_arg_table! s["variants"] begin
+        "reference"
+            arg_type = String
+            required = true
+            range_tester = x -> isfile(x)
+            help = "FASTA formatted reference genome sequence file"
+        "bam"
+            arg_type = String
+            required = true
+            range_tester = x -> isfile(x)
+            help = "BAM formatted alignment file"
+        "--output", "-o"
+            arg_type = String
+            help = "Write output to file (VCF format)"
+        "--depth", "-m"
+            arg_type = Int64
+            default = 10
+            range_tester = x -> x >= 1
+            help = "Mimimum read depth to call variant"
+        "--quality", "-q"
+            arg_type = Float64
+            default = 12.0
+            range_tester = x -> x > 0
+            help = "Minimum average basecall quality score to call variant"
+        "--frequency", "-t"
+            arg_type = Float64
+            default = 0.05
+            range_tester = x -> (x >= 0) && (x <= 1)
+            help = "Minimum alternate base frequency to call variant"
+        "--position", "-x"
+            arg_type = Float64
+            default = 0.1
+            range_tester = x -> (x >= 0) && (x < 0.5)
+            help = "Maximum distance from edge to call variant"
+        "--strand", "-s"
+            arg_type = Float64
+            range_tester = x -> (x >= 0) && (x < 0.5)
+            help = "Maximum proportion of alternate found on one strand to call variant"
+        "--significance", "-a"
+            arg_type = Float64
+            default = 1e-5
+            range_tester = x -> (x >= 0) && (x <= 1)
+            help = "Maximum Χ-squared p-value level to call variant"
+    end #add_arg_table
+    #! format: on
+
+    args = parse_args(s)
+
+    return args["%COMMAND%"], args[args["%COMMAND%"]]
+end #function
+
+Base.@ccallable function julia_main()::Cint
+    cmd, args = _parse_arguments()
+
+    if cmd == "variants"
+        _haplink_variants(args)
+    else
+        return 1
+    end #if
+
+    return 0
+end #function
+
+function _haplink_variants(args::Dict{String,Any})
+    reffile = args["reference"]
+    bam = args["bam"]
+    outfile = args["output"]
+    depth = args["depth"]
+    qual = args["quality"]
+    freq = args["frequency"]
+    pos = args["position"]
+    strand = args["strand"]
+    α = args["significance"]
+
+    refname = FASTA.identifier(_first_record(reffile))
+
+    vcf_head = _vcf_header(reffile, α; D=depth, Q=qual, X=pos, F=freq, S=strand)
+    out_stream = isnothing(outfile) ? stdout : open(outfile, "w")
+    vcf_writer = VCF.Writer(out_stream, vcf_head)
+
+    pile = pileup(bam, reffile)
+
+    for p in pile
+        vc = call_variant(p, α; D=depth, Q=qual, X=pos, F=freq, S=strand)
+        vcf_rec = vcf(vc, refname)
+        write(vcf_writer, vcf_rec)
+    end #for
+
+    close(out_stream)
+
+    return 0
+end #function
 
 end #module
