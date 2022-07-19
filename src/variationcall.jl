@@ -85,6 +85,77 @@ function vcf(vc::VariationCall, refname::AbstractString)
     return VCF.Record(vcf_string)
 end #function
 
+function _vcf_header(
+    refpath::Union{AbstractPath,AbstractString},
+    α::Float64;
+    D::Union{Nothing,Int}=nothing,
+    Q::Union{Nothing,Float64}=nothing,
+    X::Union{Nothing,Float64}=nothing,
+    F::Union{Nothing,Float64}=nothing,
+    S::Union{Nothing,Float64}=nothing,
+)
+    MI = VCF.MetaInfo
+
+    abs_ref = absolute(Path(refpath))
+
+    _to_percent(x) = isnothing(x) ? nothing : string(trunc(Int, x * 100))
+    x = _to_percent(X)
+    f = _to_percent(F)
+    s = _to_percent(S)
+
+    metas = MI[]
+
+    push!(metas, MI("##fileformat=VCFv4.3"))
+    push!(metas, MI("##filedate=$(Dates.format(today(), "YYYmmdd"))"))
+    push!(metas, MI("##source=HapLink.jlv$VERSION"))
+    push!(metas, MI("##reference=file://$abs_ref"))
+    push!(
+        metas,
+        MI(
+            "##INFO=<ID=DP,Number=1,Type=Integer,Description=\"Combined depth across samples\">",
+        ),
+    )
+    push!(metas, MI("##INFO=<ID=SB,Number=1,Type=Float,Description=\"Strand bias\">"))
+    push!(
+        metas,
+        MI(
+            "##INFO=<ID=AD,Number=1,Type=Integer,Description=\"Total read depth for each allele\">",
+        ),
+    )
+    push!(
+        metas,
+        MI(
+            "##INFO=<ID=AF,Number=1,Type=Float,Description=\"Allele frequency for each ALT allele\">",
+        ),
+    )
+    push!(
+        metas,
+        MI("##INFO=<ID=RP,Number=1,Type=Float,Description=\"Read position of allele\">"),
+    )
+    push!(
+        metas,
+        MI(
+            "##INFO=<ID=PVAL,Number=1,Type=Float,Description=\"Fisher's exact p-value of variant call\">",
+        ),
+    )
+    push!(
+        metas,
+        MI(
+            "##FILTER=<ID=a$α,Description=\"Not significant at alpha=$α level by Fisher's Exact Test\">",
+        ),
+    )
+    isnothing(D) ||
+        push!(metas, MI("##FILTER=<ID=d$D,Description=\"Variant depth below $D\">"))
+    isnothing(Q) || push!(metas, MI("##FILTER=<ID=q$Q,Description=\"Quality below $Q\">"))
+    isnothing(x) ||
+        push!(metas, MI("##FILTER=<ID=x$x,Description=\"Position in outer $x% of reads\">"))
+    isnothing(f) ||
+        push!(metas, MI("##FILTER=<ID=f$f,Description=\"Frequency below $f%\">"))
+    isnothing(s) || push!(metas, "##FILTER=<ID=s$s,Description=\"Strand bias above $s%\">")
+
+    return VCF.Header(metas, ["."])
+end #function
+
 """
     _phrederror(quality::Number)
 
