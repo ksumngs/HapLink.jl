@@ -42,15 +42,85 @@ function VariationCall(vp::VariationPileup)
     return VariationCall(v, q, f, d, s, a, x, p)
 end #function
 
+"""
+    variation(vc::VariationCall) -> SequenceVariation.Variation
+
+Gets the `Variation` of a [`VariationCall`](@ref)
+"""
 variation(vc::VariationCall) = vc.variation
+
+"""
+    quality(vc::VariationCall) -> Union{Nothing,Float64}
+
+Gets the average phred quality score of `vc`, if known. Returns `nothing` if unknown.
+
+See also [`quality(::VariationInfo)`](@ref), [`quality(::VariationPileup)`](@ref)
+"""
 quality(vc::VariationCall) = vc.quality
+
+"""
+    filters(vc::VariationCall) -> Vector{String}
+
+Gets all filters that have been applied to `vc`. Note that an empty FILTER entry is not
+permitted under the [VCF
+spec](https://github.com/samtools/hts-specs#variant-calling-data-files), and an empty array
+should not automatically be considered to have `PASS`ed all filters.
+"""
 filters(vc::VariationCall) = vc.filter
+
+"""
+    depth(vc::VariationCall) -> Union{Nothing,UInt}
+
+Gets the number of times the position of `vc` appears total. Returns `nothing` if unknown.
+
+See also [`depth(::VariationPileup)`](@ref)
+"""
 depth(vc::VariationCall) = vc.depth
+
+"""
+    strand_bias(vc::VariationCall) -> Union{Nothing,Float64}
+
+Gets the fraction of times `vc` appears on the positive strand. Returns `nothing` if
+unknown.
+
+See also [`strand(::VariationInfo)`](@ref), [`strand(::VariationPileup)`](@ref)
+"""
 strand_bias(vc::VariationCall) = vc.strandbias
+
+"""
+    altdepth(vc::VariationCall) -> Union{Nothing,UInt}
+
+Gets the number of times `vc` appears. Returns `nothing` if unknown.
+
+See also [`altdepth(::VariationPileup)`](@ref)
+"""
 altdepth(vc::VariationCall) = vc.altdepth
+
+"""
+    readpos(vc::VariationCall) -> Union{Nothing,Float64}
+
+Gets the average relative position of `vc`. Returns `nothing` if unknown.
+
+See also [`readpos(::VariationPileup)`](@ref)
+"""
 readpos(vc::VariationCall) = vc.readpos
+
+"""
+    p_value(vc::VariationCall) -> Union{Nothing,Float64}
+
+Gets the ``p``-value of the observed statistic of `vc`. Returns `nothing` if unknown.
+
+See also [`variation_test`](@ref)
+"""
 p_value(vc::VariationCall) = vc.pvalue
 
+"""
+    frequency(vc::VariationCall) -> Float64
+
+Gets the alternate allele frequency of `vc`
+
+See also [`frequency(::VariationPileup)`](@ref)
+"""
 frequency(vc::VariationCall) = altdepth(vc) / depth(vc)
 
 """
