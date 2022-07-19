@@ -11,11 +11,9 @@
     "prepare": "husky install"
   },
   "lint-staged": {
-    "*.jl": "julia -e 'using JuliaFormatter; format(\".\"; verbose=true)'",
-    "docs/src/*.md": [
-      "julia -e 'using JuliaFormatter; format(\".\"; verbose=true, format_markdown=true)'"
-    ],
+    "*.jl": "julia -e 'using JuliaFormatter; format(ARGS[1]; verbose=true)'",
     "*.md": [
+      "julia -e 'using JuliaFormatter; format(ARGS[1]; verbose=true, format_markdown=true)'",
       "markdownlint-cli2-fix",
       "prettier --write"
     ],
