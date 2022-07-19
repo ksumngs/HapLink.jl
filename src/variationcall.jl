@@ -9,8 +9,8 @@ Format](https://github.com/samtools/hts-specs#variant-calling-data-files), or a
 # Fields
 - `variation::Variation`: The `Variation` of this call
 - `quality::Union{Nothing,Number}`: Phred quality of the basecall for `variation`
-- `filter::Union{Nothing,Vector{String}}`: Indicator if `variation` has passed filters and
-  is actually a variant call, or a list of criteria that have failed it
+- `filter::Vector{String}`: Indicator if `variation` has passed filters and is actually
+  a variant call, or a list of criteria that have failed it
 - `depth::Union{Nothing,UInt}`: The number of reads that cover `leftposition(variation)`
 - `strandbias::Union{Nothing,Float64}`: The fraction of times `variation` appears on a
   positive strand
@@ -21,7 +21,7 @@ Format](https://github.com/samtools/hts-specs#variant-calling-data-files), or a
 Base.@kwdef struct VariationCall
     variation::Variation
     quality::Union{Nothing,Number} = nothing
-    filter::Union{Nothing,Vector{String}} = nothing
+    filter::Vector{String} = String[]
     depth::Union{Nothing,UInt} = nothing
     strandbias::Union{Nothing,Float64} = nothing
     altdepth::Union{Nothing,UInt} = nothing
