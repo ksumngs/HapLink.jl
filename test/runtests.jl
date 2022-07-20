@@ -13,6 +13,7 @@ using Random: randstring, seed!
 using SequenceVariation: Variant, Variation, variations
 using Statistics: mean
 using XAM: SAM, BAM
+using VariantCallFormat: VCF
 
 using Documenter: DocMeta, doctest
 using Test
@@ -56,6 +57,13 @@ const ALIGNMENTS = align.(GENOTYPES, [REFERENCE])
 const VARIANTS = Variant.(ALIGNMENTS)
 const VARIATIONS = unique!(variations(VARIANTS))
 const SAMS = sam.(ALIGNMENTS)
+const VARIATIONINFOS = VariationInfo.(VARIATIONS, [0.5], [30.0], [STRAND_POS])
+const VARIATIONPILEUPS =
+    VariationPileup.(
+        VARIATIONS, [0x04], [[0.0, 1.0]], [[20.0, 30.0]], [[STRAND_POS, STRAND_NEG]]
+    )
+const VARIATIONCALLS = call_variant.(VARIATIONPILEUPS, [1.0])
+const VCFS = vcf.(VARIATIONCALLS, ["REFERENCE"])
 
 @testset "HapLink.jl" begin
     include("doctests.jl")

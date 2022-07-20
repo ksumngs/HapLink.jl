@@ -145,3 +145,32 @@ end #function
 function interval(v::Variation, refname::AbstractString)
     return Interval(refname, Int(leftposition(v)), Int(rightposition(v)))
 end #function
+
+"""
+    variation(r::VCF.Record, refseq::NucleotideSeq)
+
+Construct a `Variation` from `r` applying to `refseq`. There is no validation that `r`'s
+actually describes a mutation in `refseq`.
+"""
+function variation(r::VCF.Record, refseq::NucleotideSeq)
+    # Convert VCF record to array of nucleotides
+    SEQTYPE = typeof(refseq)
+    altbases = SEQTYPE(first(VCF.alt(r)))
+    refbases = SEQTYPE(VCF.ref(r))
+    pos = VCF.pos(r)
+
+    if length(altbases) == 1 && length(refbases) == 1
+        # Substitution
+        return Variation(refseq, "$refbases$pos$altbases")
+    elseif length(altbases) > length(refbases)
+        # Insertion
+        totalalt = pos > 1 ? altbases[2:end] : altbases[1:(end - 1)]
+        return Variation(refseq, "$pos$totalalt")
+    elseif length(refbases) > length(altbases)
+        dellen = length(refbases) - length(altbases)
+        delendpos = pos + dellen - 1
+        return Variation(refseq, "Δ$pos-$delendpos")
+    end #if
+
+    return altseq
+end #function

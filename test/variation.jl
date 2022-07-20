@@ -33,4 +33,10 @@ const INSERTION = Variation(REFERENCE, "19GTC")
         @test quality(DELETION, SAMS[3]) == 24.5
         @test quality(INSERTION, SAMS[end]) == 20
     end #testset
+
+    @testset "vcf" begin
+        for i in eachindex(VARIATIONS)
+            @test variation(VCFS[i], REFERENCE) == VARIATIONS[i]
+        end #for
+    end #testset
 end #testset
