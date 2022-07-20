@@ -8,14 +8,16 @@ using BioAlignments:
     pairalign
 using BioGenerics: leftposition
 using BioSequences: BioSequence, @dna_str, ungap!
-using Documenter: DocMeta, doctest
-using GenomicFeatures: Strand, STRAND_POS
-using HapLink
+using GenomicFeatures: Strand, STRAND_POS, STRAND_NEG
 using Random: randstring, seed!
 using SequenceVariation: Variant, Variation, variations
 using Statistics: mean
-using Test
 using XAM: SAM, BAM
+
+using Documenter: DocMeta, doctest
+using Test
+
+using HapLink
 
 seed!(1)
 
@@ -59,4 +61,5 @@ const SAMS = sam.(ALIGNMENTS)
     include("doctests.jl")
     include("variation.jl")
     include("variationinfo.jl")
+    include("variationpileup.jl")
 end #testset
