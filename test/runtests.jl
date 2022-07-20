@@ -62,4 +62,5 @@ const SAMS = sam.(ALIGNMENTS)
     include("variation.jl")
     include("variationinfo.jl")
     include("variationpileup.jl")
+    include("variationcall.jl")
 end #testset
