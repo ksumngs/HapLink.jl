@@ -46,6 +46,7 @@ GenomicFeatures = "2"
 HypothesisTests = "0.10"
 Lazy = "0.15.1"
 OrderedCollections = "1.4"
+SequenceVariation = "0.1.1"
 ThreadsX = "0.1"
 VariantCallFormat = "0.5"
 XAM = "0.2"
@@ -63,4 +64,13 @@ Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 XAM = "d759349c-bcba-11e9-07c2-5b90f8f05f7c"
 
 [targets]
-test = ["BioAlignments", "BioGenerics", "BioSequences", "Documenter", "Random", "SequenceVariation", "Test", "XAM"]
+test = [
+    "BioAlignments",
+    "BioGenerics",
+    "BioSequences",
+    "Documenter",
+    "Random",
+    "SequenceVariation",
+    "Test",
+    "XAM"
+]
