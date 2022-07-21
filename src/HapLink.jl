@@ -19,6 +19,7 @@ using SequenceVariation:
     Variation,
     altbases,
     mutation,
+    reconstruct!,
     refbases,
     variations
 using Statistics: mean
@@ -74,6 +75,9 @@ function _parse_arguments()
         "variants"
             help = "Call variants"
             action = :command
+        "consensus"
+            help = "Create consensus sequence"
+            action = :command
     end #add_arg_table
 
     # Add arguments for the variant calling command
@@ -121,6 +125,30 @@ function _parse_arguments()
             range_tester = x -> (x >= 0) && (x <= 1)
             help = "Maximum Χ-squared p-value level to call variant"
     end #add_arg_table
+
+    @add_arg_table! s["consensus"] begin
+        "reference"
+            arg_type = String
+            required = true
+            range_tester = x -> isfile(x)
+            help = "FASTA formatted reference genome sequence file"
+        "variants"
+            arg_type = String
+            required = true
+            range_tester = x -> isfile(x)
+            help = "VCF formatted variant calls"
+        "--output", "-o"
+            arg_type = String
+            help = "Write output to file (VCF format)"
+        "--frequency", "-t"
+            arg_type = Float64
+            default = 0.5
+            range_tester = x -> (x >= 0) && (x <= 1)
+            help = "Minimum alternate base frequency to label variant as consensus"
+        "--prefix", "-p"
+            arg_type = String
+            help = "The prefix (sequence identifier) of the consensus sequence"
+    end #add_arg_table
     #! format: on
 
     args = parse_args(s)
@@ -133,6 +161,8 @@ Base.@ccallable function julia_main()::Cint
 
     if cmd == "variants"
         _haplink_variants(args)
+    elseif cmd == "consensus"
+        _haplink_consensus(args)
     else
         return 1
     end #if
@@ -166,6 +196,37 @@ function _haplink_variants(args::Dict{String,Any})
     end #for
 
     close(out_stream)
+
+    return 0
+end #function
+
+function _haplink_consensus(args::Dict{String,Any})
+    reffile = args["reference"]
+    varfile = args["variants"]
+    outfile = args["output"]
+    freq = args["frequency"]
+    prefix = args["prefix"]
+
+    refrec = _first_record(reffile)
+    ref_id = isnothing(prefix) ? FASTA.identifier(refrec) : prefix
+    ref_seq = FASTA.sequence(refrec)
+
+    vars = Variation{typeof(ref_seq),eltype(ref_seq)}[]
+
+    vcf_reader = VCF.Reader(open(varfile, "r"))
+    for vcf_rec in vcf_reader
+        parse(Float64, VCF.info(vcf_rec, "AF")) >= freq || continue
+        first(VCF.filter(vcf_rec)) == "PASS" || continue
+        push!(vars, variation(vcf_rec, ref_seq))
+    end #for
+    close(vcf_reader)
+
+    con_seq = isempty(vars) ? ref_seq : reconstruct!(ref_seq, Variant(ref_seq, vars))
+
+    FASTA.Writer(isnothing(outfile) ? stdout : open(outfile, "w")) do fasta_writer
+        fasta_record = FASTA.Record("$(ref_id)_CONSENSUS", con_seq)
+        write(fasta_writer, fasta_record)
+    end #do
 
     return 0
 end #function
