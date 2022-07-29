@@ -1,3 +1,4 @@
+<!-- markdownlint-disable -->
 
 # <img src="./docs/src/assets/logo.png" style="border: 3px solid; float: left; margin: auto 2.5% auto 0" width="30%" > HapLink
 
@@ -10,6 +11,8 @@
 [![Coverage](https://codecov.io/gh/ksumngs/HapLink.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/ksumngs/HapLink.jl)
 [![Code Style: Blue](https://img.shields.io/badge/code%20style-blue-4495d1.svg)](https://github.com/invenia/BlueStyle)
 
+<!-- markdownlint-enable -->
+
 > This project follows the [semver] _pro forma_ and uses the [OneFlow]
 > branching model.
 
@@ -17,7 +20,7 @@ Call haplotypes based on linkage disequilibrium between variant sites on long
 sequencing reads. Uses maximum liklihood methods for reads that are shorter than
 the entire genome. Comes with its own variant caller.
 
-***
+---
 
 ## Installation
 
@@ -36,11 +39,15 @@ If you need to use HapLink somewhere else, everything needed is available in a
 
 To install our Hot-and-Ready binaries, run the following command:
 
+<!-- markdownlint-disable -->
+
 ```bash
-mkdir -p ~/.local/opt/HapLink-0.6.1
-curl -L https://github.com/ksumngs/HapLink.jl/releases/download/v0.6.1/HapLink-v0.6.1_linux.x86_64.tar.gz | tar xzv -C ~/.local/opt/HapLink-0.6.1
-ln -s ~/.local/opt/HapLink-0.6.1/bin/haplink ~/.local/bin
+mkdir -p ~/.local/opt/HapLink-0.7.1
+curl -L https://github.com/ksumngs/HapLink.jl/releases/download/v0.7.1/HapLink-v0.7.1_linux.x86_64.tar.gz | tar xzv -C ~/.local/opt/HapLink-0.7.1
+ln -s ~/.local/opt/HapLink-0.7.1/bin/haplink ~/.local/bin
 ```
+
+<!-- markdownlint-enable -->
 
 ### Julia Package
 
@@ -48,7 +55,7 @@ HapLink is not in the General Registry (yet!), so install using the `URL#tag`
 syntax to use in the REPL.
 
 ```julia
-using Pkg; Pkg.add("https://github.com/ksumngs/HapLink#v0.6.1")
+using Pkg; Pkg.add("https://github.com/ksumngs/HapLink#v0.7.1")
 ```
 
 ## Usage
@@ -58,29 +65,33 @@ both on the command line and in the REPL.
 
 The basic flow of HapLink is
 
+<!-- markdownlint-disable -->
+
 |     | Step                                   | Command              | Output Format |
 | --- | -------------------------------------- | -------------------- | ------------- |
 | 1.  | Call variants                          | `haplink variants`   | VCF           |
 | 2.  | Call haplotypes                        | `haplink haplotypes` | YAML          |
 | 3.  | Convert haplotype calls into sequences | `haplink sequences`  | FASTA         |
 
+<!-- markdownlint-enable -->
+
 You can see how this works using the files in the [example directory]:
 
 ```bash
 haplink variants \
-    --bam example/sample.bam \
-    --reference example/reference.fasta
-    --output sample.vcf
+  --bam example/sample.bam \
+  --reference example/reference.fasta
+--output sample.vcf
 
 haplink haplotypes \
-    --bam example/sample.bam \
-    --variants sample.vcf \
-    --output sample.yaml \
+  --bam example/sample.bam \
+  --variants sample.vcf \
+  --output sample.yaml
 
 haplink sequences \
-    --haplotypes sample.yaml \
-    --reference example/reference.fasta \
-    --output sample.fasta
+  --haplotypes sample.yaml \
+  --reference example/reference.fasta \
+  --output sample.fasta
 ```
 
 ## Development
@@ -135,22 +146,22 @@ Binaries are compiled using [PackageCompiler.jl], using the recipe in [.github/w
 1. Get the [official Julia release] (disto packages generally don't work)
 2. Install PackageCompiler into that Julia depot
 
-    ```shellsession
-    (@v1.6) pkg> install PackageCompiler
-    ```
+   ```shellsession
+   (@v1.6) pkg> install PackageCompiler
+   ```
 
 3. Run `PackageCompiler.create_app()` with the following options
 
-    ```julia
-    using PackageCompiler
-    create_app(
-      "/path/to/HapLink.jl",
-      "/path/to/output",
-      precompile_execution_file="precompile_app.jl",
-      executables=["haplink" => "haplink"],
-      cpu_target="x86-64",
-    )
-    ```
+   ```julia
+   using PackageCompiler
+   create_app(
+     "/path/to/HapLink.jl",
+     "/path/to/output",
+     precompile_execution_file="precompile_app.jl",
+     executables=["haplink" => "haplink"],
+     cpu_target="x86-64",
+   )
+   ```
 
 Compilation can take over 15 minutes to complete, so be patient!
 
@@ -161,14 +172,14 @@ working at Kansas State University. Why don't you [open a pull request] and fix
 that?
 
 [semver]: https://semver.org
-[OneFlow]: https://www.endoflineblog.com/oneflow-a-git-branching-model-and-workflow
-[Docker image over on Quay]: https://quay.io/repository/millironx/julia_bam-readcounts
+[oneflow]: https://www.endoflineblog.com/oneflow-a-git-branching-model-and-workflow
+[docker image over on quay]: https://quay.io/repository/millironx/julia_bam-readcounts
 [the docs]: https://ksumngs.github.io/HapLink.jl/stable
 [example directory]: https://github.com/ksumngs/HapLink.jl/tree/master/example
-[Julia]: https://julialang.org
-[Pkg documentation]: https://pkgdocs.julialang.org/v1/managing-packages/#developing
-[TTFP]: https://viralinstruction.com/posts/badjulia/#compile_time_latency
-[PackageCompiler.jl]: https://julialang.github.io/PackageCompiler.jl/stable/apps.html
+[julia]: https://julialang.org
+[pkg documentation]: https://pkgdocs.julialang.org/v1/managing-packages/#developing
+[ttfp]: https://viralinstruction.com/posts/badjulia/#compile_time_latency
+[packagecompiler.jl]: https://julialang.github.io/PackageCompiler.jl/stable/apps.html
 [.github/workflows/build.yml]: https://github.com/ksumngs/HapLink.jl/blob/master/.github/workflows/build.yml
-[official Julia release]: https://julialang.org/downloads/
+[official julia release]: https://julialang.org/downloads/
 [open a pull request]: https://github.com/ksumngs/HapLink.jl/compare
