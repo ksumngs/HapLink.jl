@@ -12,8 +12,10 @@
   },
   "lint-staged": {
     "*.jl": "julia -e 'using JuliaFormatter; format(\".\"; verbose=true)'",
+    "docs/src/*.md": [
+      "julia -e 'using JuliaFormatter; format(\".\"; verbose=true, format_markdown=true)'"
+    ],
     "*.md": [
-      "julia -e 'using JuliaFormatter; format(\".\"; verbose=true, format_markdown=true)'",
       "markdownlint-cli2-fix",
       "prettier --write"
     ],
