@@ -119,7 +119,7 @@ function savevcf(
         write(f, "##FILTER=<ID=x$X,Description=\"Position in outer $X% of reads\">\n")
         write(
             f,
-            "##FILTER=<ID=sg,Description=\"Not significant at α=$α level by Fisher's Exact Test\">\n",
+            "##FILTER=<ID=sg,Description=\"Not significant at alpha=$α level by Fisher's Exact Test\">\n",
         )
 
         # Add descriptions of the info tags I chose to include
