@@ -1,8 +1,6 @@
 name = "HapLink"
 uuid = "8ca39d33-de0d-4205-9b21-13a80f2b7eed"
-authors = [
-    "Thomas A. Christensen II, Kansas State University, and contributors"
-]
+authors = ["Thomas A. Christensen II, Kansas State University, and contributors"]
 version = "0.7.1"
 
 [deps]
@@ -32,7 +30,7 @@ BioSymbols = "4"
 Combinatorics = "1"
 DataFrames = "1"
 Distributions = "0.25"
-FASTX = "1.2"
+FASTX = "1.2, 2"
 FilePaths = "0.8"
 HypothesisTests = "0.10"
 OrderedCollections = "1.4"
