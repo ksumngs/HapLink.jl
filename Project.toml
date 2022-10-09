@@ -1,8 +1,6 @@
 name = "HapLink"
 uuid = "8ca39d33-de0d-4205-9b21-13a80f2b7eed"
-authors = [
-    "Thomas A. Christensen II, Kansas State University, and contributors"
-]
+authors = ["Thomas A. Christensen II, Kansas State University, and contributors"]
 version = "0.7.1"
 
 [deps]
@@ -26,7 +24,7 @@ YAML = "ddb6d928-2868-570f-bddf-ab3f9cf99eb6"
 
 [compat]
 ArgParse = "1"
-BioAlignments = "2"
+BioAlignments = "2, 3"
 BioSequences = "2"
 BioSymbols = "4"
 Combinatorics = "1"
