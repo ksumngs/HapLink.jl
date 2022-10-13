@@ -5,6 +5,7 @@ using BioAlignments: Alignment, AlignedSequence, PairwiseAlignment, ref2seq
 using BioGenerics: BioGenerics, leftposition, rightposition, metadata
 using BioSequences: BioSequence, NucleotideSeq
 using BioSymbols: BioSymbol
+using Combinatorics: combinations
 using Dates: Dates, today
 using FASTX: FASTA
 using FilePaths: FilePaths, AbstractPath, Path, absolute
@@ -33,6 +34,7 @@ export altdepth
 export call_variant
 export depth
 export filters
+export findset
 export frequency
 export interval
 export p_value
@@ -55,6 +57,7 @@ include("interval.jl")
 include("variationinfo.jl")
 include("variationpileup.jl")
 include("variationcall.jl")
+include("findset.jl")
 
 const VERSION = project_version(
     string(joinpath(parent(parent(Path(Base.find_package("HapLink")))), "Project.toml"))

@@ -71,4 +71,5 @@ const VCFS = vcf.(VARIATIONCALLS, ["REFERENCE"])
     include("variationinfo.jl")
     include("variationpileup.jl")
     include("variationcall.jl")
+    include("findset.jl")
 end #testset
