@@ -117,7 +117,11 @@ end #struct
             if $XAM.ismapped(record) &&
                 $XAM.flag(record) & 0x900 == 0 && # is primary line
                 $XAM.refname(record) == FASTA.identifier(ref)
-                push!(all_variation_infos, variationinfos(record, FASTA.sequence(ref))...)
+                seqtype = typeof($XAM.sequence(record))
+                push!(
+                    all_variation_infos,
+                    variationinfos(record, FASTA.sequence(seqtype, ref))...,
+                )
             end #if
         end #while
 
