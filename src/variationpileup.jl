@@ -100,10 +100,10 @@ function _depth_dict(sam::Union{AbstractString,AbstractPath}, ref::FASTA.Record)
     dd = Dict{Interval,UInt}()
 
     rname = FASTA.identifier(ref)
-    rlen = FASTA.seqlen(ref)
+    rlen = FASTA.seqsize(ref)
     sams = last(_indexed_reader(sam, Interval(rname, 1, rlen)))
 
-    for i in 1:FASTA.seqlen(ref)
+    for i in 1:rlen
         int = Interval(rname, i, i)
         dd[int] = 0
     end #for
