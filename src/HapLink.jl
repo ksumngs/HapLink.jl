@@ -3,7 +3,7 @@ module HapLink
 using ArgParse: ArgParseSettings, @add_arg_table!, parse_args, project_version
 using BioAlignments: Alignment, AlignedSequence, PairwiseAlignment, ref2seq
 using BioGenerics: BioGenerics, leftposition, rightposition, metadata
-using BioSequences: BioSequence, NucleotideSeq
+using BioSequences: BioSequence, LongDNA, NucleotideSeq
 using BioSymbols: BioSymbol
 using Combinatorics: combinations
 using Dates: Dates, today
@@ -32,6 +32,7 @@ export VariationInfo
 export VariationPileup
 export altdepth
 export call_variant
+export consensus
 export depth
 export filters
 export findset
@@ -57,6 +58,7 @@ include("interval.jl")
 include("variationinfo.jl")
 include("variationpileup.jl")
 include("variationcall.jl")
+include("consensus.jl")
 include("findset.jl")
 
 const VERSION = project_version(
@@ -210,25 +212,10 @@ function _haplink_consensus(args::Dict{String,Any})
     freq = args["frequency"]
     prefix = args["prefix"]
 
-    refrec = _first_record(reffile)
-    ref_id = isnothing(prefix) ? FASTA.identifier(refrec) : prefix
-    ref_seq = FASTA.sequence(refrec)
-
-    vars = Variation{typeof(ref_seq),eltype(ref_seq)}[]
-
-    vcf_reader = VCF.Reader(open(varfile, "r"))
-    for vcf_rec in vcf_reader
-        parse(Float64, VCF.info(vcf_rec, "AF")) >= freq || continue
-        first(VCF.filter(vcf_rec)) == "PASS" || continue
-        push!(vars, variation(vcf_rec, ref_seq))
-    end #for
-    close(vcf_reader)
-
-    con_seq = isempty(vars) ? ref_seq : reconstruct!(ref_seq, Variant(ref_seq, vars))
+    consensus_record = consensus(reffile, varfile; frequency=freq, prefix=prefix)
 
     FASTA.Writer(isnothing(outfile) ? stdout : open(outfile, "w")) do fasta_writer
-        fasta_record = FASTA.Record("$(ref_id)_CONSENSUS", con_seq)
-        write(fasta_writer, fasta_record)
+        write(fasta_writer, consensus_record)
     end #do
 
     return 0

@@ -1,38 +1,87 @@
 """
-    consensus_sequence(refseq::LongDNASeq, vars::AbstractArray{Variant}; freq::Float64=0.5)
+    consensus(
+        reference::Union{AbstractString,AbstractPath},
+        variants::Union{AbstractString,AbstractPath};
+        frequency::Float64=0.5,
+        prefix::Union{AbstractString,Nothing}=nothing,
+    )
 
-Generate the consensus sequence of `refseq` when mutated by `vars`, excluding any items from
-`vars` that have a variant frequency less than `freq`.
+Get the consensus `FASTA.Record `from `variants` applied to the first sequence in
+`reference`.
+
+# Arguments
+- `reference::Union{AbstractString,AbstractPath}`: Path to the reference genome that
+  variants were called from. Only the first sequence will be used.
+- `variants::Union{AbstractString,AbstractPath}`: Path to variant call file that mutations
+  will be applied from
+
+# Keywords
+- `frequency::Float64=0.5`: Fraction of total reads that must have supported the alternate
+  position in order to be included as part of the consensus. In other words, only VCF
+  records that have a `AF` (allele/alternate frequency) higher than this will be considered
+  to contribute to the consensus.
+- `prefix::Union{AbstractString,Nothing}=nothing`: Name to give to the output record. By
+  default, the name of the output record will be the same as the name of the input record
+  with `_CONSENSUS` appended. If `prefix` is supplied, then the name of the output record
+  will be `\$(prefix)_CONSENSUS`.
 """
-function consensus_sequence(
-    refseq::LongDNASeq, vars::AbstractArray{Variant}; freq::Float64=0.5
+function consensus(
+    reference::Union{AbstractString,AbstractPath},
+    variants::Union{AbstractString,AbstractPath};
+    frequency::Float64=0.5,
+    prefix::Union{AbstractString,Nothing}=nothing,
 )
-    consensus_seq = copy(refseq)
-    return mutate(consensus_seq, Haplotype(consensus_variants(vars; freq=freq)))
+    refrec = _first_record(reference)
+    ref_id = isnothing(prefix) ? FASTA.identifier(refrec) : prefix
+    ref_seq = FASTA.sequence(LongDNA{2}, refrec)
+
+    con_seq = consensus(ref_seq, variants; frequency=frequency)
+
+    fasta_record = FASTA.Record("$(ref_id)_CONSENSUS", con_seq)
+
+    return fasta_record
 end #function
 
 """
-    consensus_variants(vars::AbstractArray{Variant}; freq::Float64=0.5)
+    consensus(
+        reference::NucleotideSeq,
+        variants::Union{AbstractString,AbstractPath};
+        frequency::Float64=0.5,
+    )
 
-Get a list of [`Variant`](@ref)s from `vars` that are the majority base with a frequency
-greater than `freq`
+Get the consensus `FASTA.Record `from `variants` applied to the first sequence in
+`reference`.
+
+# Arguments
+- `reference::NucleotideSeq`: Sequence of the reference genome that variants were called
+  from
+- `variants::Union{AbstractString,AbstractPath}`: Path to variant call file that mutations
+  will be applied from
+
+# Keywords
+- `frequency::Float64=0.5`: Fraction of total reads that must have supported the alternate
+  position in order to be included as part of the consensus. In other words, only VCF
+  records that have a `AF` (allele/alternate frequency) higher than this will be considered
+  to contribute to the consensus.
 """
-function consensus_variants(vars::AbstractArray{Variant}; freq::Float64=0.5)
-    con_vars = Variant[]
+function consensus(
+    reference::NucleotideSeq,
+    variants::Union{AbstractString,AbstractPath};
+    frequency::Float64=0.5,
+)
+    SeqType = typeof(reference)
+    BaseType = eltype(reference)
 
-    # Loop through every genomic region (CHROM:POS)
-    for chrom in unique(chromosome.(vars)), pos in unique(varposition.(vars))
-        # Get all the variants that match this particular genomic region
-        containingvars = filter(v -> chromosome(v) == chrom && varposition(v) == pos, vars)
+    vars = Variation{SeqType,BaseType}[]
 
-        # Sort those variants by depth and pick the most occuring variant
-        sort!(containingvars; lt=(x, y) -> alternatedepth(x) < alternatedepth(y))
-        mostvar = last(containingvars)
-
-        if (alternatedepth(mostvar) / totaldepth(mostvar)) > freq
-            push!(con_vars, mostvar)
-        end #if
+    vcf_reader = VCF.Reader(open(string(variants), "r"))
+    for vcf_rec in vcf_reader
+        parse(Float64, VCF.info(vcf_rec, "AF")) >= frequency || continue
+        all(f -> f == "PASS", VCF.filter(vcf_rec)) || continue
+        push!(vars, variation(vcf_rec, reference))
     end #for
 
-    return con_vars
+    con_seq = isempty(vars) ? reference : reconstruct!(reference, Variant(reference, vars))
+
+    return con_seq
 end #function
