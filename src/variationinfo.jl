@@ -64,10 +64,7 @@ variation call found within `query` as a `Vector{VariationInfo}`
     XAM = _xam_record_switch(query)
 
     quote
-        aligned_seq = AlignedSequence($XAM.sequence(query), $XAM.alignment(query))
-        paired_alignment = PairwiseAlignment(aligned_seq, reference)
-
-        query_variant = Variant(paired_alignment)
+        query_variant = Variant(query, reference)
 
         query_variations = VariationInfo[]
 
