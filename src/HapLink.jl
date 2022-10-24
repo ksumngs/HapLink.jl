@@ -84,6 +84,9 @@ function _parse_arguments()
         "consensus"
             help = "Create consensus sequence"
             action = :command
+        "haplotypes"
+            help = "Call haplotypes"
+            action = :command
     end #add_arg_table
 
     # Add arguments for the variant calling command
@@ -155,6 +158,68 @@ function _parse_arguments()
             arg_type = String
             help = "The prefix (sequence identifier) of the consensus sequence"
     end #add_arg_table
+
+    @add_arg_table! s["haplotypes"] begin
+        "reference"
+            arg_type = String
+            required = true
+            range_tester = isfile
+            help = "FASTA formatted reference genome sequence file"
+        "variants"
+            arg_type = String
+            required = true
+            range_tester = isfile
+            help = "VCF formatted variant calls"
+        "bam"
+            arg_type = String
+            required = true
+            range_tester = isfile
+            help = "BAM formatted alignment file"
+        "--output", "-o"
+            arg_type = String
+            help = "Write output to file (YAML format)"
+        "--consensus_frequency", "-c"
+            arg_type = Float64
+            default = 0.5
+            range_tester = x -> (x >= 0) && (x <= 1)
+            help = "Minimum alternate base frequency to label variant as consensus"
+        "--significance", "-a"
+            arg_type = Float64
+            default = 1e-5
+            range_tester = x -> (x >= 0) && (x <= 1)
+            help = "Maximum Χ-squared significance to call a haplotype"
+        "--depth", "-d"
+            arg_type = Int64
+            default = 10
+            range_tester = x -> x >= 1
+            help = "Minimum depth to call a haplotype"
+        "--frequency", "-t"
+            arg_type = Float64
+            default = 0.1
+            range_tester = x -> (x >= 0) && (x <= 1)
+            help = "Minimum frequency to call a haplotype"
+        "--full_length_reads"
+            action = :store_true
+            help = "Use reads that span the entire genome to call haplotypes"
+        "--simulated_reads"
+            action = :store_true
+            help = "Simulate long reads based on overlapping alignments. Overrides `--full_length_reads`"
+        "--overlap_min", "-m"
+            arg_type = Int64
+            default = 0
+            help = "The minimum number of bases that aligned reads must overlap to be compiled into the same simulated read. A value of `0` indicates that all gaps are permitted, while a negative value puts a cap on the length of gaps permitted. Only applies if `--simulated_reads` is passed."
+        "--overlap_max", "-n"
+            arg_type = Int64
+            default = 500
+            help = "The maximum number of bases that aligned reads are allowed to overlap to be compiled into the same simulated read. Only applies if `--simulated_reads` is passed."
+        "--iterations", "-j"
+            arg_type = UInt64
+            default = UInt64(10000)
+            help = "Number of simulated reads to attepmt to generate. Only applies if `--simulated_reads` is passed."
+        "--seed", "-s"
+            arg_type = UInt64
+            help = "Set the random seed for the simulated read generation process. Only applies if `--simulated_reads` is passed."
+    end #add_arg_table
     #! format: on
 
     args = parse_args(s)
@@ -169,6 +234,8 @@ Base.@ccallable function julia_main()::Cint
         _haplink_variants(args)
     elseif cmd == "consensus"
         _haplink_consensus(args)
+    elseif cmd == "haplotypes"
+        _haplink_haplotypes(args)
     else
         return 1
     end #if
@@ -219,6 +286,10 @@ function _haplink_consensus(args::Dict{String,Any})
         write(fasta_writer, consensus_record)
     end #do
 
+    return 0
+end #function
+
+function _haplink_haplotypes(args::Dict{String,Any})
     return 0
 end #function
 
