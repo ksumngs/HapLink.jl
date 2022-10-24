@@ -20,3 +20,17 @@ end #function
 _startpos(x::Pseudoread) = x.startpos
 _endpos(x::Pseudoread) = x.endpos
 _read(x::Pseudoread) = x.read
+
+function _pseudoreads(sam::Union{AbstractString,AbstractPath}, consensus::NucleotideSeq)
+    XAM = _issam(sam) ? SAM : BAM
+
+    returned_reads = Pseudoread[]
+
+    reader = open(XAM.Reader, sam)
+    for r in reader
+        push!(returned_reads, Pseudoread(r, consensus))
+    end #for
+    close(reader)
+
+    return returned_reads
+end #function
