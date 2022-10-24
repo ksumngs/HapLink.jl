@@ -9,6 +9,14 @@ function Pseudoread(startpos::Integer, endpos::Integer, read::Variant)
     return Pseudoread(UInt64(startpos), UInt64(endpos), read)
 end #function
 
+function Pseudoread(query::Union{SAM.Record,BAM.Record}, reference::NucleotideSeq)
+    XAM = query isa SAM.Record ? SAM : BAM
+
+    return Pseudoread(
+        XAM.position(query), XAM.rightposition(query), Variant(query, reference)
+    )
+end #function
+
 _startpos(x::Pseudoread) = x.startpos
 _endpos(x::Pseudoread) = x.endpos
 _read(x::Pseudoread) = x.read
