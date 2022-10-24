@@ -53,6 +53,7 @@ export vcf
 
 include("fasta.jl")
 include("xam.jl")
+include("variant.jl")
 include("variation.jl")
 include("interval.jl")
 include("variationinfo.jl")
