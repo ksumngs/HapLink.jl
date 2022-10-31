@@ -76,7 +76,7 @@ function consensus(
 
     vcf_reader = VCF.Reader(open(string(variants), "r"))
     for vcf_rec in vcf_reader
-        parse(Float64, VCF.info(vcf_rec, "AF")) >= frequency || continue
+        _alt_freq(vcf_rec) >= frequency || continue
         all(f -> f == "PASS", VCF.filter(vcf_rec)) || continue
         push!(vars, variation(vcf_rec, reference))
     end #for
@@ -84,4 +84,16 @@ function consensus(
     con_seq = isempty(vars) ? reference : reconstruct!(reference, Variant(reference, vars))
 
     return con_seq
+end #function
+
+function _alt_freq(r::VCF.Record)
+    infos = Dict(VCF.info(r))
+    if "AF" in keys(infos)
+        return parse(Float64, infos["AF"])
+    elseif "DP" in keys(infos) && "AD" in keys(infos)
+        return parse(Float64, infos["AD"]) / parse(Float64, infos["DP"])
+    else
+        @warn "Not enough INFO on $(VCF.chrom(r)):$(VCF.pos(r)) to determine frequency"
+        return NaN
+    end #if
 end #function
