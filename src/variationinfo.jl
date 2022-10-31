@@ -111,9 +111,7 @@ end #struct
             empty!(record)
             read!(reader, record)
 
-            if $XAM.ismapped(record) &&
-                $XAM.flag(record) & 0x900 == 0 && # is primary line
-                $XAM.refname(record) == FASTA.identifier(ref)
+            if _is_primary_record(record) && $XAM.refname(record) == FASTA.identifier(ref)
                 seqtype = typeof($XAM.sequence(record))
                 push!(
                     all_variation_infos,
@@ -124,4 +122,10 @@ end #struct
 
         return all_variation_infos
     end #quote
+end #function
+
+function _is_primary_record(r::Union{SAM.Record,BAM.Record})
+    XAM = r isa SAM.Record ? SAM : BAM
+
+    return XAM.ismapped(r) && (XAM.flag(r) & 0x900 == 0) # is primary line
 end #function
