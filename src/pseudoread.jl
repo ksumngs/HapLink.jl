@@ -28,7 +28,7 @@ function _pseudoreads(sam::Union{AbstractString,AbstractPath}, consensus::Nucleo
 
     reader = open(XAM.Reader, sam)
     for r in reader
-        push!(returned_reads, Pseudoread(r, consensus))
+        _is_primary_record(r) && push!(returned_reads, Pseudoread(r, consensus))
     end #for
     close(reader)
 
