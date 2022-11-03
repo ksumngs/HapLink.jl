@@ -76,14 +76,17 @@ function consensus(
 
     vcf_reader = VCF.Reader(open(string(variants), "r"))
     for vcf_rec in vcf_reader
-        _alt_freq(vcf_rec) >= frequency || continue
-        all(f -> f == "PASS", VCF.filter(vcf_rec)) || continue
-        push!(vars, variation(vcf_rec, reference))
+        isconsensus(vcf_rec; frequency=frequency) &&
+            push!(vars, variation(vcf_rec, reference))
     end #for
 
     con_seq = isempty(vars) ? reference : reconstruct!(reference, Variant(reference, vars))
 
     return con_seq
+end #function
+
+function isconsensus(r::VCF.Record; frequency::Float64=0.5)
+    return _alt_freq(r) >= frequency && all(f -> f == "PASS", VCF.filter(r))
 end #function
 
 function _alt_freq(r::VCF.Record)
