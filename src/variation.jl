@@ -56,73 +56,59 @@ Calculates the fractional position of `v` within the sequence of `r`. If `v` is
 out-of-bounds of `r`, then will return `0` for positions before `r` and `1` for positions
 after `r`.
 """
-@generated function relativepos(v::Variation, r::Union{SAM.Record,BAM.Record})
-    XAM = _xam_record_switch(r)
-
-    quote
-        if leftposition(v) <= $XAM.position(r)
-            return 0.0
-        elseif leftposition(v) >= $XAM.rightposition(r)
-            return 1.0
-        else
-            pos = seqpos(v, $XAM.alignment(r)) / ($XAM.rightposition(r) - $XAM.position(r))
-            return pos <= 1.0 ? pos : 1.0
-        end #if
-    end #quote
+function relativepos(v::Variation, r::Union{SAM.Record,BAM.Record})
+    if leftposition(v) <= _XAM_(r).position(r)
+        return 0.0
+    elseif leftposition(v) >= _XAM_(r).rightposition(r)
+        return 1.0
+    else
+        pos =
+            seqpos(v, _XAM_(r).alignment(r)) /
+            (_XAM_(r).rightposition(r) - _XAM_(r).position(r))
+        return pos <= 1.0 ? pos : 1.0
+    end #if
 end #function
 
-@generated function _subqual(v::Variation, r::Union{SAM.Record,BAM.Record})
-    XAM = _xam_record_switch(r)
-
-    quote
-        # Substitution quality: basecall quality of substituted base
-        # ref    GATTACA
-        #        ||| |||
-        # seq    GATAACA  => qscore = '%' = 4
-        # qscore "#$%&'(
-        return $XAM.quality(r)[first(ref2seq($XAM.alignment(r), leftposition(v)))]
-    end #quote
+function _subqual(v::Variation, r::Union{SAM.Record,BAM.Record})
+    # Substitution quality: basecall quality of substituted base
+    # ref    GATTACA
+    #        ||| |||
+    # seq    GATAACA  => qscore = '%' = 4
+    # qscore "#$%&'(
+    return _XAM_(r).quality(r)[first(ref2seq(_XAM_(r).alignment(r), leftposition(v)))]
 end #function
 
-@generated function _insqual(v::Variation, r::Union{SAM.Record,BAM.Record})
-    XAM = _xam_record_switch(r)
+function _insqual(v::Variation, r::Union{SAM.Record,BAM.Record})
+    if leftposition(v) <= _XAM_(r).position(r)
+        # Insertion quality if insertion starts before alignment: basecall quality of
+        # read from first base until last inserted base
+        # ref    --GATTACA
+        #          |||||||
+        # seq    GGGATTACA => qscore = mean('#$') = mean([1,2]) = 1.5
+        # qscore "#$%&'()*
+        startpos = 1
+        endpos = first(ref2seq(_XAM_(r).alignment(r), leftposition(v))) - 1
+    elseif leftposition(v) >= _XAM_(r).rightposition(r)
+        startpos = first(ref2seq(_XAM_(r).alignment(r), leftposition(v) - 1)) + 1
+        endpos = length(_XAM_(r).quality(r))
+    else
+        # Insertion quality: basecall quality of inserted bases
+        # ref    GAT--TACA
+        #        |||  ||||
+        # seq    GATGGTACA  => qscore = mean('%&') = mean([4,5]) = 4.5
+        # qscore "#$%&'()*
+        startpos = first(ref2seq(_XAM_(r).alignment(r), leftposition(v) - 1)) + 1
+        endpos = first(ref2seq(_XAM_(r).alignment(r), leftposition(v))) - 1
+    end #if
 
-    quote
-        if leftposition(v) <= $XAM.position(r)
-            # Insertion quality if insertion starts before alignment: basecall quality of
-            # read from first base until last inserted base
-            # ref    --GATTACA
-            #          |||||||
-            # seq    GGGATTACA => qscore = mean('#$') = mean([1,2]) = 1.5
-            # qscore "#$%&'()*
-            startpos = 1
-            endpos = first(ref2seq($XAM.alignment(r), leftposition(v))) - 1
-        elseif leftposition(v) >= $XAM.rightposition(r)
-            startpos = first(ref2seq($XAM.alignment(r), leftposition(v) - 1)) + 1
-            endpos = length($XAM.quality(r))
-        else
-            # Insertion quality: basecall quality of inserted bases
-            # ref    GAT--TACA
-            #        |||  ||||
-            # seq    GATGGTACA  => qscore = mean('%&') = mean([4,5]) = 4.5
-            # qscore "#$%&'()*
-            startpos = first(ref2seq($XAM.alignment(r), leftposition(v) - 1)) + 1
-            endpos = first(ref2seq($XAM.alignment(r), leftposition(v))) - 1
-        end #if
-
-        return mean($XAM.quality(r)[startpos:endpos])
-    end #quote
+    return mean(_XAM_(r).quality(r)[startpos:endpos])
 end #function
 
-@generated function _delqual(v::Variation, r::Union{SAM.Record,BAM.Record})
-    XAM = _xam_record_switch(r)
+function _delqual(v::Variation, r::Union{SAM.Record,BAM.Record})
+    leftpos = first(ref2seq(_XAM_(r).alignment(r), leftposition(v) - 1))
+    rightpos = first(ref2seq(_XAM_(r).alignment(r), leftposition(v) + length(mutation(v))))
 
-    quote
-        leftpos = first(ref2seq($XAM.alignment(r), leftposition(v) - 1))
-        rightpos = first(ref2seq($XAM.alignment(r), leftposition(v) + length(mutation(v))))
-
-        return mean($XAM.quality(r)[leftpos:rightpos])
-    end #quote
+    return mean(_XAM_(r).quality(r)[leftpos:rightpos])
 end #function
 
 """
