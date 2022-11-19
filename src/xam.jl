@@ -1,3 +1,13 @@
+function _XAM_(r::Union{SAM.Record,BAM.Record,SAM.Reader,BAM.Reader})
+    if r isa SAM.Record || r isa SAM.Reader
+        return SAM
+    elseif r isa BAM.Record || r isa BAM.Reader
+        return BAM
+    else
+        error("Type checking failed for $(r)")
+    end #if
+end #function
+
 function _xam_record_switch(r::Union{Type{SAM.Record},Type{BAM.Record}})
     return r <: SAM.Record ? :SAM : :BAM
 end
