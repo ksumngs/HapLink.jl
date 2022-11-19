@@ -32,11 +32,8 @@ function _issam(file::Union{AbstractPath,AbstractString})
     return false
 end #function
 
-@generated function interval(r::Union{SAM.Record,BAM.Record})
-    XAM = _xam_record_switch(r)
-    quote
-        return Interval($XAM.refname(r), $XAM.position(r), $XAM.rightposition(r))
-    end #quote
+function interval(r::Union{SAM.Record,BAM.Record})
+    return Interval(_XAM_(r).refname(r), _XAM_(r).position(r), _XAM_(r).rightposition(r))
 end #function
 
 FilePaths.@compat function _find_bam_index(bam::AbstractPath)

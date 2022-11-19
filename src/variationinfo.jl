@@ -58,36 +58,30 @@ strand(vi::VariationInfo) = vi.strand
 Calls `Variation`s based on the alignments in `query` against `reference`, and returns every
 variation call found within `query` as a `Vector{VariationInfo}`
 """
-@generated function variationinfos(
-    query::Union{SAM.Record,BAM.Record}, reference::NucleotideSeq
-)
-    XAM = _xam_record_switch(query)
+function variationinfos(query::Union{SAM.Record,BAM.Record}, reference::NucleotideSeq)
+    query_variant = Variant(query, reference)
 
-    quote
-        query_variant = Variant(query, reference)
+    query_variations = VariationInfo[]
 
-        query_variations = VariationInfo[]
-
-        try
-            for variation in variations(query_variant)
-                push!(
-                    query_variations,
-                    VariationInfo(
-                        variation,
-                        relativepos(variation, query),
-                        Float64(quality(variation, query)),
-                        # Note: ispositivestrand is implemented for BAM records, but not for
-                        # SAM records, so inline the logic here
-                        $XAM.flag(query) & 0x10 == 0 ? Strand('+') : Strand('-'),
-                    ),
-                )
-            end #for
-        catch
-            tname = $XAM.tempname(query)
-            @warn "Could not parse variations from $tname"
-        end #try
-        return query_variations
-    end #quote
+    try
+        for variation in variations(query_variant)
+            push!(
+                query_variations,
+                VariationInfo(
+                    variation,
+                    relativepos(variation, query),
+                    Float64(quality(variation, query)),
+                    # Note: ispositivestrand is implemented for BAM records, but not for
+                    # SAM records, so inline the logic here
+                    _XAM_(query).flag(query) & 0x10 == 0 ? Strand('+') : Strand('-'),
+                ),
+            )
+        end #for
+    catch
+        tname = _XAM_(query).tempname(query)
+        @warn "Could not parse variations from $tname"
+    end #try
+    return query_variations
 end #function
 
 function variationinfos(
@@ -100,32 +94,25 @@ function variationinfos(
     return vi
 end #struct
 
-@generated function _varinfos(reader::Union{SAM.Reader,BAM.Reader}, ref::FASTA.Record)
-    XAM = _xam_reader_switch(reader)
+function _varinfos(reader::Union{SAM.Reader,BAM.Reader}, ref::FASTA.Record)
+    all_variation_infos = VariationInfo[]
+    record = _XAM_(reader).Record()
 
-    quote
-        all_variation_infos = VariationInfo[]
-        record = $XAM.Record()
+    while !eof(reader)
+        empty!(record)
+        read!(reader, record)
 
-        while !eof(reader)
-            empty!(record)
-            read!(reader, record)
+        if _is_primary_record(record) && _XAM_(reader).refname(record) == FASTA.identifier(ref)
+            seqtype = typeof(_XAM_(reader).sequence(record))
+            push!(
+                all_variation_infos, variationinfos(record, FASTA.sequence(seqtype, ref))...
+            )
+        end #if
+    end #while
 
-            if _is_primary_record(record) && $XAM.refname(record) == FASTA.identifier(ref)
-                seqtype = typeof($XAM.sequence(record))
-                push!(
-                    all_variation_infos,
-                    variationinfos(record, FASTA.sequence(seqtype, ref))...,
-                )
-            end #if
-        end #while
-
-        return all_variation_infos
-    end #quote
+    return all_variation_infos
 end #function
 
 function _is_primary_record(r::Union{SAM.Record,BAM.Record})
-    XAM = r isa SAM.Record ? SAM : BAM
-
-    return XAM.ismapped(r) && (XAM.flag(r) & 0x900 == 0) # is primary line
+    return _XAM_(r).ismapped(r) && (_XAM_(r).flag(r) & 0x900 == 0) # is primary line
 end #function
