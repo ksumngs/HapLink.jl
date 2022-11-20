@@ -42,4 +42,10 @@
         @test contains(baseheader, "<ID=f")
         @test contains(baseheader, "<ID=s")
     end #testset
+
+    @testset "phrederror" begin
+        @test HapLink._phrederror(10) ≈ 0.1
+        @test HapLink._phrederror(20) ≈ 0.01
+        @test HapLink._phrederror(30) ≈ 0.001
+    end #testset
 end
