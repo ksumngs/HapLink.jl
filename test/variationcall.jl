@@ -48,4 +48,12 @@
         @test HapLink._phrederror(20) ≈ 0.01
         @test HapLink._phrederror(30) ≈ 0.001
     end #testset
+
+    @testset "pos_to_edge" begin
+        @test_throws ErrorException HapLink._pos_to_edge(-1)
+        @test_throws ErrorException HapLink._pos_to_edge(2)
+        @test HapLink._pos_to_edge(0.5) == 1
+        @test HapLink._pos_to_edge(0.25) == 0.5
+        @test HapLink._pos_to_edge(0.75) == 0.5
+    end
 end
