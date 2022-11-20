@@ -243,8 +243,8 @@ Converts `pos` from a number between 0 (beginning) and 1 (end) to a number rangi
 distance from the edge.
 """
 function _pos_to_edge(pos::Number)
-    pos > 0 && pos < 1 || error("`pos` must be between 0 and 1")
-    return min(pos, 1 - pos)
+    pos >= 0 && pos <= 1 || error("`pos` must be between 0 and 1")
+    return pos <= 0.5 ? pos * 2 : (1 - pos) * 2
 end #function
 
 """
