@@ -160,7 +160,7 @@ haplotypes whose number of occurrences are given by `counts`.
 `counts` is an ``N``-dimensional array where the ``N``th dimension represents the ``N``th
 variant call position within a haplotype. `findoccurrences` produces such an array.
 """
-function linkage(counts::AbstractArray{Int})
+function linkage(counts::AbstractArray{<:Integer})
     # Get the probability of finding a perfect reference sequence
     P_allref = first(counts) / sum(counts)
 
