@@ -7,6 +7,7 @@ using BioSequences: BioSequence, LongDNA, NucleotideSeq
 using BioSymbols: BioSymbol
 using Combinatorics: combinations
 using Dates: Dates, today
+using Distributions: Chisq, cdf
 using FASTX: FASTA
 using FilePaths: FilePaths, AbstractPath, Path, absolute
 using GenomicFeatures: Interval, Strand, STRAND_POS, eachoverlap
@@ -39,6 +40,8 @@ export filters
 export findset
 export frequency
 export interval
+export linkage
+export occurence_matrix
 export p_value
 export pileup
 export quality
@@ -48,6 +51,7 @@ export seqpos
 export strand
 export strand_bias
 export subconsensus_variations
+export sumsliced
 export variation
 export variation_test
 export variationinfos
@@ -63,6 +67,7 @@ include("variationpileup.jl")
 include("variationcall.jl")
 include("consensus.jl")
 include("findset.jl")
+include("haplotypecalling.jl")
 
 const VERSION = project_version(
     string(joinpath(parent(parent(Path(Base.find_package("HapLink")))), "Project.toml"))
