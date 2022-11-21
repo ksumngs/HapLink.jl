@@ -35,7 +35,7 @@ function consensus(
     ref_id = isnothing(prefix) ? FASTA.identifier(refrec) : prefix
     ref_seq = FASTA.sequence(LongDNA{2}, refrec)
 
-    con_seq = consensus(ref_seq, variants; frequency=frequency)
+    con_seq = reconstruct!(ref_seq, consensus(ref_seq, variants; frequency=frequency))
 
     fasta_record = FASTA.Record("$(ref_id)_CONSENSUS", con_seq)
 
@@ -49,8 +49,7 @@ end #function
         frequency::Float64=0.5,
     )
 
-Get the consensus `FASTA.Record `from `variants` applied to the first sequence in
-`reference`.
+Get the consensus `SequenceVariation.Variant `from `variants` applied to `reference`.
 
 # Arguments
 - `reference::NucleotideSeq`: Sequence of the reference genome that variants were called
@@ -80,9 +79,11 @@ function consensus(
             push!(vars, variation(vcf_rec, reference))
     end #for
 
-    con_seq = isempty(vars) ? reference : reconstruct!(reference, Variant(reference, vars))
-
-    return con_seq
+    if isempty(vars)
+        return Variant(reference, SequenceVariation.Edit{SeqType,BaseType}[])
+    else
+        return Variant(reference, vars)
+    end
 end #function
 
 function isconsensus(r::VCF.Record; frequency::Float64=0.5)
