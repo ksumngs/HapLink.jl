@@ -160,3 +160,31 @@ function variation(r::VCF.Record, refseq::NucleotideSeq)
 
     return altseq
 end #function
+
+"""
+    subconsensus_variations(vcf::Union{AbstractPath,AbstractString}, consensus::Variant)
+
+Get a `Vector{Variation}` with passing variant calls from `vcf` that do not appear in
+`consensus`
+"""
+function subconsensus_variations(
+    vcf::Union{AbstractPath,AbstractString}, consensus::Variant{S,T}
+) where {S,T}
+    subcon_vars = Variation{S,T}[]
+
+    reference_sequence = reference(consensus)
+
+    reader = VCF.Reader(open(string(vcf), "r"))
+    for record in reader
+        if all(f -> f == "PASS", VCF.filter(record))
+            var = variation(record, reference_sequence)
+
+            if !(var in consensus)
+                push!(subcon_vars, var)
+            end #if
+        end #if
+    end #for
+    close(reader)
+
+    return subcon_vars
+end #function

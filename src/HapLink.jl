@@ -22,6 +22,7 @@ using SequenceVariation:
     mutation,
     reconstruct!,
     refbases,
+    reference,
     variations
 using Statistics: mean
 using VariantCallFormat: VCF
@@ -46,6 +47,7 @@ export relativepos
 export seqpos
 export strand
 export strand_bias
+export subconsensus_variations
 export variation
 export variation_test
 export variationinfos
