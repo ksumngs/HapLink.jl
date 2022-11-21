@@ -3,13 +3,17 @@
         haplotype::AbstractArray{Variation{S,T}},
         reads::AbstractArray{Variant{S,T}},
     ) where {S<:BioSequence,T<:BioSymbol}
+    occurence_matrix(
+        haplotype::Variant{S,T},
+        reads::AbstractArray{S,T}
+    ) where {S<:BioSequence,T<:BioSymbol}
 
 Determine how many times the variants in `haplotype` appear in `reads` as an ``N``-
 dimensional matrix.
 
 # Arguments
-- `haplotype::AbstractArray{Variation}`: A `Vector` of `Variation`s to search for as a
-    haplotype
+- `haplotype::AbstractArray{Variation}`: A `Vector` of `Variation`s or a `Variant` to search
+    for as a haplotype
 - `reads::AbstractArray{Variant}`: The reads to search for `haplotype` in
 
 # Returns
@@ -43,6 +47,12 @@ function occurence_matrix(
     end #for
 
     return hapcounts
+end #function
+
+function occurence_matrix(
+    haplotype::Variant{S,T}, reads::AbstractArray{Variant{S,T}}
+) where {S<:BioSequence,T<:BioSymbol}
+    return occurence_matrix(variations(haplotype), reads)
 end #function
 
 """
