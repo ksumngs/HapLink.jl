@@ -34,6 +34,20 @@ function HaplotypeCall(
     return HaplotypeCall(hapvar, reads)
 end #function
 
+function name(hc::HaplotypeCall; prefix::AbstractString="")
+    refseq = copy(reference(variant(hc)))
+    mutseq = reconstruct!(refseq, variant(hc))
+
+    seqhash = bytes2hex(sha1(string(mutseq)))
+    shorthash = seqhash[1:8]
+
+    if isempty(prefix)
+        return shorthash
+    else
+        return join([prefix, shorthash], "_")
+    end #if
+end #function
+
 """
     function ishaplotype(
         haplotype::Union{AbstractArray{Variation{S,T}}, Variant{S,T}},
