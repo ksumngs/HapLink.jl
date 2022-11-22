@@ -1,3 +1,39 @@
+struct HaplotypeCall{S<:BioSequence,T<:BioSymbol}
+    depth::UInt64
+    linkage::Float64
+    frequency::Float64
+    significance::Float64
+    haplotype::Variant{S,T}
+end #struct
+
+depth(hc::HaplotypeCall) = hc.depth
+linkage(hc::HaplotypeCall) = hc.linkage
+frequency(hc::HaplotypeCall) = hc.frequency
+significance(hc::HaplotypeCall) = hc.significance
+haplotype(hc::HaplotypeCall) = hc.haplotype
+variant(hc::HaplotypeCall) = haplotype(hc)
+
+function HaplotypeCall(
+    haplotype::Variant{S,T}, reads::AbstractArray{Variant{S,T}}
+) where {S<:BioSequence,T<:BioSymbol}
+    hapcounts = occurence_matrix(haplotype, reads)
+
+    depth = last(hapcounts)
+    frequency = last(hapcounts) / sum(hapcounts)
+    (Δ, p) = linkage(hapcounts)
+
+    return HaplotypeCall(depth, Δ, frequency, p, haplotype)
+end #function
+
+function HaplotypeCall(
+    haplotype::AbstractArray{Variation{S,T}}, reads::AbstractArray{Variant{S,T}}
+) where {S<:BioSequence,T<:BioSymbol}
+    refseq = reference(first(haplotype))
+    hapvar = Variant(refseq, haplotype)
+
+    return HaplotypeCall(hapvar, reads)
+end #function
+
 """
     function ishaplotype(
         haplotype::Union{AbstractArray{Variation{S,T}}, Variant{S,T}},
