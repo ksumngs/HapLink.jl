@@ -90,44 +90,27 @@ where
 The significance is then calculated from the cumulative ``χ^2`` distribution function.
 """
 function ishaplotype(
-    haplotype::AbstractArray{Variation{S,T}},
+    haplotype::Union{AbstractArray{Variation{S,T}},Variant{S,T}},
     reads::AbstractArray{Variant{S,T}};
-    frequency::Union{Float64,Nothing}=nothing,
-    significance::Union{Float64,Nothing}=nothing,
-    depth::Union{Int,Nothing}=nothing,
+    min_frequency::Union{Float64,Nothing}=nothing,
+    significance_level::Union{Float64,Nothing}=nothing,
+    min_depth::Union{Int,Nothing}=nothing,
 ) where {S<:BioSequence,T<:BioSymbol}
-    hapcounts = occurence_matrix(haplotype, reads)
+    call = HaplotypeCall(haplotype, reads)
 
-    if !isnothing(depth)
-        last(hapcounts) >= depth || return false
+    if !isnothing(min_depth)
+        depth(call) >= min_depth || return false
     end #if
 
-    if !isnothing(frequency)
-        last(hapcounts) / sum(hapcounts) >= frequency || return false
+    if !isnothing(min_frequency)
+        frequency(call) >= min_frequency || return false
     end #if
 
-    if !isnothing(significance)
-        (Δ, p) = linkage(hapcounts)
-        p <= significance || return false
+    if !isnothing(significance_level)
+        significance(call) <= significance_level || return false
     end #if
 
     return true
-end #function
-
-function ishaplotype(
-    haplotype::Variant{S,T},
-    reads::AbstractArray{Variant{S,T}};
-    frequency::Union{Float64,Nothing}=nothing,
-    significance::Union{Float64,Nothing}=nothing,
-    depth::Union{Int,Nothing}=nothing,
-) where {S<:BioSequence,T<:BioSymbol}
-    return ishaplotype(
-        variations(haplotype),
-        reads;
-        frequency=frequency,
-        significance=significance,
-        depth=depth,
-    )
 end #function
 
 """
