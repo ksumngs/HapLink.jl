@@ -127,6 +127,24 @@ function ishaplotype(
     return true
 end #function
 
+function _dict(hc::HaplotypeCall; prefix::AbstractString="")
+    variants = String[]
+    for var in variations(variant(hc))
+        varbuffer = IOBuffer()
+        show(varbuffer, var)
+        push!(variants, String(take!(varbuffer)))
+        close(varbuffer)
+    end #for
+    return Dict{String,Any}(
+        "name" => name(hc; prefix=prefix),
+        "depth" => depth(hc),
+        "frequency" => frequency(hc),
+        "linkage" => linkage(hc),
+        "significance" => significance(hc),
+        "snps" => variants,
+    )
+end #function
+
 """
     occurence_matrix(
         haplotype::AbstractArray{Variation{S,T}},
