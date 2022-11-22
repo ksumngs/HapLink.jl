@@ -25,6 +25,7 @@ using SequenceVariation:
     refbases,
     reference,
     variations
+using SHA: sha1
 using Statistics: mean
 using VariantCallFormat: VCF
 using XAM: BAM, SAM
