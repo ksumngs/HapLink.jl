@@ -12,6 +12,7 @@ using FASTX: FASTA
 using FilePaths: FilePaths, AbstractPath, Path, absolute
 using GenomicFeatures: Interval, Strand, STRAND_POS, eachoverlap
 using HypothesisTests: FisherExactTest, pvalue
+using OrderedCollections: OrderedDict
 using SequenceVariation:
     SequenceVariation,
     Deletion,
@@ -29,6 +30,7 @@ using SHA: sha1
 using Statistics: mean
 using VariantCallFormat: VCF
 using XAM: BAM, SAM
+using YAML: YAML
 
 export VariationCall
 export VariationInfo
@@ -298,6 +300,57 @@ function _haplink_consensus(args::Dict{String,Any})
 end #function
 
 function _haplink_haplotypes(args::Dict{String,Any})
+    reffile = args["reference"]
+    varfile = args["variants"]
+    bamfile = args["bam"]
+    outfile = args["output"]
+    frequency = args["frequency"]
+    consensus_frequency = args["consensus_frequency"]
+    significance = args["significance"]
+    depth = args["depth"]
+    simulate_reads = args["simulated_reads"]
+
+    refrecord = _first_record(reffile)
+    refseq = FASTA.sequence(LongDNA{4}, refrecord)
+
+    consensus_variant = consensus(refseq, varfile; frequency=consensus_frequency)
+
+    consensus_sequence = reconstruct!(refseq, consensus_variant)
+
+    read_pool = Pseudoread[]
+    if simulate_reads
+        @warn "Not implemented yet"
+    else
+        read_pool = _read.(_pseudoreads(bamfile, consensus_sequence))
+    end #if
+
+    subconsensus_vars = subconsensus_variations(varfile, consensus_variant)
+
+    haplotype_tester =
+        h -> ishaplotype(
+            h,
+            read_pool;
+            min_frequency=frequency,
+            significance_level=significance,
+            min_depth=depth,
+        )
+
+    valid_haplotypes = findset(subconsensus_vars, haplotype_tester)
+
+    hapcalls = HaplotypeCall[]
+
+    for hap in valid_haplotypes
+        push!(hapcalls, HaplotypeCall(hap, read_pool))
+    end #for
+
+    outdict = OrderedDict{String,Any}()
+    outdict["version"] = VERSION
+    outdict["settings"] = args
+    outdict["haplotypes"] = [_dict(h) for h in hapcalls]
+
+    out_stream = isnothing(outfile) ? stdout : open(outfile, "w")
+    YAML.write(out_stream, outdict)
+
     return 0
 end #function
 
