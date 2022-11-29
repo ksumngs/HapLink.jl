@@ -66,6 +66,26 @@ function overlapping_variations(ps::Pseudoread, v::Variant)
 end #function
 
 """
+    overlap_inrange(
+        x::Pseudoread, y::Pseudoread, overlap_min::Integer, overlap_max::Integer
+    )
+
+Returns `true` if the overlap between `x` and `y` is within `overlap_min` and `overlap_max`,
+returns `false` otherwise
+"""
+function overlap_inrange(
+    x::Pseudoread, y::Pseudoread, overlap_min::Integer, overlap_max::Integer
+)
+    x_interval = leftposition(x):rightposition(x)
+    y_interval = leftposition(y):rightposition(y)
+
+    overlap_interval = overlap(x_interval, y_interval)
+    overlap_amount = last(overlap_interval) - first(overlap_interval)
+
+    return overlap_amount >= overlap_min && overlap_amount <= overlap_max
+end #function
+
+"""
     overlap(x::UnitRange{S}, y::UnitRange{S}) where {S}
 
 Finds the inclusive overlap interval of `x` and `y`
