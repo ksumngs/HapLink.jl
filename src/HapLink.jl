@@ -64,6 +64,7 @@ export variant
 export variation
 export variation_test
 export variationinfos
+export variations_match
 export vcf
 
 include("fasta.jl")
