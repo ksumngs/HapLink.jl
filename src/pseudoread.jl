@@ -43,6 +43,15 @@ function pseudoreads(sam::Union{AbstractString,AbstractPath}, consensus::Nucleot
 end #function
 
 """
+    _posin(ps::Pseudoread, v::Variation)
+
+Determines if the positions that make up `v` are wholly contained by `ps`
+"""
+function _posin(ps::Pseudoread, v::Variation)
+    return leftposition(ps) <= leftposition(v) && rightposition(ps) >= rightposition(v)
+end #function
+
+"""
     overlapping_variations(ps::Pseudoread, v::Variant)
 
 Find all `Variation`s within `v` that are contained within the range defined by `ps`
