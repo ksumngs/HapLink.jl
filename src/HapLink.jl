@@ -47,6 +47,7 @@ export interval
 export linkage
 export occurence_matrix
 export overlap
+export overlapping_variations
 export p_value
 export pileup
 export pseudoreads
@@ -73,6 +74,7 @@ include("variationinfo.jl")
 include("variationpileup.jl")
 include("variationcall.jl")
 include("consensus.jl")
+include("pseudoread.jl")
 include("findset.jl")
 include("haplotypecalling.jl")
 

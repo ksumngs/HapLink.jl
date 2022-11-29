@@ -43,6 +43,20 @@ function pseudoreads(sam::Union{AbstractString,AbstractPath}, consensus::Nucleot
 end #function
 
 """
+    overlapping_variations(ps::Pseudoread, v::Variant)
+
+Find all `Variation`s within `v` that are contained within the range defined by `ps`
+"""
+function overlapping_variations(ps::Pseudoread, v::Variant)
+    return filter(
+        var ->
+            leftposition(var) >= leftposition(ps) &&
+                rightposition(var) <= rightposition(ps),
+        variations(v),
+    )
+end #function
+
+"""
     overlap(x::UnitRange{S}, y::UnitRange{S}) where {S}
 
 Finds the inclusive overlap interval of `x` and `y`
