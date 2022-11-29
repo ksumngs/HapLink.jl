@@ -46,6 +46,7 @@ export frequency
 export interval
 export linkage
 export occurence_matrix
+export overlap
 export p_value
 export pileup
 export pseudoreads
