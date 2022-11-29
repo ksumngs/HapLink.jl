@@ -42,6 +42,81 @@ function pseudoreads(sam::Union{AbstractString,AbstractPath}, consensus::Nucleot
     return returned_reads
 end #function
 
+function simulate(
+    pool::AbstractArray{Pseudoread},
+    refseq::BioSequence,
+    subcon::AbstractArray{Variation{S,T}};
+    reverse_order::Union{Bool,Nothing}=nothing,
+    overlap_min::Int64=0,
+    overlap_max::Int64=500,
+) where {S,T}
+    # Get the reference sequence to start with
+    refvar = Variant(refseq, Variation{S,T}[])
+
+    # Find out if we're going to walk the genome forward or backward
+    is_reversed = isnothing(reverse_order) ? rand(Bool) : reverse_order
+
+    # Create a pseudoread that we will build from. It needs to start at the end of the
+    # genome that we're starting the simulation from
+    previous_read = if is_reversed
+        Pseudoread(length(refseq), length(refseq), refvar)
+    else
+        Pseudoread(1, 1, refvar)
+    end
+
+    # Set up the order to go through variations
+    var_pool = is_reversed ? reverse(sort(subcon)) : sort(subcon)
+
+    first_pass = true
+
+    # Add a read for every variation position
+    for var in var_pool
+        # Get reads that contain `leftpostion(var)` and `rightposition(var)`
+        # and that overlap `previous_read` by the specified amount
+        # and that match all existing `variations(previous_read)`
+        # Overlaps do not need to be checked if this is the first read
+        matching_read_pool = filter(
+            r -> _is_candidate(
+                r,
+                previous_read,
+                var,
+                overlap_min,
+                overlap_max;
+                check_overlap=!first_pass,
+            ),
+            pool,
+        )
+
+        # Abort if we've hit a dead end
+        if isempty(matching_read_pool)
+            return missing
+        end #if
+
+        # Get the new read
+        matching_read = rand(matching_read_pool)
+
+        # Get the variations we've worked with so far as a vector
+        previous_variations = _variations(previous_read)
+
+        # Add any new variations to the old ones
+        new_variations = union(_variations(matching_read), var_pool)
+        push!(previous_variations, new_variations...)
+        unique!(previous_variations)
+        sort!(previous_variations)
+
+        # Find out what the total interval we've transversed is
+        start_pos = is_reversed ? leftposition(matching_read) : leftposition(previous_read)
+        end_pos = is_reversed ? rightposition(previous_read) : rightposition(matching_read)
+
+        # Create the new pseudoread
+        previous_read = Pseudoread(start_pos, end_pos, Variant(refseq, previous_variations))
+
+        first_pass = false
+    end #for
+
+    return variant(previous_read)
+end #function
+
 function _is_candidate(
     current_read::Pseudoread,
     previous_read::Pseudoread,

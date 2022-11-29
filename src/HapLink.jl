@@ -56,6 +56,7 @@ export quality
 export readpos
 export relativepos
 export seqpos
+export simulate
 export strand
 export strand_bias
 export subconsensus_variations
