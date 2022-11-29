@@ -42,6 +42,23 @@ function pseudoreads(sam::Union{AbstractString,AbstractPath}, consensus::Nucleot
     return returned_reads
 end #function
 
+function _is_candidate(
+    current_read::Pseudoread,
+    previous_read::Pseudoread,
+    var::Variation,
+    overlap_min::Integer,
+    overlap_max::Integer;
+    check_overlap::Bool=true,
+)
+    _posin(current_read, var) || return false
+    if check_overlap
+        overlap_inrange(previous_read, current_read, overlap_min, overlap_max) ||
+            return false
+    end
+    variations_match(previous_read, current_read) || return false
+    return true
+end #function
+
 """
     _posin(ps::Pseudoread, v::Variation)
 
