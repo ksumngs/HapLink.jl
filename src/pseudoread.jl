@@ -52,6 +52,47 @@ function _posin(ps::Pseudoread, v::Variation)
 end #function
 
 """
+    variations_match(reference::Pseudoread, query::Union{Pseudoread,Haplotype})
+
+Returns `true` if `query` could be a read from `reference`.
+
+Additional `Variation`s found within `query` that are not present in `reference` **do not**
+invalid a positive match result so long as none of those `Variation`s [`contridict`](@ref)
+`reference`. These `Variation`s can either
+
+1. Extend beyond the length of `reference`, or
+2. Exist as "sequencing errors" within the interval of `reference`
+
+On the other hand, **every** `Variation` within the overlapping interval of `reference` and
+`query` that is present in `reference` **must** also be found in `query`. In other words,
+`query` must have all of `reference` (within the overlap), but `reference` does not need all
+of `query`.
+
+This arrangment allows for the creation of bodies of matching [`Pseudoread`](@ref)s, as
+done via [`simulate`](@ref).
+"""
+function variations_match(reference::Pseudoread, query::Haplotype)
+    # Every variation within the reference must also be found within the query, provided
+    # that the query covers that interval
+    all(var -> var in query, overlapping_variations(reference, query)) || return false
+
+    # Every variation in query can either...
+    # 1. Exactly match one found in reference
+    # 2. Not contridict one found in reference
+    for var in variations(query)
+        var in variant(reference) && continue
+
+        contridicts(var, variant(reference)) && return false
+    end #for
+
+    return true
+end #function
+
+function variations_match(reference::Pseudoread, query::Pseudoread)
+    return variations_match(reference, variant(query))
+end #function
+
+"""
     overlapping_variations(ps::Pseudoread, v::Variant)
 
 Find all `Variation`s within `v` that are contained within the range defined by `ps`
