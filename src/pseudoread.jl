@@ -17,11 +17,18 @@ function Pseudoread(query::Union{SAM.Record,BAM.Record}, reference::NucleotideSe
     )
 end #function
 
-_startpos(x::Pseudoread) = x.startpos
-_endpos(x::Pseudoread) = x.endpos
-_read(x::Pseudoread) = x.read
+BioGenerics.leftposition(ps::Pseudoread) = ps.startpos
+BioGenerics.rightposition(ps::Pseudoread) = ps.endpos
+variant(ps::Pseudoread) = ps.read
+_variations(ps::Pseudoread) = variations(variant(ps))
 
-function _pseudoreads(sam::Union{AbstractString,AbstractPath}, consensus::NucleotideSeq)
+"""
+    pseudoreads(sam::Union{AbstractString,AbstractPath}, consensus::NucleotideSeq)
+
+Create a set of [`Pseudoread`](@ref)s from the alignments present in `sam` when aligned
+against `consensus`.
+"""
+function pseudoreads(sam::Union{AbstractString,AbstractPath}, consensus::NucleotideSeq)
     XAM = _issam(sam) ? SAM : BAM
 
     returned_reads = Pseudoread[]
