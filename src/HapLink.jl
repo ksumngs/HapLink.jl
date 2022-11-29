@@ -32,6 +32,7 @@ using VariantCallFormat: VCF
 using XAM: BAM, SAM
 using YAML: YAML
 
+export Pseudoread
 export VariationCall
 export VariationInfo
 export VariationPileup
@@ -47,6 +48,7 @@ export linkage
 export occurence_matrix
 export p_value
 export pileup
+export pseudoreads
 export quality
 export readpos
 export relativepos
@@ -55,6 +57,7 @@ export strand
 export strand_bias
 export subconsensus_variations
 export sumsliced
+export variant
 export variation
 export variation_test
 export variationinfos
@@ -321,7 +324,7 @@ function _haplink_haplotypes(args::Dict{String,Any})
     if simulate_reads
         @warn "Not implemented yet"
     else
-        read_pool = _read.(_pseudoreads(bamfile, consensus_sequence))
+        read_pool = variant.(pseudoreads(bamfile, consensus_sequence))
     end #if
 
     subconsensus_vars = subconsensus_variations(varfile, consensus_variant)
