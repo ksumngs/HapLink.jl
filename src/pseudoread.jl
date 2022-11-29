@@ -41,3 +41,32 @@ function pseudoreads(sam::Union{AbstractString,AbstractPath}, consensus::Nucleot
 
     return returned_reads
 end #function
+
+"""
+    overlap(x::UnitRange{S}, y::UnitRange{S}) where {S}
+
+Finds the inclusive overlap interval of `x` and `y`
+
+# Example
+```jldoctest
+julia> overlap(1:5, 3:10)
+3:5
+
+julia> overlap(2:4, 6:8)
+6:5
+
+julia> overlap(1:10, 2:9)
+2:9
+```
+"""
+function overlap(x::UnitRange{S}, y::UnitRange{S}) where {S}
+    a = first(x)
+    b = first(y)
+    c = last(x)
+    d = last(y)
+
+    e = max(a, b)
+    f = min(c, d)
+
+    return UnitRange{S}(e, f)
+end #function
