@@ -372,6 +372,8 @@ function _haplink_haplotypes(args::Dict{String,Any})
 
     hapcalls = HaplotypeCall[]
 
+    push!(hapcalls, HaplotypeCall(UInt64(0), 0.0, 0.0, 0.0, consensus_variant))
+
     for hap in valid_haplotypes
         push!(hapcalls, HaplotypeCall(hap, read_pool))
     end #for
