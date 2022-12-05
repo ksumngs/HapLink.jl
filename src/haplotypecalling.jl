@@ -135,7 +135,7 @@ function _dict(hc::HaplotypeCall; prefix::AbstractString="")
         push!(variants, String(take!(varbuffer)))
         close(varbuffer)
     end #for
-    return Dict{String,Any}(
+    return OrderedDict{String,Any}(
         "name" => name(hc; prefix=prefix),
         "depth" => depth(hc),
         "frequency" => frequency(hc),
