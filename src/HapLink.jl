@@ -13,6 +13,7 @@ using FilePaths: FilePaths, AbstractPath, Path, absolute
 using GenomicFeatures: Interval, Strand, STRAND_POS, eachoverlap
 using HypothesisTests: FisherExactTest, pvalue
 using OrderedCollections: OrderedDict
+using Random: seed!
 using SequenceVariation:
     SequenceVariation,
     Deletion,
@@ -313,11 +314,15 @@ function _haplink_haplotypes(args::Dict{String,Any})
     varfile = args["variants"]
     bamfile = args["bam"]
     outfile = args["output"]
-    frequency = args["frequency"]
     consensus_frequency = args["consensus_frequency"]
     significance = args["significance"]
     depth = args["depth"]
+    frequency = args["frequency"]
     simulate_reads = args["simulated_reads"]
+    overlap_min = args["overlap_min"]
+    overlap_max = args["overlap_max"]
+    iterations = args["iterations"]
+    input_seed = args["seed"]
 
     refrecord = _first_record(reffile)
     refseq = FASTA.sequence(LongDNA{4}, refrecord)
@@ -326,14 +331,33 @@ function _haplink_haplotypes(args::Dict{String,Any})
 
     consensus_sequence = reconstruct!(refseq, consensus_variant)
 
-    read_pool = Pseudoread[]
-    if simulate_reads
-        @warn "Not implemented yet"
-    else
-        read_pool = variant.(pseudoreads(bamfile, consensus_sequence))
-    end #if
+    fake_reads = pseudoreads(bamfile, consensus_sequence)
 
     subconsensus_vars = subconsensus_variations(varfile, consensus_variant)
+
+    read_pool = Variant[]
+    if simulate_reads
+        if !isnothing(input_seed)
+            seed!(input_seed)
+        end #if
+
+        small_pool = Vector{Union{Variant,Missing}}(undef, iterations)
+
+        Threads.@threads for i in 1:iterations
+            small_pool[i] = simulate(
+                fake_reads,
+                consensus_sequence,
+                subconsensus_vars;
+                reverse_order=iseven(i),
+                overlap_min=overlap_min,
+                overlap_max=overlap_max,
+            )
+        end #for
+
+        read_pool = collect(skipmissing(small_pool))
+    else
+        read_pool = variant.(fake_reads)
+    end #if
 
     haplotype_tester =
         h -> ishaplotype(
