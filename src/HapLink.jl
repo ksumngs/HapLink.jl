@@ -376,9 +376,13 @@ function _haplink_haplotypes(args::Dict{String,Any})
         push!(hapcalls, HaplotypeCall(hap, read_pool))
     end #for
 
+    start_pos = min(leftposition.(fake_reads)...)
+    end_pos = max(rightposition.(fake_reads)...)
+
     outdict = OrderedDict{String,Any}()
     outdict["version"] = VERSION
     outdict["settings"] = args
+    outdict["coverage"] = OrderedDict{String,Int}("start" => start_pos, "end" => end_pos)
     outdict["haplotypes"] = [_dict(h) for h in hapcalls]
 
     out_stream = isnothing(outfile) ? stdout : open(outfile, "w")
