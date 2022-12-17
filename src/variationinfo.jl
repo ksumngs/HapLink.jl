@@ -64,13 +64,13 @@ function variationinfos(query::Union{SAM.Record,BAM.Record}, reference::Nucleoti
     query_variations = VariationInfo[]
 
     try
-        for variation in variations(query_variant)
+        for var in variations(query_variant)
             push!(
                 query_variations,
                 VariationInfo(
-                    variation,
-                    relativepos(variation, query),
-                    Float64(quality(variation, query)),
+                    var,
+                    relativepos(var, query),
+                    Float64(quality(var, query)),
                     # Note: ispositivestrand is implemented for BAM records, but not for
                     # SAM records, so inline the logic here
                     _XAM_(query).flag(query) & 0x10 == 0 ? Strand('+') : Strand('-'),
@@ -102,7 +102,8 @@ function _varinfos(reader::Union{SAM.Reader,BAM.Reader}, ref::FASTA.Record)
         empty!(record)
         read!(reader, record)
 
-        if _is_primary_record(record) && _XAM_(reader).refname(record) == FASTA.identifier(ref)
+        if _is_primary_record(record) &&
+            _XAM_(reader).refname(record) == FASTA.identifier(ref)
             seqtype = typeof(_XAM_(reader).sequence(record))
             push!(
                 all_variation_infos, variationinfos(record, FASTA.sequence(seqtype, ref))...
