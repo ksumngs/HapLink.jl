@@ -12,10 +12,6 @@ function _XAM_(f::Union{AbstractString,AbstractPath})
     return _issam(f) ? SAM : BAM
 end #function
 
-function _xam_record_switch(r::Union{Type{SAM.Record},Type{BAM.Record}})
-    return r <: SAM.Record ? :SAM : :BAM
-end
-
 function _xam_reader_switch(r::Union{Type{S},Type{B}}) where {S<:SAM.Reader,B<:BAM.Reader}
     return r <: SAM.Reader ? :SAM : :BAM
 end #function
