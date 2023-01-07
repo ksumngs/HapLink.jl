@@ -7,7 +7,8 @@ using BioAlignments:
     cigar,
     pairalign
 using BioGenerics: leftposition
-using BioSequences: BioSequence, @dna_str, ungap!
+using BioSequences: BioSequence, LongDNA, @dna_str, ungap!
+using FASTX: FASTA
 using GenomicFeatures: Strand, STRAND_POS, STRAND_NEG
 using Random: randstring, seed!
 using SequenceVariation: Variant, Variation, variations
@@ -67,6 +68,7 @@ const VCFS = vcf.(VARIATIONCALLS, ["REFERENCE"])
 
 @testset "HapLink.jl" begin
     include("doctests.jl")
+    include("fasta.jl")
     include("variation.jl")
     include("variationinfo.jl")
     include("variationpileup.jl")
