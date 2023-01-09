@@ -9,7 +9,7 @@ using BioAlignments:
 using BioGenerics: leftposition
 using BioSequences: BioSequence, LongDNA, @dna_str, ungap!
 using FASTX: FASTA
-using GenomicFeatures: Strand, STRAND_POS, STRAND_NEG
+using GenomicFeatures: Interval, Strand, STRAND_POS, STRAND_NEG
 using Random: randstring, seed!
 using SequenceVariation: Variant, Variation, variations
 using Statistics: mean
