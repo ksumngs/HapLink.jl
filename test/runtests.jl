@@ -42,6 +42,16 @@ function sam(a::PairwiseAlignment)
         join([qname, flag, rname, pos, mapq, cig, rnext, pnext, tlen, seq, qual, tag], "\t")
     )
 end #function
+function write_sam(recs::AbstractVector{SAM.Record})
+    sam_file, _ = mktemp()
+    sam_header = SAM.Header([SAM.MetaInfo("SQ", ["SN" => "REFERENCE", "LN" => 35])])
+    sam_writer = SAM.Writer(open(sam_file, "w"), sam_header)
+    for rec in recs
+        write(sam_writer, rec)
+    end #for
+    close(sam_writer)
+    return sam_file
+end #function
 
 # Sequences from Japanese Encephalitis Virus full genome positions NC_001437:5979-7016 with
 # an additional two-base deletion in genotype III
@@ -58,6 +68,7 @@ const ALIGNMENTS = align.(GENOTYPES, [REFERENCE])
 const VARIANTS = Variant.(ALIGNMENTS)
 const VARIATIONS = unique!(variations(VARIANTS))
 const SAMS = sam.(ALIGNMENTS)
+const SAM_FILE = write_sam(SAMS)
 const VARIATIONINFOS = VariationInfo.(VARIATIONS, [0.5], [30.0], [STRAND_POS])
 const VARIATIONPILEUPS =
     VariationPileup.(
@@ -69,6 +80,7 @@ const VCFS = vcf.(VARIATIONCALLS, ["REFERENCE"])
 @testset "HapLink.jl" begin
     include("doctests.jl")
     include("fasta.jl")
+    include("xam.jl")
     include("variation.jl")
     include("variationinfo.jl")
     include("variationpileup.jl")
