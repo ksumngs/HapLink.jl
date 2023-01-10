@@ -35,7 +35,7 @@ function consensus(
     ref_id = isnothing(prefix) ? FASTA.identifier(refrec) : prefix
     ref_seq = FASTA.sequence(LongDNA{2}, refrec)
 
-    con_seq = reconstruct!(ref_seq, consensus(ref_seq, variants; frequency=frequency))
+    con_seq = reconstruct(consensus(ref_seq, variants; frequency=frequency))
 
     fasta_record = FASTA.Record("$(ref_id)_CONSENSUS", con_seq)
 
