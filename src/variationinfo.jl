@@ -59,7 +59,7 @@ Calls `Variation`s based on the alignments in `query` against `reference`, and r
 variation call found within `query` as a `Vector{VariationInfo}`
 """
 function variationinfos(query::Union{SAM.Record,BAM.Record}, reference::NucleotideSeq)
-    query_variant = Variant(query, reference)
+    query_variant = Haplotype(query, reference)
 
     query_variations = VariationInfo[]
 

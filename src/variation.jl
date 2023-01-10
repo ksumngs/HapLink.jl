@@ -1,9 +1,9 @@
 """
-    variations(vs::AbstractVector{Variant})
+    variations(vs::AbstractVector{Haplotype})
 
 Extracts all `SequenceVariation.Variation`s from `vs`.
 """
-function SequenceVariation.variations(vs::AbstractVector{<:Variant})
+function SequenceVariation.variations(vs::AbstractVector{<:Haplotype})
     nvar = sum([length(v.edits) for v in vs])
     all_variations = Vector{Variation}(undef, nvar)
     i = 1
@@ -162,13 +162,13 @@ function variation(r::VCF.Record, refseq::NucleotideSeq)
 end #function
 
 """
-    subconsensus_variations(vcf::Union{AbstractPath,AbstractString}, consensus::Variant)
+    subconsensus_variations(vcf::Union{AbstractPath,AbstractString}, consensus::Haplotype)
 
 Get a `Vector{Variation}` with passing variant calls from `vcf` that do not appear in
 `consensus`
 """
 function subconsensus_variations(
-    vcf::Union{AbstractPath,AbstractString}, consensus::Variant{S,T}
+    vcf::Union{AbstractPath,AbstractString}, consensus::Haplotype{S,T}
 ) where {S,T}
     subcon_vars = Variation{S,T}[]
 

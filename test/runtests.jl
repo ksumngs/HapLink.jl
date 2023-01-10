@@ -11,7 +11,7 @@ using BioSequences: BioSequence, LongDNA, @dna_str, ungap!
 using FASTX: FASTA
 using GenomicFeatures: Interval, Strand, STRAND_POS, STRAND_NEG
 using Random: randstring, seed!
-using SequenceVariation: Variant, Variation, variations
+using SequenceVariation: Haplotype, Variation, variations
 using Statistics: mean
 using XAM: SAM, BAM
 using VariantCallFormat: VCF
@@ -65,7 +65,7 @@ const GENOTYPE_V   = ungap!(dna"CATCCAGCGTGCCTGGAAGTCTGTCAAGCCTGGCGCT")
 
 const GENOTYPES = [REFERENCE, GENOTYPE_I, GENOTYPE_II, GENOTYPE_III, GENOTYPE_V]
 const ALIGNMENTS = align.(GENOTYPES, [REFERENCE])
-const VARIANTS = Variant.(ALIGNMENTS)
+const VARIANTS = Haplotype.(ALIGNMENTS)
 const VARIATIONS = unique!(variations(VARIANTS))
 const SAMS = sam.(ALIGNMENTS)
 const SAM_FILE = write_sam(SAMS)

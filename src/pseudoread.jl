@@ -1,10 +1,10 @@
 struct Pseudoread
     startpos::UInt64
     endpos::UInt64
-    read::Variant
+    read::Haplotype
 end #struct
 
-function Pseudoread(startpos::Integer, endpos::Integer, read::Variant)
+function Pseudoread(startpos::Integer, endpos::Integer, read::Haplotype)
     (startpos < 0 || endpos < 0) && error("Positions cannot be less than zero")
     return Pseudoread(UInt64(startpos), UInt64(endpos), read)
 end #function
@@ -13,7 +13,7 @@ function Pseudoread(query::Union{SAM.Record,BAM.Record}, reference::NucleotideSe
     return Pseudoread(
         _XAM_(query).position(query),
         _XAM_(query).rightposition(query),
-        Variant(query, reference),
+        Haplotype(query, reference),
     )
 end #function
 
@@ -51,7 +51,7 @@ function simulate(
     overlap_max::Int64=500,
 ) where {S,T}
     # Get the reference sequence to start with
-    refvar = Variant(refseq, Variation{S,T}[])
+    refvar = Haplotype(refseq, Variation{S,T}[])
 
     # Find out if we're going to walk the genome forward or backward
     is_reversed = isnothing(reverse_order) ? rand(Bool) : reverse_order
@@ -109,7 +109,7 @@ function simulate(
         end_pos = is_reversed ? rightposition(previous_read) : rightposition(matching_read)
 
         # Create the new pseudoread
-        previous_read = Pseudoread(start_pos, end_pos, Variant(refseq, previous_variations))
+        previous_read = Pseudoread(start_pos, end_pos, Haplotype(refseq, previous_variations))
 
         first_pass = false
     end #for
@@ -185,11 +185,11 @@ function variations_match(reference::Pseudoread, query::Pseudoread)
 end #function
 
 """
-    overlapping_variations(ps::Pseudoread, v::Variant)
+    overlapping_variations(ps::Pseudoread, v::Haplotype)
 
 Find all `Variation`s within `v` that are contained within the range defined by `ps`
 """
-function overlapping_variations(ps::Pseudoread, v::Variant)
+function overlapping_variations(ps::Pseudoread, v::Haplotype)
     return filter(
         var ->
             leftposition(var) >= leftposition(ps) &&
@@ -210,9 +210,9 @@ returns `false` otherwise
 ```jldoctest
 julia> using BioSequences, SequenceVariation
 
-julia> ps1 = Pseudoread(1, 100, Variant(dna"A", Variation{LongDNA{4}, DNA}[]));
+julia> ps1 = Pseudoread(1, 100, Haplotype(dna"A", Variation{LongDNA{4}, DNA}[]));
 
-julia> ps2 = Pseudoread(50, 150, Variant(dna"A", Variation{LongDNA{4}, DNA}[]));
+julia> ps2 = Pseudoread(50, 150, Haplotype(dna"A", Variation{LongDNA{4}, DNA}[]));
 
 julia> overlap_inrange(ps1, ps2, 1, 500)
 true
