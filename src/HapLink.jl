@@ -17,9 +17,9 @@ using Random: seed!
 using SequenceVariation:
     SequenceVariation,
     Deletion,
+    Haplotype,
     Insertion,
     Substitution,
-    Variant,
     Variation,
     altbases,
     mutation,
@@ -335,13 +335,13 @@ function _haplink_haplotypes(args::Dict{String,Any})
 
     subconsensus_vars = subconsensus_variations(varfile, consensus_variant)
 
-    read_pool = Variant[]
+    read_pool = Haplotype[]
     if simulate_reads
         if !isnothing(input_seed)
             seed!(input_seed)
         end #if
 
-        small_pool = Vector{Union{Variant,Missing}}(undef, iterations)
+        small_pool = Vector{Union{Haplotype,Missing}}(undef, iterations)
 
         Threads.@threads for i in 1:iterations
             small_pool[i] = simulate(

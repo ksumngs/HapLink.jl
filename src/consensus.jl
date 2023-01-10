@@ -49,7 +49,7 @@ end #function
         frequency::Float64=0.5,
     )
 
-Get the consensus `SequenceVariation.Variant `from `variants` applied to `reference`.
+Get the consensus `Haplotype `from `variants` applied to `reference`.
 
 # Arguments
 - `reference::NucleotideSeq`: Sequence of the reference genome that variants were called
@@ -80,9 +80,9 @@ function consensus(
     end #for
 
     if isempty(vars)
-        return Variant(reference, SequenceVariation.Edit{SeqType,BaseType}[])
+        return Haplotype(reference, SequenceVariation.Edit{SeqType,BaseType}[])
     else
-        return Variant(reference, vars)
+        return Haplotype(reference, vars)
     end
 end #function
 

@@ -3,7 +3,7 @@ struct HaplotypeCall{S<:BioSequence,T<:BioSymbol}
     linkage::Float64
     frequency::Float64
     significance::Float64
-    haplotype::Variant{S,T}
+    haplotype::Haplotype{S,T}
 end #struct
 
 depth(hc::HaplotypeCall) = hc.depth
@@ -14,7 +14,7 @@ haplotype(hc::HaplotypeCall) = hc.haplotype
 variant(hc::HaplotypeCall) = haplotype(hc)
 
 function HaplotypeCall(
-    haplotype::Variant{S,T}, reads::AbstractArray{Variant{S,T}}
+    haplotype::Haplotype{S,T}, reads::AbstractArray{Haplotype{S,T}}
 ) where {S<:BioSequence,T<:BioSymbol}
     hapcounts = occurence_matrix(haplotype, reads)
 
@@ -26,10 +26,10 @@ function HaplotypeCall(
 end #function
 
 function HaplotypeCall(
-    haplotype::AbstractArray{Variation{S,T}}, reads::AbstractArray{Variant{S,T}}
+    haplotype::AbstractArray{Variation{S,T}}, reads::AbstractArray{Haplotype{S,T}}
 ) where {S<:BioSequence,T<:BioSymbol}
     refseq = reference(first(haplotype))
-    hapvar = Variant(refseq, haplotype)
+    hapvar = Haplotype(refseq, haplotype)
 
     return HaplotypeCall(hapvar, reads)
 end #function
@@ -50,8 +50,8 @@ end #function
 
 """
     function ishaplotype(
-        haplotype::Union{AbstractArray{Variation{S,T}}, Variant{S,T}},
-        reads::AbstractArray{Variant{S,T}};
+        haplotype::Union{AbstractArray{Variation{S,T}}, Haplotype{S,T}},
+        reads::AbstractArray{Haplotype{S,T}};
         frequency::Union{Float64,Nothing}=nothing,
         significance::Union{Float64,Nothing}=nothing,
         depth::Union{Int,Nothing}=nothing,
@@ -61,9 +61,9 @@ Determines if a call of `haplotype` is supported by the sequences in `reads` bas
 the provided keyword criteria.
 
 # Arguments
-- `haplotype::Union{AbstractArray{Variation}, Variant}`: A `Vector` of `Variation`s or a
-    `Variant` to search for as a haplotype
-- `reads::AbstractArray{Variant}`: The reads to search for `haplotype` in
+- `haplotype::Union{AbstractArray{Variation}, Haplotype}`: A `Vector` of `Variation`s or a
+    `Haplotype` to search for as a haplotype
+- `reads::AbstractArray{Haplotype}`: The reads to search for `haplotype` in
 
 # Keywords
 - `frequency::Union{Float64,Nothing}=nothing`: The minimum number of times the entire
@@ -104,8 +104,8 @@ where
 The significance is then calculated from the cumulative ``χ^2`` distribution function.
 """
 function ishaplotype(
-    haplotype::Union{AbstractArray{Variation{S,T}},Variant{S,T}},
-    reads::AbstractArray{Variant{S,T}};
+    haplotype::Union{AbstractArray{Variation{S,T}},Haplotype{S,T}},
+    reads::AbstractArray{Haplotype{S,T}};
     min_frequency::Union{Float64,Nothing}=nothing,
     significance_level::Union{Float64,Nothing}=nothing,
     min_depth::Union{Int,Nothing}=nothing,
@@ -148,10 +148,10 @@ end #function
 """
     occurence_matrix(
         haplotype::AbstractArray{Variation{S,T}},
-        reads::AbstractArray{Variant{S,T}},
+        reads::AbstractArray{Haplotype{S,T}},
     ) where {S<:BioSequence,T<:BioSymbol}
     occurence_matrix(
-        haplotype::Variant{S,T},
+        haplotype::Haplotype{S,T},
         reads::AbstractArray{S,T}
     ) where {S<:BioSequence,T<:BioSymbol}
 
@@ -159,9 +159,9 @@ Determine how many times the variants in `haplotype` appear in `reads` as an ``N
 dimensional matrix.
 
 # Arguments
-- `haplotype::AbstractArray{Variation}`: A `Vector` of `Variation`s or a `Variant` to search
+- `haplotype::AbstractArray{Variation}`: A `Vector` of `Variation`s or a `Haplotype` to search
     for as a haplotype
-- `reads::AbstractArray{Variant}`: The reads to search for `haplotype` in
+- `reads::AbstractArray{Haplotype}`: The reads to search for `haplotype` in
 
 # Returns
 - `2x2x... Array{Int, length(haplotype)}`: An ``N``-dimensional matrix where ``N`` is
@@ -174,7 +174,7 @@ dimensional matrix.
     of times the all-alternate base haplotype was found.
 """
 function occurence_matrix(
-    haplotype::AbstractArray{Variation{S,T}}, reads::AbstractArray{Variant{S,T}}
+    haplotype::AbstractArray{Variation{S,T}}, reads::AbstractArray{Haplotype{S,T}}
 ) where {S<:BioSequence,T<:BioSymbol}
     hapcounts = zeros(UInt, repeat([2], length(haplotype))...)
 
@@ -197,7 +197,7 @@ function occurence_matrix(
 end #function
 
 function occurence_matrix(
-    haplotype::Variant{S,T}, reads::AbstractArray{Variant{S,T}}
+    haplotype::Haplotype{S,T}, reads::AbstractArray{Haplotype{S,T}}
 ) where {S<:BioSequence,T<:BioSymbol}
     return occurence_matrix(variations(haplotype), reads)
 end #function
