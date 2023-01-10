@@ -36,7 +36,7 @@ end #function
 
 function name(hc::HaplotypeCall; prefix::AbstractString="")
     refseq = copy(reference(variant(hc)))
-    mutseq = reconstruct!(refseq, variant(hc))
+    mutseq = reconstruct(variant(hc))
 
     seqhash = bytes2hex(sha1(string(mutseq)))
     shorthash = seqhash[1:8]

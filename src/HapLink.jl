@@ -23,7 +23,7 @@ using SequenceVariation:
     Variation,
     altbases,
     mutation,
-    reconstruct!,
+    reconstruct,
     refbases,
     reference,
     variations
@@ -329,7 +329,7 @@ function _haplink_haplotypes(args::Dict{String,Any})
 
     consensus_variant = consensus(refseq, varfile; frequency=consensus_frequency)
 
-    consensus_sequence = reconstruct!(refseq, consensus_variant)
+    consensus_sequence = reconstruct(consensus_variant)
 
     fake_reads = pseudoreads(bamfile, consensus_sequence)
 
