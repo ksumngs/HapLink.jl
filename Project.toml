@@ -42,6 +42,7 @@ GenomicFeatures = "2"
 HypothesisTests = "0.10"
 OrderedCollections = "1.4"
 SequenceVariation = "0.1.4"
+TestItems = "0.1.0"
 VariantCallFormat = "0.5"
 XAM = "0.3.1"
 YAML = "0.4"
@@ -55,7 +56,9 @@ Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 SequenceVariation = "eef6e190-9969-4f06-a38f-35a110a8fdc8"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+TestItems = "1c621080-faea-4a02-84b6-bbd5e436b8fe"
+TestItemRunner = "f8b46487-2199-4994-9208-9a1283c18c0a"
 XAM = "d759349c-bcba-11e9-07c2-5b90f8f05f7c"
 
 [targets]
-test = ["BioAlignments", "BioGenerics", "BioSequences", "Documenter", "Random", "SequenceVariation", "Test", "XAM"]
+test = ["BioAlignments", "BioGenerics", "BioSequences", "Documenter", "Random", "SequenceVariation", "Test", "TestItems", "TestItemRunner", "XAM"]
