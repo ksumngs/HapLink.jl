@@ -40,6 +40,7 @@ export VariationPileup
 export altdepth
 export call_variant
 export consensus
+export contridicts
 export depth
 export filters
 export findset

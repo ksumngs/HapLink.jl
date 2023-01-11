@@ -108,8 +108,13 @@ function simulate(
         start_pos = is_reversed ? leftposition(matching_read) : leftposition(previous_read)
         end_pos = is_reversed ? rightposition(previous_read) : rightposition(matching_read)
 
+        # Check the found variations for consistency
+        check_contridicts(previous_variations) && return missing
+
         # Create the new pseudoread
-        previous_read = Pseudoread(start_pos, end_pos, Haplotype(refseq, previous_variations))
+        previous_read = Pseudoread(
+            start_pos, end_pos, Haplotype(refseq, previous_variations)
+        )
 
         first_pass = false
     end #for
@@ -182,6 +187,52 @@ end #function
 
 function variations_match(reference::Pseudoread, query::Pseudoread)
     return variations_match(reference, variant(query))
+end #function
+
+"""
+    contridicts(var::Variation{S,T}, ref::Haplotype{S,T}) where {S,T}
+
+Returns `true` if `var` contains a modification incompatible with any of the `Variation`s
+that make up `ref`.
+
+# Example
+```jldoctest
+julia> using BioSequences, SequenceVariation
+
+julia> ref = Haplotype(dna"GATTACA", [Variation(dna"GATTACA", "A2T"), Variation(dna"GATTACA", "Δ5-6")]);
+
+julia> contridicts(Variation(dna"GATTACA", "A2C"), ref)
+true
+
+julia> contridicts(Variation(dna"GATTACA", "T4A"), ref)
+false
+
+julia> contridicts(Variation(dna"GATTACA", "Δ2-2"), ref)
+true
+
+julia> contridicts(Variation(dna"GATTACA", "Δ4-4"), ref)
+false
+
+julia> contridicts(Variation(dna"GATTACA", "2G"), ref)
+false
+
+julia> contridicts(Variation(dna"GATTACA", "4G"), ref)
+false
+```
+<!--
+Broken test
+```
+julia> contridicts(Variation(dna"GATTACA", "Δ6-6"), ref)
+true
+```
+--->
+"""
+function contridicts(var::Variation{S,T}, ref::Haplotype{S,T}) where {S,T}
+    all_variations = sort!([variations(ref)..., var])
+    fake_haplotype = SequenceVariation.Haplotype{S,T}(
+        reference(ref), SequenceVariation._edit.(all_variations), SequenceVariation.Unsafe()
+    )
+    return !first(SequenceVariation._is_valid(fake_haplotype))
 end #function
 
 """
