@@ -18,6 +18,8 @@ using VariantCallFormat: VCF
 
 using Documenter: DocMeta, doctest
 using Test
+using TestItems
+using TestItemRunner
 
 using HapLink
 
@@ -86,4 +88,6 @@ const VCFS = vcf.(VARIATIONCALLS, ["REFERENCE"])
     include("variationpileup.jl")
     include("variationcall.jl")
     include("findset.jl")
+    include("haplotype.jl")
+    @run_package_tests
 end #testset
