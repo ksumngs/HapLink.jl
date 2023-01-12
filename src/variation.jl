@@ -188,3 +188,29 @@ function subconsensus_variations(
 
     return subcon_vars
 end #function
+
+"""
+    _cigar(var::Variation{S,T}) where {S,T}
+
+Returns a CIGAR operation for `var`. Only supports insertions and deletions.
+
+See also [`_cigar_between`](@ref)
+"""
+function _cigar(var::Variation{S,T}) where {S,T}
+    cigar_letter = mutation(var) isa Deletion ? 'D' : 'I'
+    return string(length(mutation(var)), cigar_letter)
+end #function
+
+"""
+    _cigar_between(x::Variation{S,T}, y::Variation{S,T}) where {S,T}
+
+Returns a CIGAR operation for the (assumed) matching bases between `x` and `y`.
+
+See also [`_cigar`](@ref)
+"""
+function _cigar_between(x::Variation{S,T}, y::Variation{S,T}) where {S,T}
+    x == y && return ""
+    match_length = leftposition(y) - rightposition(x)
+    match_length > 0 || return ""
+    return "$(match_length)M"
+end #function
