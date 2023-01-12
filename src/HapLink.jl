@@ -39,6 +39,7 @@ export VariationInfo
 export VariationPileup
 export altdepth
 export call_variant
+export cigar
 export consensus
 export contridicts
 export depth
