@@ -26,6 +26,7 @@ using SequenceVariation:
     reconstruct,
     refbases,
     reference,
+    translate,
     variations
 using SHA: sha1
 using Statistics: mean
@@ -330,12 +331,15 @@ function _haplink_haplotypes(args::Dict{String,Any})
     refseq = FASTA.sequence(LongDNA{4}, refrecord)
 
     consensus_variant = consensus(refseq, varfile; frequency=consensus_frequency)
-
     consensus_sequence = reconstruct(consensus_variant)
+    consensus_alignment = PairwiseAlignment(
+        AlignedSequence(consensus_sequence, Alignment(cigar(consensus_variant))), refseq
+    )
 
     fake_reads = pseudoreads(bamfile, consensus_sequence)
 
     subconsensus_vars = subconsensus_variations(varfile, consensus_variant)
+    subconsensus_remapped = map(v -> translate(v, consensus_alignment), subconsensus_vars)
 
     read_pool = Haplotype[]
     if simulate_reads
@@ -349,7 +353,7 @@ function _haplink_haplotypes(args::Dict{String,Any})
             small_pool[i] = simulate(
                 fake_reads,
                 consensus_sequence,
-                subconsensus_vars;
+                subconsensus_remapped;
                 reverse_order=iseven(i),
                 overlap_min=overlap_min,
                 overlap_max=overlap_max,
