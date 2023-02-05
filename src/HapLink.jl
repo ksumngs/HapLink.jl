@@ -4,7 +4,7 @@ using ArgParse: ArgParseSettings, @add_arg_table!, parse_args, project_version
 using BioAlignments: Alignment, AlignedSequence, PairwiseAlignment, ref2seq
 using BioGenerics: BioGenerics, leftposition, rightposition, metadata
 using BioSequences: BioSequence, LongDNA, NucleotideSeq
-using BioSymbols: BioSymbol
+using BioSymbols: BioSymbol, DNA
 using Combinatorics: combinations
 using Dates: Dates, today
 using Distributions: Chisq, cdf
@@ -340,14 +340,15 @@ function _haplink_haplotypes(args::Dict{String,Any})
 
     subconsensus_vars = subconsensus_variations(varfile, consensus_variant)
     subconsensus_remapped = map(v -> translate(v, consensus_alignment), subconsensus_vars)
+    sort!(subconsensus_remapped)
 
-    read_pool = Haplotype[]
+    read_pool = Haplotype{LongDNA{4},DNA}[]
     if simulate_reads
         if !isnothing(input_seed)
             seed!(input_seed)
         end #if
 
-        small_pool = Vector{Union{Haplotype,Missing}}(undef, iterations)
+        small_pool = Vector{Union{Haplotype{LongDNA{4},DNA},Missing}}(undef, iterations)
 
         Threads.@threads for i in 1:iterations
             small_pool[i] = simulate(
@@ -362,7 +363,17 @@ function _haplink_haplotypes(args::Dict{String,Any})
 
         read_pool = collect(skipmissing(small_pool))
     else
-        read_pool = variant.(fake_reads)
+        first_pos = leftposition(first(subconsensus_remapped))
+        last_pos = rightposition(last(subconsensus_remapped))
+
+        for fr in fake_reads
+            leftposition(fr) >= first_pos || continue
+            rightposition(fr) <= last_pos || continue
+
+            v = variant(fr)
+            t = translate(v, consensus_alignment)
+            push!(read_pool, t)
+        end #for
     end #if
 
     haplotype_tester =
@@ -374,13 +385,14 @@ function _haplink_haplotypes(args::Dict{String,Any})
             min_depth=depth,
         )
 
-    valid_haplotypes = findset(subconsensus_vars, haplotype_tester)
+    valid_haplotypes = findset(subconsensus_remapped, haplotype_tester)
 
     hapcalls = HaplotypeCall[]
 
     push!(hapcalls, HaplotypeCall(UInt64(0), 0.0, 0.0, 0.0, consensus_variant))
 
     for hap in valid_haplotypes
+        length(hap) > 1 || continue
         push!(hapcalls, HaplotypeCall(hap, read_pool))
     end #for
 
