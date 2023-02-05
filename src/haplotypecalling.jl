@@ -104,7 +104,26 @@ where
 The significance is then calculated from the cumulative ``χ^2`` distribution function.
 """
 function ishaplotype(
-    haplotype::Union{AbstractArray{Variation{S,T}},Haplotype{S,T}},
+    haplotype::AbstractArray{Variation{S,T}},
+    reads::AbstractArray{Haplotype{S,T}};
+    min_frequency::Union{Float64,Nothing}=nothing,
+    significance_level::Union{Float64,Nothing}=nothing,
+    min_depth::Union{Int,Nothing}=nothing,
+) where {S<:BioSequence,T<:BioSymbol}
+    check_contridicts(haplotype) && return false
+    hap = Haplotype(reference(first(haplotype)), haplotype)
+
+    return ishaplotype(
+        hap,
+        reads;
+        min_frequency=min_frequency,
+        significance_level=significance_level,
+        min_depth=min_depth,
+    )
+end #function
+
+function ishaplotype(
+    haplotype::Haplotype{S,T},
     reads::AbstractArray{Haplotype{S,T}};
     min_frequency::Union{Float64,Nothing}=nothing,
     significance_level::Union{Float64,Nothing}=nothing,
@@ -125,6 +144,19 @@ function ishaplotype(
     end #if
 
     return true
+end #function
+
+function check_contridicts(vars::AbstractArray{Variation{S,T}}) where {S,T}
+    passed_vars = similar(vars, 0)
+    ref = reference(first(vars))
+
+    for var in vars
+        passed_hap = Haplotype(ref, passed_vars)
+        contridicts(var, passed_hap) && return true
+        push!(passed_vars, var)
+    end #for
+
+    return false
 end #function
 
 function _dict(hc::HaplotypeCall; prefix::AbstractString="")
