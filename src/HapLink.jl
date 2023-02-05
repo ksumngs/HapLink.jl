@@ -208,17 +208,17 @@ function _parse_arguments()
             help = "Minimum alternate base frequency to label variant as consensus"
         "--significance", "-a"
             arg_type = Float64
-            default = 1e-5
+            default = 0.05
             range_tester = x -> (x >= 0) && (x <= 1)
             help = "Maximum Χ-squared significance to call a haplotype"
         "--depth", "-d"
             arg_type = Int64
-            default = 10
+            default = 3
             range_tester = x -> x >= 1
             help = "Minimum depth to call a haplotype"
         "--frequency", "-t"
             arg_type = Float64
-            default = 0.1
+            default = 0.05
             range_tester = x -> (x >= 0) && (x <= 1)
             help = "Minimum frequency to call a haplotype"
         "--full_length_reads"
