@@ -1,7 +1,12 @@
 tabWidth = 4
+proseWrap = "always"
 
 [[overrides]]
 files = "*.{md,yml,yaml,json,Dockerfile,sh,svg}"
 
 [overrides.options]
 tabWidth = 2
+
+[[overrides]]
+files = "*.md"
+proseWrap = "always"
