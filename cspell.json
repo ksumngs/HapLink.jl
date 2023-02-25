@@ -1,17 +1,11 @@
 {
-    "version": "0.2",
-    "language": "en",
-    "allowCompoundWords": true,
-    "dictionaryDefinitions": [
-        { "name": "bioinformatics", "path": "./.cspell/bioinformatics.txt" },
-        { "name": "julia", "path": "./.cspell/julia.txt"}
-    ],
-    "dictionaries": [
-        "bioinformatics",
-        "julia"
-    ],
-    "includeRegExpList": [
-        "#.*",
-        "string"
-    ]
+  "version": "0.2",
+  "language": "en",
+  "allowCompoundWords": true,
+  "dictionaryDefinitions": [
+    { "name": "bioinformatics", "path": "./.cspell/bioinformatics.txt" },
+    { "name": "julia", "path": "./.cspell/julia.txt" }
+  ],
+  "dictionaries": ["bioinformatics", "julia"],
+  "includeRegExpList": ["#.*", "string"]
 }

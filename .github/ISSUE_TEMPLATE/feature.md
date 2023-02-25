@@ -5,10 +5,10 @@ title: "[Feature]: "
 labels: enhancement
 ---
 
-> _Thanks for adding fresh ideas to HapLink!_ :smile:
-> _This template is rather extensive. Please fill out all that you can, but
-> remember that it is only a tool: if you feel anything in this template is not
-> relevant, simply delete it._
+> _Thanks for adding fresh ideas to HapLink! :smile: This template is rather
+> extensive. Please fill out all that you can, but remember that it is only a
+> tool: if you feel anything in this template is not relevant, simply delete
+> it._
 
 Give a clear and consise description of what you want to happen
 
@@ -36,8 +36,8 @@ construct this feature (if applicable).
 
 ### Input files
 
-- [sample.bam](#)
-- [reference.fasta](#)
+- [sample.bam](https://github.com/ksumngs/HapLink.jl/raw/master/example/sample.bam)
+- [reference.fasta](https://github.com/ksumngs/HapLink.jl/raw/master/example/reference.fasta)
 
 ### Command
 
@@ -64,6 +64,6 @@ Explain what you're doing now, or if any other tools come close to this feature.
 ## Possible Implementation
 
 (Optional, but highly useful). If you can figure out a good entry point in the
-code, or have a one-liner that could be a good starting place, list it here. Even
-better, if you know a way to implement it, but don't want to open a pull
+code, or have a one-liner that could be a good starting place, list it here.
+Even better, if you know a way to implement it, but don't want to open a pull
 request, explain that here.
