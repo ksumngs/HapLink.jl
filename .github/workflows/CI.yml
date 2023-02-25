@@ -6,6 +6,7 @@ on:
   pull_request:
 jobs:
   test:
+    # prettier-ignore
     name: Julia ${{ matrix.version }} - ${{ matrix.os }} - ${{ matrix.arch }} - ${{ github.event_name }}
     runs-on: ${{ matrix.os }}
     strategy:
@@ -30,6 +31,7 @@ jobs:
           cache-name: cache-artifacts
         with:
           path: ~/.julia/artifacts
+          # prettier-ignore
           key: ${{ runner.os }}-test-${{ env.cache-name }}-${{ hashFiles('**/Project.toml') }}
           restore-keys: |
             ${{ runner.os }}-test-${{ env.cache-name }}-

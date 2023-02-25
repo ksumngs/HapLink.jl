@@ -13,8 +13,8 @@
 
 <!-- markdownlint-enable -->
 
-> This project follows the [semver] _pro forma_ and uses the [OneFlow]
-> branching model.
+> This project follows the [semver] _pro forma_ and uses the [OneFlow] branching
+> model.
 
 Call haplotypes based on linkage disequilibrium between variant sites on long
 sequencing reads. Uses maximum liklihood methods for reads that are shorter than
@@ -141,7 +141,8 @@ julia --project=$HOME/src/HapLink.jl -e 'using HapLink.haplink()' "$@"
 > - _Updates must be recompiled_
 > - _Fast execution time_
 
-Binaries are compiled using [PackageCompiler.jl], using the recipe in [.github/workflows/build.yml].
+Binaries are compiled using [PackageCompiler.jl], using the recipe in
+[.github/workflows/build.yml].
 
 1. Get the [official Julia release] (disto packages generally don't work)
 2. Install PackageCompiler into that Julia depot
@@ -172,14 +173,19 @@ working at Kansas State University. Why don't you [open a pull request] and fix
 that?
 
 [semver]: https://semver.org
-[oneflow]: https://www.endoflineblog.com/oneflow-a-git-branching-model-and-workflow
-[docker image over on quay]: https://quay.io/repository/millironx/julia_bam-readcounts
+[oneflow]:
+  https://www.endoflineblog.com/oneflow-a-git-branching-model-and-workflow
+[docker image over on quay]:
+  https://quay.io/repository/millironx/julia_bam-readcounts
 [the docs]: https://ksumngs.github.io/HapLink.jl/stable
 [example directory]: https://github.com/ksumngs/HapLink.jl/tree/master/example
 [julia]: https://julialang.org
-[pkg documentation]: https://pkgdocs.julialang.org/v1/managing-packages/#developing
+[pkg documentation]:
+  https://pkgdocs.julialang.org/v1/managing-packages/#developing
 [ttfp]: https://viralinstruction.com/posts/badjulia/#compile_time_latency
-[packagecompiler.jl]: https://julialang.github.io/PackageCompiler.jl/stable/apps.html
-[.github/workflows/build.yml]: https://github.com/ksumngs/HapLink.jl/blob/master/.github/workflows/build.yml
+[packagecompiler.jl]:
+  https://julialang.github.io/PackageCompiler.jl/stable/apps.html
+[.github/workflows/build.yml]:
+  https://github.com/ksumngs/HapLink.jl/blob/master/.github/workflows/build.yml
 [official julia release]: https://julialang.org/downloads/
 [open a pull request]: https://github.com/ksumngs/HapLink.jl/compare

@@ -5,11 +5,10 @@ title: "[Bug]: "
 labels: bug
 ---
 
-> _Thanks for helping squash bugs in HapLink!_ :smile:
-> _This template is rather extensive._
-> _Please fill out all that you can, but remember that this template_
-> _is only a tool: if you feel that anything is not relavant, simply_
-> _leave it blank._
+> _Thanks for helping squash bugs in HapLink! :smile: This template is rather
+> extensive. Please fill out all that you can, but remember that this template
+> is only a tool: if you feel that anything is not relevant, simply leave it
+> blank._
 
 ## Behavior
 
@@ -27,34 +26,32 @@ Tell us what actually happened
 
 ### File(s) that cause bug
 
-Please drag and drop (i.e. upload to the GitHub issue) the exact files
-that are causing the problem. If needed, you can zip/tarball them
-first.
+Please drag and drop (i.e. upload to the GitHub issue) the exact files that are
+causing the problem. If needed, you can zip/tarball them first.
 
 ### Shell command that causes bug
 
-Enter the command(s) used to produce the bug on the command line
-without command output
+Enter the command(s) used to produce the bug on the command line without command
+output
 
 ### REPL command that causes bug
 
-Enter the Julia code used to produce the bug in the REPL without prompt
-or output
+Enter the Julia code used to produce the bug in the REPL without prompt or
+output
 
 ## More Info
 
 ### Context
 
-Tell us what you are trying to accomplish and/or how this bug affects
-users in the "real world."
+Tell us what you are trying to accomplish and/or how this bug affects users in
+the "real world."
 
 ### Possible Solution
 
-**(Highly optional, but highly useful.)**
-If you can figure out a design decision or a particular function call
-that is causing the bug, explain here.
-Even better, if you know a way to fix it, but don't want to open a pull
-request, then explain the fix here.
+**(Highly optional, but highly useful.)** If you can figure out a design
+decision or a particular function call that is causing the bug, explain here.
+Even better, if you know a way to fix it, but don't want to open a pull request,
+then explain the fix here.
 
 ## Environment
 
