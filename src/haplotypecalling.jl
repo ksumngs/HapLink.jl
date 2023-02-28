@@ -252,7 +252,7 @@ function linkage(counts::AbstractArray{<:Integer})
     P_allref = first(counts) / n
 
     # Get the probabilities of finding reference bases in any of the haplotypes
-    P_refs = map(dim -> sumsliced(counts, dim) / n, 1:N)
+    P_refs = map(dim -> P_ref(counts, dim), 1:N)
 
     # Calculate linkage disequilibrium
     Δ = P_allref - prod(P_refs)
@@ -265,6 +265,10 @@ function linkage(counts::AbstractArray{<:Integer})
     p = 1 - cdf(Chisq(1), Χ_squared)
 
     return Δ, p
+end #function
+
+function P_ref(counts::AbstractArray, dim::Integer)
+    return sumsliced(counts, dim) / sum(counts)
 end #function
 
 """
