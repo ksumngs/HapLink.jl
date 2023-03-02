@@ -20,7 +20,8 @@ function HaplotypeCall(
 
     depth = last(hapcounts)
     frequency = last(hapcounts) / sum(hapcounts)
-    (Δ, p) = linkage(hapcounts)
+    Δ = linkage(hapcounts)
+    p = significance(hapcounts)
 
     return HaplotypeCall(depth, Δ, frequency, p, haplotype)
 end #function
@@ -237,8 +238,8 @@ end #function
 """
     linkage(counts::AbstractArray{Int})
 
-Calculates the linkage disequilibrium and Chi-squared significance level of a combination of
-haplotypes whose number of occurrences are given by `counts`.
+Calculates the linkage disequilibrium of a haplotype given its ``N``-dimensional contingency
+matrix, `counts`.
 
 `counts` is an ``N``-dimensional array where the ``N``th dimension represents the ``N``th
 variant call position within a haplotype. `findoccurrences` produces such an array.
@@ -255,16 +256,35 @@ function linkage(counts::AbstractArray{<:Integer})
     P_refs = map(dim -> P_ref(counts, dim), 1:N)
 
     # Calculate linkage disequilibrium
-    Δ = P_allref - prod(P_refs)
+    return P_allref - prod(P_refs)
+end #function
+
+"""
+    significance(counts::AbstractArray{<:Integer})
+
+Calculates the ``χ^2`` significance of a haplotype given its ``N``-dimensional contingency
+matrix, `counts`
+
+See the documentation on [`linkage(::AbstractArray{<:Integer})`](@ref) or
+[`occurence_matrix`](@ref) for details on how `counts` should be constructed.
+"""
+function significance(counts::AbstractArray{<:Integer})
+    # Make math easier by declaring variables
+    N = ndims(counts)
+    n = sum(counts)
+
+    # Get the probabilities of finding reference bases in any of the haplotypes
+    P_refs = map(dim -> P_ref(counts, dim), 1:N)
+
+    # Get the linkage disequilibrium
+    Δ = linkage(counts)
 
     # Calculate the test statistic
     r = Δ / prod(P -> P * (1 - P), P_refs)^(1 / N)
     Χ_squared = r^2 * n
 
     # Calculate the significance
-    p = 1 - cdf(Chisq(1), Χ_squared)
-
-    return Δ, p
+    return 1 - cdf(Chisq(1), Χ_squared)
 end #function
 
 function P_ref(counts::AbstractArray, dim::Integer)
