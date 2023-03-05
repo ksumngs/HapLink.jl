@@ -236,31 +236,60 @@ function occurence_matrix(
 end #function
 
 """
-    linkage(counts::AbstractArray{Int})
+    linkage(counts::AbstractArray{<:Integer})
 
 Calculates the linkage disequilibrium of a haplotype given its ``N``-dimensional contingency
 matrix, `counts`.
 
 `counts` is an ``N``-dimensional array where the ``N``th dimension represents the ``N``th
-variant call position within a haplotype. `findoccurrences` produces such an array.
+variant call locus within a haplotype. `findoccurrences` produces such an array.
+
+# Extended help
+
+`linkage(::AbstractArray{<:Integer})` calculates an unweighted linkage disequilibrium as
+given by Equation (6) of [Slatkin (1972)](https://doi.org/10.1093/genetics/72.1.157).
+
+```math
+D(1..N) = E\\left( \\prod_k^N i_k - P_k \\right)
+```
+
+where
+
+- ``N`` is the number of variant loci
+- ``D(1..N)`` is the linkage disequilibrium of all ``N`` variant loci
+- ``E`` is an operator returning the arithmetic mean of its argument over every read
+- ``i_k`` is a function that returns ``1`` if the ``k``-th locus of the given read contains
+  the reference allele, and returns ``0`` otherwise.
+- ``P_k`` is the probability of any read containing the reference allele in the ``k``-th
+  locus, i.e. the frequency at which the reference allele is found within the entire read set
+  at the ``k``-th locus
 """
 function linkage(counts::AbstractArray{<:Integer})
     # Make math easier by declaring variables
     N = ndims(counts)
-    n = sum(counts)
 
     # Short-circuit if there is only one contingency
     N > 1 || return 0.0
 
-    # Get the probability of finding a perfect reference sequence
-    P_allref = first(counts) / n
+    # Vector containing the product of allele value minus reference probability
+    allele_minus_prob = Float64[]
 
-    # Calculate linkage disequilibrium
-    Δ =
-        P_allref - Σ(dim -> P_ref(dim, counts) * linkage(rmdim(counts, dim)), 1:N) -
-        Π(dim -> P_ref(dim, counts), 1:N)
+    # Add the allele minus reference values from each contingency option to the array
+    for i in CartesianIndices(counts)
+        # Skip if there are no reads for this contingency
+        counts[i] > 0 || continue
 
-    return Δ
+        # Check for reference matches
+        is_reference = Tuple(i) .== 1
+
+        # Multiply the E-function
+        d = Π(j -> Int(is_reference[j]) - P_ref(counts, j), 1:N)
+
+        # Add the E-function to the array as many times as this contingency appears
+        push!(allele_minus_prob, repeat([d], counts[i])...)
+    end #for
+
+    return mean(allele_minus_prob)
 end #function
 
 """
@@ -343,7 +372,7 @@ julia> rmdim(mat, 1)
 2×2 Matrix{Int64}:
  19  16
   3  26
-  
+
 julia> rmdim(mat, 2)
 2×2 Matrix{Int64}:
  17  12
