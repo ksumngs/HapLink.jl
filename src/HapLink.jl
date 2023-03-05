@@ -73,6 +73,10 @@ export variationinfos
 export variations_match
 export vcf
 
+# Declare some handy math aliases
+const Σ = sum
+const Π = prod
+
 include("fasta.jl")
 include("xam.jl")
 include("haplotype.jl")
