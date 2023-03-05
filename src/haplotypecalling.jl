@@ -249,14 +249,18 @@ function linkage(counts::AbstractArray{<:Integer})
     N = ndims(counts)
     n = sum(counts)
 
+    # Short-circuit if there is only one contingency
+    N > 1 || return 0.0
+
     # Get the probability of finding a perfect reference sequence
     P_allref = first(counts) / n
 
-    # Get the probabilities of finding reference bases in any of the haplotypes
-    P_refs = map(dim -> P_ref(counts, dim), 1:N)
-
     # Calculate linkage disequilibrium
-    return P_allref - prod(P_refs)
+    Δ =
+        P_allref - Σ(dim -> P_ref(dim, counts) * linkage(rmdim(counts, dim)), 1:N) -
+        Π(dim -> P_ref(dim, counts), 1:N)
+
+    return Δ
 end #function
 
 """
