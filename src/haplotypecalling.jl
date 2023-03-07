@@ -267,29 +267,26 @@ where
 function linkage(counts::AbstractArray{<:Integer})
     # Make math easier by declaring variables
     N = ndims(counts)
+    n = sum(counts)
 
     # Short-circuit if there is only one contingency
     N > 1 || return 0.0
 
-    # Vector containing the product of allele value minus reference probability
-    allele_minus_prob = Float64[]
+    return Σ(map(i -> _e_operand(i, counts) * counts[i], CartesianIndices(counts))) / n
+end #function
 
-    # Add the allele minus reference values from each contingency option to the array
-    for i in CartesianIndices(counts)
-        # Skip if there are no reads for this contingency
-        counts[i] > 0 || continue
+function _e_operand(coord::CartesianIndex, counts::AbstractArray{<:Integer})
+    # Skip if there are no reads for this contingency
+    counts[coord] > 0 || return 0
 
-        # Check for reference matches
-        is_reference = Tuple(i) .== 1
+    # Make math nicer-looking
+    N = ndims(counts)
 
-        # Multiply the E-function
-        d = Π(j -> Int(is_reference[j]) - P_ref(counts, j), 1:N)
+    # Check for reference matches
+    is_reference = Tuple(coord) .== 1
 
-        # Add the E-function to the array as many times as this contingency appears
-        push!(allele_minus_prob, repeat([d], counts[i])...)
-    end #for
-
-    return mean(allele_minus_prob)
+    # Return the result of the operand
+    return Π(j -> Int(is_reference[j]) - P_ref(counts, j), 1:N)
 end #function
 
 """
