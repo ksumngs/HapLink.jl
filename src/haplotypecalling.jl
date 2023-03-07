@@ -282,11 +282,16 @@ function _e_operand(coord::CartesianIndex, counts::AbstractArray{<:Integer})
     # Make math nicer-looking
     N = ndims(counts)
 
-    # Check for reference matches
-    is_reference = Tuple(coord) .== 1
-
     # Return the result of the operand
-    return Π(j -> Int(is_reference[j]) - P_ref(counts, j), 1:N)
+    return Π(j -> _sub_i(j, coord, counts), 1:N)
+end #function
+
+function _sub_i(
+    loci_index::Integer, read_index::CartesianIndex, counts::AbstractArray{<:Integer}
+)
+    is_reference = read_index[loci_index] == 1
+
+    return Int(is_reference) - P_ref(counts, loci_index)
 end #function
 
 """
