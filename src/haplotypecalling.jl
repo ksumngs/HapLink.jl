@@ -286,6 +286,11 @@ function _e_operand(coord::CartesianIndex, counts::AbstractArray{<:Integer})
     return Π(j -> _sub_i(j, coord, counts), 1:N)
 end #function
 
+function _e_square_operand(loci::Integer, counts::AbstractArray{<:Integer})
+    return sum(i -> _sub_i(loci, i, counts)^2 * counts[i], CartesianIndices(counts)) /
+           sum(counts)
+end #function
+
 function _sub_i(
     loci_index::Integer, read_index::CartesianIndex, counts::AbstractArray{<:Integer}
 )
@@ -304,22 +309,14 @@ See the documentation on [`linkage(::AbstractArray{<:Integer})`](@ref) or
 [`occurence_matrix`](@ref) for details on how `counts` should be constructed.
 """
 function significance(counts::AbstractArray{<:Integer})
-    # Make math easier by declaring variables
-    N = ndims(counts)
-    n = sum(counts)
-
-    # Get the probabilities of finding reference bases in any of the haplotypes
-    P_refs = map(dim -> P_ref(counts, dim), 1:N)
-
-    # Get the linkage disequilibrium
-    Δ = linkage(counts)
-
-    # Calculate the test statistic
-    r = Δ / prod(P -> P * (1 - P), P_refs)^(1 / N)
-    Χ_squared = r^2 * n
+    Χ_squared = _correlation_coeff(counts)^2 * sum(counts)
 
     # Calculate the significance
     return 1 - cdf(Chisq(1), Χ_squared)
+end #function
+
+function _correlation_coeff(counts::AbstractArray{<:Integer})
+    return linkage(counts) / √Π(j -> _e_square_operand(j, counts), 1:ndims(counts))
 end #function
 
 function P_ref(counts::AbstractArray, dim::Integer)
