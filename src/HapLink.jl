@@ -61,6 +61,7 @@ export readpos
 export relativepos
 export rmdim
 export seqpos
+export significance
 export simulate
 export strand
 export strand_bias
