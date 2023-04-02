@@ -8,6 +8,19 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Added
+
+- `significance` function for haplotype chi-squared significance
+
+### Changed
+
+- [BREAKING] `linkage` now returns only the unweighted linkage disequilibrium,
+  not a tuple of linkage disequilibrium and significance
+
+### Fixed
+
+- Linkage disequilibrium and chi-squared significance calculations corrected
+
 ## [0.7.1] - 2022-07-29
 
 ## Fixed
