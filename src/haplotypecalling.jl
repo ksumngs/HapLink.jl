@@ -244,18 +244,22 @@ haplotypes whose number of occurrences are given by `counts`.
 variant call position within a haplotype. `findoccurrences` produces such an array.
 """
 function linkage(counts::AbstractArray{<:Integer})
+    # Make math easier by declaring variables
+    N = ndims(counts)
+    n = sum(counts)
+
     # Get the probability of finding a perfect reference sequence
-    P_allref = first(counts) / sum(counts)
+    P_allref = first(counts) / n
 
     # Get the probabilities of finding reference bases in any of the haplotypes
-    P_refs = sumsliced.([counts], 1:ndims(counts)) ./ sum(counts)
+    P_refs = map(dim -> sumsliced(counts, dim) / n, 1:N)
 
     # Calculate linkage disequilibrium
     Δ = P_allref - prod(P_refs)
 
     # Calculate the test statistic
-    r = Δ / (prod(P_refs .* (1 .- P_refs))^(1 / ndims(counts)))
-    Χ_squared = r^2 * sum(counts)
+    r = Δ / prod(P -> P * (1 - P), P_refs)^(1 / N)
+    Χ_squared = r^2 * n
 
     # Calculate the significance
     p = 1 - cdf(Chisq(1), Χ_squared)
