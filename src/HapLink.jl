@@ -59,6 +59,7 @@ export pseudoreads
 export quality
 export readpos
 export relativepos
+export rmdim
 export seqpos
 export simulate
 export strand
