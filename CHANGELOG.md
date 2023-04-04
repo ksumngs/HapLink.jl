@@ -8,18 +8,53 @@ and this project adheres to
 
 ## [Unreleased]
 
+> This release represents a [big rewrite](https://youtu.be/xCGu5Z_vaps) of
+> HapLink
+
 ### Added
 
+- BAM index file finder ([#35](https://github.com/ksumngs/HapLink.jl/pull/35))
+- `VariationInfo` type ([#35](https://github.com/ksumngs/HapLink.jl/pull/35))
+- `VariationPileup` type ([#35](https://github.com/ksumngs/HapLink.jl/pull/35))
+- `VariationCall` type ([#35](https://github.com/ksumngs/HapLink.jl/pull/35))
+- `HaplotypeCall` type ([#35](https://github.com/ksumngs/HapLink.jl/pull/35))
+- More rigorous haplotype combination finding algorithm
+  ([#35](https://github.com/ksumngs/HapLink.jl/pull/35))
 - `significance` function for haplotype chi-squared significance
+  ([#37](https://github.com/ksumngs/HapLink.jl/pull/37))
 
 ### Changed
 
+- VCF parsing outsourced to
+  [VariantCallFormat.jl](https://github.com/rasmushenningsson/VariantCallFormat.jl)
+  ([#35](https://github.com/ksumngs/HapLink.jl/pull/35))
+- Codebase now uses [Blue Style](https://github.com/invenia/BlueStyle)
+  ([#35](https://github.com/ksumngs/HapLink.jl/pull/35))
+- Variant calling and storage outsourced to
+  [SequenceVariation.jl](https://github.com/BioJulia/SequenceVariation.jl)
+  ([#35](https://github.com/ksumngs/HapLink.jl/pull/35))
 - [BREAKING] `linkage` now returns only the unweighted linkage disequilibrium,
   not a tuple of linkage disequilibrium and significance
+  ([#37](https://github.com/ksumngs/HapLink.jl/pull/37))
+
+### Removed
+
+- [BREAKING] `myref2seq` (functionality now present in
+  [BioAlignments.jl](https://github.com/BioJulia/BioAlignments.jl))
+  ([#35](https://github.com/ksumngs/HapLink.jl/pull/35))
+- Dependency on bam-readcount artifact (including x86-64 glibc Linux-specific
+  code) ([#35](https://github.com/ksumngs/HapLink.jl/pull/35))
+- `Variant` type (functionality now present in
+  [SequenceVariation.jl](https://github.com/BioJulia/SequenceVariation.jl))
+  ([#35](https://github.com/ksumngs/HapLink.jl/pull/35))
+- `Haplotype` type (functionality now present in
+  [SequenceVariation.jl](https://github.com/BioJulia/SequenceVariation.jl))
+  ([#35](https://github.com/ksumngs/HapLink.jl/pull/35))
 
 ### Fixed
 
 - Linkage disequilibrium and chi-squared significance calculations corrected
+  ([#37](https://github.com/ksumngs/HapLink.jl/pull/37))
 
 ## [0.7.1] - 2022-07-29
 
