@@ -22,6 +22,8 @@ and this project adheres to
   ([#35](https://github.com/ksumngs/HapLink.jl/pull/35))
 - `significance` function for haplotype chi-squared significance
   ([#37](https://github.com/ksumngs/HapLink.jl/pull/37))
+- Earthfile for repeatable testing and documentation builds
+  ([#42](https://github.com/ksumngs/HapLink.jl/issues/42)/[#45](https://github.com/ksumngs/HapLink.jl/pull/45))
 
 ### Changed
 
@@ -58,7 +60,7 @@ and this project adheres to
 
 ## [0.7.1] - 2022-07-29
 
-## Fixed
+### Fixed
 
 - VCF output files no longer contain invalid characters
   ([#30](https://github.com/ksumngs/HapLink.jl/pull/30))
