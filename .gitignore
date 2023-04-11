@@ -29,3 +29,7 @@ Manifest.toml
 build
 example/output.*
 example/reference.fasta.fai
+
+# Files generated during ci
+lcov.info
+local-output
