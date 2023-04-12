@@ -42,12 +42,16 @@ function _name(h::Haplotype; prefix::AbstractString="")
     refseq = copy(reference(h))
     mutseq = reconstruct(h)
 
-    seqhash = bytes2hex(sha1(string(mutseq)))
-    shorthash = seqhash[1:8]
+    seqhash = _short_hash(mutseq)
 
     if isempty(prefix)
         return shorthash
     else
         return join([prefix, shorthash], "_")
     end #if
+end #function
+
+function _short_hash(x::Any; length::Integer=8)
+    hash = bytes2hex(sha1(string(x)))
+    return hash[1:length]
 end #function
