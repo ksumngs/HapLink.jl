@@ -27,8 +27,10 @@ Manifest.toml
 
 # Files generated during compilation/testing
 build
-example/output.*
-example/reference.fasta.fai
+example/*
+!example/reference.fasta
+!example/sample.bam
+!example/sample.bam.bai
 
 # Files generated during ci
 lcov.info
