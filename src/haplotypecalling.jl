@@ -35,7 +35,7 @@ function HaplotypeCall(
     return HaplotypeCall(hapvar, reads)
 end #function
 
-function name(hc::HaplotypeCall; prefix::AbstractString="")
+function _name(hc::HaplotypeCall; prefix::AbstractString="")
     refseq = copy(reference(variant(hc)))
     mutseq = reconstruct(variant(hc))
 
@@ -169,7 +169,7 @@ function _dict(hc::HaplotypeCall; prefix::AbstractString="")
         close(varbuffer)
     end #for
     return OrderedDict{String,Any}(
-        "name" => name(hc; prefix=prefix),
+        "name" => _name(hc; prefix=prefix),
         "depth" => depth(hc),
         "frequency" => frequency(hc),
         "linkage" => linkage(hc),
