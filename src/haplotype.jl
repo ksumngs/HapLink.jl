@@ -37,3 +37,17 @@ function cigar(hap::Haplotype{S,T}) where {S,T}
 
     return join(cigar_string, "")
 end #function
+
+function _name(h::Haplotype; prefix::AbstractString="")
+    refseq = copy(reference(h))
+    mutseq = reconstruct(h)
+
+    seqhash = bytes2hex(sha1(string(mutseq)))
+    shorthash = seqhash[1:8]
+
+    if isempty(prefix)
+        return shorthash
+    else
+        return join([prefix, shorthash], "_")
+    end #if
+end #function
