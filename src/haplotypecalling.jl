@@ -12,8 +12,8 @@ frequency(hc::HaplotypeCall) = hc.frequency
 significance(hc::HaplotypeCall) = hc.significance
 haplotype(hc::HaplotypeCall) = hc.haplotype
 variant(hc::HaplotypeCall) = haplotype(hc)
-function _name(hc::HaplotypeCall; prefix::AbstractString="")
-    return _name(haplotype(hc); prefix=prefix)
+function _name(hc::HaplotypeCall; prefix::AbstractString="", is_consensus::Bool=false)
+    return _name(haplotype(hc); prefix=prefix, is_consensus=is_consensus)
 end
 
 function HaplotypeCall(
