@@ -12,6 +12,9 @@ frequency(hc::HaplotypeCall) = hc.frequency
 significance(hc::HaplotypeCall) = hc.significance
 haplotype(hc::HaplotypeCall) = hc.haplotype
 variant(hc::HaplotypeCall) = haplotype(hc)
+function _name(hc::HaplotypeCall; prefix::AbstractString="")
+    return _name(haplotype(hc); prefix=prefix)
+end
 
 function HaplotypeCall(
     haplotype::Haplotype{S,T}, reads::AbstractArray{Haplotype{S,T}}
@@ -33,20 +36,6 @@ function HaplotypeCall(
     hapvar = Haplotype(refseq, haplotype)
 
     return HaplotypeCall(hapvar, reads)
-end #function
-
-function _name(hc::HaplotypeCall; prefix::AbstractString="")
-    refseq = copy(reference(variant(hc)))
-    mutseq = reconstruct(variant(hc))
-
-    seqhash = bytes2hex(sha1(string(mutseq)))
-    shorthash = seqhash[1:8]
-
-    if isempty(prefix)
-        return shorthash
-    else
-        return join([prefix, shorthash], "_")
-    end #if
 end #function
 
 """
