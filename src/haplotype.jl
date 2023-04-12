@@ -38,16 +38,16 @@ function cigar(hap::Haplotype{S,T}) where {S,T}
     return join(cigar_string, "")
 end #function
 
-function _name(h::Haplotype; prefix::AbstractString="")
+function _name(h::Haplotype; prefix::AbstractString="", is_consensus::Bool=false)
     refseq = copy(reference(h))
     mutseq = reconstruct(h)
 
-    seqhash = _short_hash(mutseq)
+    seqhash = is_consensus ? "CONSENSUS" : _short_hash(mutseq)
 
     if isempty(prefix)
-        return shorthash
+        return seqhash
     else
-        return join([prefix, shorthash], "_")
+        return join([prefix, seqhash], "_")
     end #if
 end #function
 
