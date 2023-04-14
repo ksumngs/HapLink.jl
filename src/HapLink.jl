@@ -116,6 +116,9 @@ function _parse_arguments()
         "haplotypes"
             help = "Call haplotypes"
             action = :command
+        "sequences"
+            help = "Convert haplotypes to sequences"
+            action = :command
     end #add_arg_table
 
     # Add arguments for the variant calling command
@@ -248,6 +251,25 @@ function _parse_arguments()
         "--seed", "-s"
             arg_type = UInt64
             help = "Set the random seed for the simulated read generation process. Only applies if `--simulated_reads` is passed."
+    end #add_arg_table
+    
+    @add_arg_table! s["sequences"] begin
+        "reference"
+            arg_type = String
+            required = true
+            range_tester = x -> isfile(x)
+            help = "FASTA formatted reference genome sequence file"
+        "haplotypes"
+            arg_type = String
+            required = true
+            range_tester = x -> isfile(x)
+            help = "YAML output from `haplink haplotypes`"
+        "--output", "-o"
+            arg_type = String
+            help = "Write output to file (FASTA format)"
+        "--prefix", "-p"
+            arg_type = String
+            help = "The prefix (sequence identifier) of the output sequences" 
     end #add_arg_table
     #! format: on
 
