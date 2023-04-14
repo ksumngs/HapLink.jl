@@ -321,6 +321,13 @@ function magnitude(x::UnitRange)
     return last(x) - first(x)
 end #function
 
+function SequenceVariation.reconstruct(ps::Pseudoread)
+    len_read = rightposition(ps) - leftposition(ps) + _lendiff(ps)
+    left_index = leftposition(ps)
+    right_index = leftposition(ps) + len_read
+    return reconstruct(haplotype(ps))[left_index:right_index]
+end #function
+
 function _lendiff(ps::Pseudoread)
     # Start with the number of bases being the same
     n = 0
