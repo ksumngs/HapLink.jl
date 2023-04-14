@@ -320,3 +320,57 @@ end #function
 function magnitude(x::UnitRange)
     return last(x) - first(x)
 end #function
+
+function _lendiff(ps::Pseudoread)
+    # Start with the number of bases being the same
+    n = 0
+
+    # Now check how each variation changes it
+    for var in _variations(ps)
+        # Convert all positional data to signed integers
+        var_l = Int(leftposition(var))
+        var_r = Int(rightposition(var))
+        ps_l = Int(leftposition(ps))
+        ps_r = Int(rightposition(ps))
+
+        # Create unitranges to represent overlaps
+        var_range = var_l:var_r
+        ps_range = ps_l:ps_r
+
+        # Substitutions don't change the number of bases
+        if mutation(var) isa Substitution
+            continue
+        end #if
+
+        # Insertions always add the same number of bases
+        if mutation(var) isa Insertion
+            # Variation must be at least partially within the read window
+            magnitude(overlap(var_range, ps_range)) >= 1 || continue
+            n += length(mutation(var))
+            continue
+        end #if
+
+        # Deletions are tricky: they can overlap the edge of the read window
+        if mutation(var) isa Deletion
+            # Variation must be at least partially within the read window
+            magnitude(overlap(var_range, ps_range)) >= 0 || continue
+
+            # Check if the deletion is fully within the read window
+            if var_l > ps_l && var_r < ps_r
+                n -= length(mutation(var))
+                continue
+            elseif var_l < ps_l
+                n -= var_r - ps_l + 1
+                continue
+            elseif var_r > ps_r
+                n -= ps_r - var_l + 1
+                continue
+            else
+                n -= 1
+                continue
+            end #if
+        end #if
+    end #for
+
+    return n
+end #function
