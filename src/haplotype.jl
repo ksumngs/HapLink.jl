@@ -9,6 +9,12 @@ function SequenceVariation.Haplotype(
     return Haplotype(paired_alignment)
 end #function
 
+function SequenceVariation.Haplotype(ref::NucleotideSeq, data::AbstractDict)
+    snps = data["snps"]
+    vars = map(snp -> Variation(ref, snp), snps)
+    return Haplotype(ref, vars)
+end #function
+
 """
     cigar(hap::Haplotype{S,T}) where {S,T}
 
