@@ -287,6 +287,8 @@ Base.@ccallable function julia_main()::Cint
         _haplink_consensus(args)
     elseif cmd == "haplotypes"
         _haplink_haplotypes(args)
+    elseif cmd == "sequences"
+        _haplink_sequences(args)
     else
         return 1
     end #if
@@ -439,4 +441,52 @@ function _haplink_haplotypes(args::Dict{String,Any})
     return 0
 end #function
 
+function _haplink_sequences(args::Dict{String,Any})
+    reffile = args["reference"]
+    hapfile = args["haplotypes"]
+    outfile = args["output"]
+    prefix = args["prefix"]
+
+    # Read the haplotype file
+    haplotype_input = YAML.load_file(hapfile)
+
+    # Read the reference file
+    refrecord = HapLink._first_record(reffile)
+    refseq = FASTA.sequence(LongDNA{4}, refrecord)
+
+    # Find the length of sequences
+    startpos = haplotype_input["coverage"]["start"]
+    endpos = haplotype_input["coverage"]["end"]
+
+    # Parse the consensus variants into a Haplotype
+    consensus_data = popfirst!(haplotype_input["haplotypes"])
+    consensus_hap = Haplotype(refseq, consensus_data)
+    consensus_seq = reconstruct(consensus_hap)
+    consensus_ps = Pseudoread(startpos, endpos, consensus_hap)
+
+    # Convert prefix to string
+    prefix = isnothing(prefix) ? "" : prefix
+
+    # Open the new fasta file
+    FASTA.Writer(isnothing(outfile) ? stdout : open(outfile, "w")) do fasta_writer
+        # Write the consensus sequence
+        write(fasta_writer, FASTA.Record(consensus_ps; prefix=prefix, is_consensus=true))
+
+        # Apply the variants of every other haplotype to a new haplotype
+        for hap_dictionary in haplotype_input["haplotypes"]
+            write(
+                fasta_writer,
+                FASTA.Record(
+                    Pseudoread(
+                        startpos, endpos, Haplotype(copy(consensus_seq), hap_dictionary)
+                    );
+                    prefix=prefix,
+                    is_consensus=false,
+                ),
+            )
+        end #for
+    end #do
+
+    return 0
+end #function
 end #module
