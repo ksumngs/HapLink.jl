@@ -321,6 +321,12 @@ function magnitude(x::UnitRange)
     return last(x) - first(x)
 end #function
 
+function FASTA.Record(ps::Pseudoread; prefix::AbstractString="", is_consensus::Bool=false)
+    return FASTA.Record(
+        _name(haplotype(ps); prefix=prefix, is_consensus=is_consensus), reconstruct(ps)
+    )
+end #function
+
 function SequenceVariation.reconstruct(ps::Pseudoread)
     len_read = rightposition(ps) - leftposition(ps) + _lendiff(ps)
     left_index = leftposition(ps)
