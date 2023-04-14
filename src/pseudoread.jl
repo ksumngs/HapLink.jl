@@ -316,3 +316,7 @@ function overlap(x::UnitRange{S}, y::UnitRange{S}) where {S}
 
     return UnitRange{S}(e, f)
 end #function
+
+function magnitude(x::UnitRange)
+    return last(x) - first(x)
+end #function

@@ -49,6 +49,7 @@ export findset
 export frequency
 export interval
 export linkage
+export magnitude
 export occurence_matrix
 export overlap
 export overlap_inrange
