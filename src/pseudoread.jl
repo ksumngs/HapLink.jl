@@ -21,6 +21,7 @@ BioGenerics.leftposition(ps::Pseudoread) = ps.startpos
 BioGenerics.rightposition(ps::Pseudoread) = ps.endpos
 variant(ps::Pseudoread) = ps.read
 _variations(ps::Pseudoread) = variations(variant(ps))
+haplotype(ps::Pseudoread) = ps.read
 
 """
     pseudoreads(sam::Union{AbstractString,AbstractPath}, consensus::NucleotideSeq)
