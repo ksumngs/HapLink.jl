@@ -363,6 +363,13 @@ function SequenceVariation.reconstruct(ps::Pseudoread)
     return reconstruct(haplotype(ps))[left_index:right_index]
 end #function
 
+"""
+    _lendiff(ps::Pseudoread)
+
+Gets the difference between the number of bases within the read window of `ps` on the
+reference sequence from the number of bases within the read window on the mutated sequence,
+taking into account insertions and deletions.
+"""
 function _lendiff(ps::Pseudoread)
     # Start with the number of bases being the same
     n = 0
