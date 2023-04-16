@@ -317,6 +317,18 @@ function overlap(x::UnitRange{S}, y::UnitRange{S}) where {S}
     return UnitRange{S}(e, f)
 end #function
 
+"""
+    magnitude(x::UnitRange)
+
+Gets the difference between the last and first elements of `x`
+
+# Example
+```jldoctest
+julia> magnitude(0:10)
+10
+
+```
+"""
 function magnitude(x::UnitRange)
     return last(x) - first(x)
 end #function
