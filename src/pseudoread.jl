@@ -333,6 +333,23 @@ function magnitude(x::UnitRange)
     return last(x) - first(x)
 end #function
 
+"""
+    FASTX.FASTA.Record(ps::Pseudoread; prefix::AbstractString="", is_consensus::Bool=false)
+
+Specialized constructor for outputting [`Pseudoread`](@ref)s to `FASTA.Record`s that can be
+written to files.
+
+# Arguments
+- `ps::Pseudoread`: The modified sequence and read window to be converted into the sequence
+    of the new record
+
+# Keywords
+- `prefix::AbstractString=""`: A string to start the sequence identifier with, usually based
+    on the reference sequence of `ps`
+- `is_consensus::Bool=false`: Normally, the new identifier of the record is a combination of
+    the `prefix` and the SHA1 hash of the alternate sequence. Set `is_consensus` to `true`
+    to instead use the word `"CONSENSUS"` in place of the hash
+"""
 function FASTA.Record(ps::Pseudoread; prefix::AbstractString="", is_consensus::Bool=false)
     return FASTA.Record(
         _name(haplotype(ps); prefix=prefix, is_consensus=is_consensus), reconstruct(ps)
