@@ -1,8 +1,6 @@
 name = "HapLink"
 uuid = "8ca39d33-de0d-4205-9b21-13a80f2b7eed"
-authors = [
-    "Thomas A. Christensen II, Kansas State University, and contributors"
-]
+authors = ["Thomas A. Christensen II, Kansas State University, and contributors"]
 version = "0.7.1"
 
 [deps]
@@ -38,7 +36,7 @@ Combinatorics = "1"
 Distributions = "0.25"
 FASTX = "2"
 FilePaths = "0.8"
-GenomicFeatures = "2"
+GenomicFeatures = "2, 3"
 HypothesisTests = "0.10"
 OrderedCollections = "1.4"
 SequenceVariation = "0.2.2"
@@ -56,8 +54,8 @@ Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 SequenceVariation = "eef6e190-9969-4f06-a38f-35a110a8fdc8"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
-TestItems = "1c621080-faea-4a02-84b6-bbd5e436b8fe"
 TestItemRunner = "f8b46487-2199-4994-9208-9a1283c18c0a"
+TestItems = "1c621080-faea-4a02-84b6-bbd5e436b8fe"
 XAM = "d759349c-bcba-11e9-07c2-5b90f8f05f7c"
 
 [targets]
