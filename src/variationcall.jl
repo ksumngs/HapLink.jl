@@ -177,7 +177,7 @@ function _vcf_header(
 
     push!(metas, MI("##fileformat=VCFv4.3"))
     push!(metas, MI("##filedate=$(Dates.format(today(), "YYYmmdd"))"))
-    push!(metas, MI("##source=HapLink.jlv$VERSION"))
+    push!(metas, MI("##source=HapLink.jlv$HAPLINK_VERSION"))
     push!(metas, MI("##reference=file://$abs_ref"))
     push!(
         metas,
