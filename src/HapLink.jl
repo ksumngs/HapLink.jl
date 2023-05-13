@@ -1,3 +1,8 @@
+"""
+    HapLink
+
+Viral haplotype calling via linkage disequilibrium
+"""
 module HapLink
 
 using ArgParse: ArgParseSettings, @add_arg_table!, parse_args, project_version
@@ -6,6 +11,7 @@ using BioGenerics: BioGenerics, leftposition, rightposition, metadata
 using BioSequences: BioSequence, LongDNA, NucleotideSeq
 using BioSymbols: BioSymbol, DNA
 using Combinatorics: combinations
+using Comonicon: Arg, @cast, @main
 using Dates: Dates, today
 using Distributions: Chisq, cdf
 using FASTX: FASTA
@@ -489,4 +495,6 @@ function _haplink_sequences(args::Dict{String,Any})
 
     return 0
 end #function
+
+@main
 end #module
