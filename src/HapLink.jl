@@ -10,7 +10,7 @@ using BioGenerics: BioGenerics, leftposition, rightposition, metadata
 using BioSequences: BioSequence, LongDNA, NucleotideSeq
 using BioSymbols: BioSymbol, DNA
 using Combinatorics: combinations
-using Comonicon: Arg, @cast, @main
+using Comonicon: Arg, @cast, @main, get_version
 using Dates: Dates, today
 using Distributions: Chisq, cdf
 using FASTX: FASTA
@@ -82,6 +82,9 @@ export vcf
 # Declare some handy math aliases
 const Σ = sum
 const Π = prod
+
+# Get the project version
+const HAPLINK_VERSION = get_version(HapLink)
 
 include("fasta.jl")
 include("xam.jl")
@@ -231,7 +234,7 @@ function _haplink_haplotypes(args::Dict{String,Any})
     end_pos = max(rightposition.(fake_reads)...)
 
     outdict = OrderedDict{String,Any}()
-    outdict["version"] = VERSION
+    outdict["version"] = HAPLINK_VERSION
     outdict["settings"] = args
     outdict["coverage"] = OrderedDict{String,Int}("start" => start_pos, "end" => end_pos)
     outdict["haplotypes"] = [_dict(h) for h in hapcalls]
