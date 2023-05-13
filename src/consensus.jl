@@ -29,10 +29,10 @@ function consensus_record(
     reference::Union{AbstractString,AbstractPath},
     variants::Union{AbstractString,AbstractPath};
     frequency::Float64=0.5,
-    prefix::Union{AbstractString,Nothing}=nothing,
+    prefix::AbstractString="",
 )
     refrec = _first_record(reference)
-    ref_id = isnothing(prefix) ? FASTA.identifier(refrec) : prefix
+    ref_id = isempty(prefix) ? FASTA.identifier(refrec) : prefix
     ref_seq = FASTA.sequence(LongDNA{2}, refrec)
 
     con_seq = reconstruct(consensus_haplotype(ref_seq, variants; frequency=frequency))
