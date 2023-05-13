@@ -185,17 +185,50 @@ the variant calling. Outputs a Variant Call Format (VCF) file compliant with VCF
     return 0
 end #function
 
-function _haplink_consensus(args::Dict{String,Any})
-    reffile = args["reference"]
-    varfile = args["variants"]
-    outfile = args["output"]
-    freq = args["frequency"]
-    prefix = args["prefix"]
+"""
+    function consensus(
+        reference::String,
+        variants::String;
+        outfile::Union{String,Nothing}=nothing,
+        frequency::Float64=0.5,
+        prefix::String=""
+    )
 
-    consensus_record = consensus(reffile, varfile; frequency=freq, prefix=prefix)
+Convert variant calls to consensus sequence
 
+# Introduction
+
+Generates a consensus sequence based on a reference genome and previously called variants.
+Will only consider variants with a "PASS" filter to be able to contribute to the consensus.
+Outputs results in FASTA format.
+
+# Arguments
+
+- `reference`: The path to the reference genome. Must be in FASTA format.
+- `variants`: The path to the variant calls. Must be in VCF v4 format.
+
+# Options
+
+- `--outfile=<path>`: The file to write the consensus sequence to. If left blank, the
+    consensus sequence is written to standard output.
+- `--frequency=<float>`: The minimum frequency at which a variant must appear to be
+    considered part of the consensus. Note that HapLink does not support ambigous base
+    calling (e.g. `N`, `R`, `Y`, etc.) at low frequencies unlike many variant callers.
+- `--prefix=<string>`: Name of the new sequence. Defaults to using the FASTA identifier of
+    the reference sequence.
+"""
+@cast function consensus(
+    reference::String,
+    variants::String;
+    outfile::Union{String,Nothing}=nothing,
+    frequency::Float64=0.5,
+    prefix::String="",
+)
     FASTA.Writer(isnothing(outfile) ? stdout : open(outfile, "w")) do fasta_writer
-        write(fasta_writer, consensus_record)
+        write(
+            fasta_writer,
+            consensus_record(reference, variants; frequency=frequency, prefix=prefix),
+        )
     end #do
 
     return 0
