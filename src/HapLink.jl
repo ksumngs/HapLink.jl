@@ -99,28 +99,82 @@ include("pseudoread.jl")
 include("findset.jl")
 include("haplotypecalling.jl")
 
+"""
+    function variants(
+        reference::String,
+        bam::String;
+        outfile::Union{String,Nothing}=nothing,
+        significance::Float64=1e-5,
+        depth::UInt64=UInt64(10),
+        quality::Float64=12.0,
+        frequency::Float64=0.05,
+        position::Float64=0.5,
+        strandedness::Union{Float64,Nothing}=nothing,
+    )
 
-function _haplink_variants(args::Dict{String,Any})
-    reffile = args["reference"]
-    bam = args["bam"]
-    outfile = args["output"]
-    depth = args["depth"]
-    qual = args["quality"]
-    freq = args["frequency"]
-    pos = args["position"]
-    strand = args["strand"]
-    α = args["significance"]
+Call variants
 
-    refname = FASTA.identifier(_first_record(reffile))
+# Introduction
 
-    vcf_head = _vcf_header(reffile, α; D=depth, Q=qual, X=pos, F=freq, S=strand)
+Decides which variations found within an alignment are real, and which are due to random
+chance. HapLink uses Fisher's Exact Test to determine the statistical significance of
+sequence variations, and optionally allows for other thresholds to reduce random noise in
+the variant calling. Outputs a Variant Call Format (VCF) file compliant with VCF v4.
+
+# Arguments
+
+- `reference`: path to the reference genome to call variants against in fasta format. Must
+    not be gzipped, but does not need to be indexed (have a sidecar fai file). HapLink only
+    supports single-segment reference genomes: if `reference` includes more than one
+    sequence, all but the first will be ignored.
+- `bam`: alignment file to call variants from. Can be in SAM or BAM format, and does not
+    need to be sorted or indexed, but variant calling speed will increase significantly if
+    using a sorted and indexed (has a sidebar bai file) BAM file.
+
+# Options
+
+- `--outfile=<path>`: The file to write variant calls to. If left blank, variant calls are
+    written to standard output.
+- `--significance=<float>`: The alpha value for statistical significance of variant calls.
+- `--depth=<int>`: Minimum number of times the variation must be observed within the
+    alignment to be called a variant
+- `--quality=<float>`: The minimum average basecall quality score for a variation to be
+    called a variant
+- `--frequency=<float>`: The minimum proportion of reads that the variation must be observed
+    within compared to all reads covering its position for that variation to be called a
+    variant
+- `--position=<float>`: The distance (as a percentage) from the edge of reads that a
+    variation must be observed at to be called a variant
+- `--strandedness=<float>`: The maximum proportion of times that a variation can be observed
+    on one strand versus the other to be called a variant. This metric is totally useless on
+    single-stranded sequencing protocols like Oxford Nanopore, but can be useful for
+    combining data between stranded protocols like most Illumina and Pacific Bio.
+"""
+@cast function variants(
+    reference::String,
+    bam::String;
+    outfile::Union{String,Nothing}=nothing,
+    significance::Float64=1e-5,
+    depth::UInt64=UInt64(10),
+    quality::Float64=12.0,
+    frequency::Float64=0.05,
+    position::Float64=0.5,
+    strandedness::Union{Float64,Nothing}=nothing,
+)
+    refname = FASTA.identifier(_first_record(reference))
+
+    vcf_head = _vcf_header(
+        reference, significance; D=depth, Q=quality, X=position, F=frequency, S=strandedness
+    )
     out_stream = isnothing(outfile) ? stdout : open(outfile, "w")
     vcf_writer = VCF.Writer(out_stream, vcf_head)
 
-    pile = pileup(bam, reffile)
+    pile = pileup(bam, reference)
 
     for p in pile
-        vc = call_variant(p, α; D=depth, Q=qual, X=pos, F=freq, S=strand)
+        vc = call_variant(
+            p, significance; D=depth, Q=quality, X=position, F=frequency, S=strandedness
+        )
         vcf_rec = vcf(vc, refname)
         write(vcf_writer, vcf_rec)
     end #for
