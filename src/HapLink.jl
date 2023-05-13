@@ -46,6 +46,7 @@ export VariationPileup
 export altdepth
 export call_variant
 export cigar
+export consensus_haplotype
 export consensus
 export contridicts
 export depth
@@ -218,7 +219,7 @@ function _haplink_haplotypes(args::Dict{String,Any})
     refrecord = _first_record(reffile)
     refseq = FASTA.sequence(LongDNA{4}, refrecord)
 
-    consensus_variant = consensus(refseq, varfile; frequency=consensus_frequency)
+    consensus_variant = consensus_haplotype(refseq, varfile; frequency=consensus_frequency)
     consensus_sequence = reconstruct(consensus_variant)
     consensus_alignment = PairwiseAlignment(
         AlignedSequence(consensus_sequence, Alignment(cigar(consensus_variant))), refseq
