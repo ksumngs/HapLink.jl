@@ -158,7 +158,7 @@ end #function
 function _vcf_header(
     refpath::Union{AbstractPath,AbstractString},
     α::Float64;
-    D::Union{Nothing,Int}=nothing,
+    D::Union{Nothing,Unsigned}=nothing,
     Q::Union{Nothing,Float64}=nothing,
     X::Union{Nothing,Float64}=nothing,
     F::Union{Nothing,Float64}=nothing,
@@ -335,7 +335,7 @@ Calls variant from a `pileup`.
 function call_variant(
     pileup::VariationPileup,
     α::Float64;
-    D::Union{Nothing,Int}=nothing,
+    D::Union{Nothing,Unsigned}=nothing,
     Q::Union{Nothing,Float64}=nothing,
     X::Union{Nothing,Float64}=nothing,
     F::Union{Nothing,Float64}=nothing,
