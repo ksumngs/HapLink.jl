@@ -1,5 +1,5 @@
 """
-    consensus(
+    consensus_record(
         reference::Union{AbstractString,AbstractPath},
         variants::Union{AbstractString,AbstractPath};
         frequency::Float64=0.5,
@@ -25,7 +25,7 @@ Get the consensus `FASTA.Record `from `variants` applied to the first sequence i
   with `_CONSENSUS` appended. If `prefix` is supplied, then the name of the output record
   will be `\$(prefix)_CONSENSUS`.
 """
-function consensus(
+function consensus_record(
     reference::Union{AbstractString,AbstractPath},
     variants::Union{AbstractString,AbstractPath};
     frequency::Float64=0.5,

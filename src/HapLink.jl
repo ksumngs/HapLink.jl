@@ -47,7 +47,7 @@ export altdepth
 export call_variant
 export cigar
 export consensus_haplotype
-export consensus
+export consensus_record
 export contridicts
 export depth
 export filters
