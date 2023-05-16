@@ -234,40 +234,114 @@ Outputs results in FASTA format.
     return 0
 end #function
 
-function _haplink_haplotypes(args::Dict{String,Any})
-    reffile = args["reference"]
-    varfile = args["variants"]
-    bamfile = args["bam"]
-    outfile = args["output"]
-    consensus_frequency = args["consensus_frequency"]
-    significance = args["significance"]
-    depth = args["depth"]
-    frequency = args["frequency"]
-    simulate_reads = args["simulated_reads"]
-    overlap_min = args["overlap_min"]
-    overlap_max = args["overlap_max"]
-    iterations = args["iterations"]
-    input_seed = args["seed"]
+"""
+    function haplotypes(
+        reference::String,
+        variants::String,
+        bam::String;
+        outfile::String="",
+        consensus_frequency::Float64=0.5,
+        significance::Float64=0.05,
+        depth::UInt64=0x0000000000000003,
+        frequency::Float64=0.1,
+        simulated_reads::Bool=false,
+        overlap_min::Int64=0,
+        overlap_max::Int64=500,
+        iterations::UInt64=0x0000000000002710,
+        seed::Union{UInt64,Nothing}=nothing,
+    )
 
-    refrecord = _first_record(reffile)
+Call haplotypes
+
+# Introduction
+
+Calls haplotypes based on the linkage disequilibrium between subconsensus variant sites on
+long reads. Variant sites are chosen based on having a "PASS" filter in the `variants` file,
+and linkage is calculated based on the reads present in the `bam` file. Note this means that
+haplotypes can be called on a different set of sequences than variants were (e.g. variant
+calling using high accuracy short-read chemistry like Illumina and haplotype calling using
+low accuracy long-read chemistry like Oxford Nanopore). There are no guarantees that the
+`variants` file and `bam` file match, so use this feature with caution!
+
+# Arguments
+
+- `reference`: path to the reference genome to call haplotypes against in fasta format. Must
+    not be gzipped, but does not need to be indexed (have a sidecar fai file). HapLink only
+    supports single-segment reference genomes: if `reference` includes more than one
+    sequence, all but the first will be ignored.
+- `variants`: path to the variants file that will define variant sites to call haplotypes
+    from. Must be in VCF (not BCF) v4 format. [`haplink variants`](@ref HapLink.variants)
+    generates a compatible file, although output from other tools can also be used.
+- `bam`: alignment file to call variants from. Can be in SAM or BAM format, and does not
+    need to be sorted or indexed, but variant calling speed will increase significantly if
+    using a sorted and indexed (has a sidebar bai file) BAM file.
+
+# Flags
+
+- `--simulated-reads`: Use maximum likelihood simulation of long reads based on overlapping
+    short reads
+
+# Options
+
+- `--outfile=<path>`: The file to write haplotype calls to. If left blank, haplotype calls
+    are written to standard output.
+- `--consensus-frequency=<float>`: The minimum frequency at which a variant must appear to
+    be considered part of the consensus.
+- `--significance=<float>`: The alpha value for statistical significance of haplotype calls.
+- `--depth=<int>`: Minimum number of times a variant combination must be observed within the
+    set of reads to be called a haplotype
+- `--frequency=<float>`: The minimum proportion of reads that a variant combination must be
+    observed within compared to all reads covering its position for that haplotype to be
+    called
+- `--overlap-min=<int>`: The minimum number of bases that must overlap for two short reads
+    to be combined into one simulated read. Can be negative to indicate a minimum distance
+    between reads. **Only applies when `--simulated-reads` is set.**
+- `--overlap-max=<int>`: The maximum number of bases that may overlap for two short reads to
+    be combined into one simulated read. Can be negative to indicate a cap on how far two
+    reads must be apart from one another. Must be greater than `--overlap-min`. **Only
+    applies when `--simulated-reads` is set.**
+- `--iterations=<int>`: The number of simulated reads to create before calling haplotypes.
+    **Only applies when `--simulated-reads` is set.**
+- `--seed=<int>`: The random seed used for picking short reads to create simulated reads
+    when using maximum likelihood methods. Leaving unset will use the default Julia RNG and
+    seed. See
+    [Julia's documentation on randomness](https://docs.julialang.org/en/v1/stdlib/Random/)
+    for implementation details. **Only applies when `--simulated-reads` is set.**
+"""
+@cast function haplotypes(
+    reference::String,
+    variants::String,
+    bam::String;
+    outfile::String="",
+    consensus_frequency::Float64=0.5,
+    significance::Float64=0.05,
+    depth::UInt64=0x0000000000000003,
+    frequency::Float64=0.1,
+    simulated_reads::Bool=false,
+    overlap_min::Int64=0,
+    overlap_max::Int64=500,
+    iterations::UInt64=0x0000000000002710,
+    seed::Union{UInt64,Nothing}=nothing,
+)
+    refrecord = _first_record(reference)
     refseq = FASTA.sequence(LongDNA{4}, refrecord)
 
-    consensus_variant = consensus_haplotype(refseq, varfile; frequency=consensus_frequency)
+    consensus_variant = consensus_haplotype(refseq, variants; frequency=consensus_frequency)
     consensus_sequence = reconstruct(consensus_variant)
     consensus_alignment = PairwiseAlignment(
         AlignedSequence(consensus_sequence, Alignment(cigar(consensus_variant))), refseq
     )
 
-    fake_reads = pseudoreads(bamfile, consensus_sequence)
+    fake_reads = pseudoreads(bam, consensus_sequence)
 
-    subconsensus_vars = subconsensus_variations(varfile, consensus_variant)
+    subconsensus_vars = subconsensus_variations(variants, consensus_variant)
     subconsensus_remapped = map(v -> translate(v, consensus_alignment), subconsensus_vars)
     sort!(subconsensus_remapped)
 
     read_pool = Haplotype{LongDNA{4},DNA}[]
-    if simulate_reads
-        if !isnothing(input_seed)
-            seed!(input_seed)
+    if simulated_reads
+        if !isnothing(seed)
+            seed!(seed)
         end #if
 
         small_pool = Vector{Union{Haplotype{LongDNA{4},DNA},Missing}}(undef, iterations)
@@ -323,11 +397,25 @@ function _haplink_haplotypes(args::Dict{String,Any})
 
     outdict = OrderedDict{String,Any}()
     outdict["version"] = HAPLINK_VERSION
-    outdict["settings"] = args
+    outdict["settings"] = OrderedDict{String,Any}(
+        "reference" => reference,
+        "variants" => variants,
+        "bam" => bam,
+        "outfile" => outfile,
+        "consensus_frequency" => consensus_frequency,
+        "significance" => significance,
+        "depth" => depth,
+        "frequency" => frequency,
+        "simulated_reads" => simulated_reads,
+        "overlap_min" => overlap_min,
+        "overlap_max" => overlap_max,
+        "iterations" => iterations,
+        "seed" => seed,
+    )
     outdict["coverage"] = OrderedDict{String,Int}("start" => start_pos, "end" => end_pos)
     outdict["haplotypes"] = [_dict(h) for h in hapcalls]
 
-    out_stream = isnothing(outfile) ? stdout : open(outfile, "w")
+    out_stream = isempty(outfile) ? stdout : open(outfile, "w")
     YAML.write(out_stream, outdict)
 
     return 0
