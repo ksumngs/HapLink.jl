@@ -1,0 +1,13 @@
+name = "haplink"
+
+[install]
+completion = true
+quiet = false
+optimize = 2
+
+[application]
+incremental = false
+filter_stdlibs = true
+
+[application.precompile]
+execution_file = ["deps/precompile.jl"]
