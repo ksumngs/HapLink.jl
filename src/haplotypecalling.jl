@@ -98,7 +98,7 @@ function ishaplotype(
     reads::AbstractArray{Haplotype{S,T}};
     min_frequency::Union{Float64,Nothing}=nothing,
     significance_level::Union{Float64,Nothing}=nothing,
-    min_depth::Union{Int,Nothing}=nothing,
+    min_depth::Union{Unsigned,Nothing}=nothing,
 ) where {S<:BioSequence,T<:BioSymbol}
     check_contridicts(haplotype) && return false
     hap = Haplotype(reference(first(haplotype)), haplotype)
@@ -117,7 +117,7 @@ function ishaplotype(
     reads::AbstractArray{Haplotype{S,T}};
     min_frequency::Union{Float64,Nothing}=nothing,
     significance_level::Union{Float64,Nothing}=nothing,
-    min_depth::Union{Int,Nothing}=nothing,
+    min_depth::Union{Unsigned,Nothing}=nothing,
 ) where {S<:BioSequence,T<:BioSymbol}
     call = HaplotypeCall(haplotype, reads)
 
