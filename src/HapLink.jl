@@ -421,17 +421,46 @@ low accuracy long-read chemistry like Oxford Nanopore). There are no guarantees 
     return 0
 end #function
 
-function _haplink_sequences(args::Dict{String,Any})
-    reffile = args["reference"]
-    hapfile = args["haplotypes"]
-    outfile = args["output"]
-    prefix = args["prefix"]
+"""
+    function sequences(
+        reference::String, haplotypes::String; outfile::String="", prefix::String=""
+    )
+
+Convert haplotype calls into haplotype sequences
+
+# Introduction
+
+Takes a YAML file output from [`haplink haplotypes`](@ref HapLink.haplotypes) and converts
+each called haplotype into its sequence and outputs those sequences in FASTA format. Useful
+for downstream processing by other tools, but loses all of the metadata and statistical
+details of each haplotype.
+
+# Arguments
+
+- `reference`: path to the reference genome to mutate haplotypes from. Must not be gzipped,
+    but does not need to be indexed (have a sidecar fai file). HapLink only supports single-
+    segment reference genomes: if `reference` includes more than one sequence, all but the
+    first will be ignored.
+- `haplotypes`: path to the haplotype calls file that will be used to mutate the reference
+    sequence to produce haplotype sequences. Must be an output from
+    [`haplink haplotypes`](@ref HapLink.haplotypes).
+
+# Options
+
+- `--outfile=<path>`: The file to write the haplotype sequences to. If left blank, the
+    sequences are written to standard output.
+- `--prefix=<string>`: Name of the new sequences. Defaults to using the FASTA identifier of
+    the reference sequence.
+"""
+@cast function sequences(
+    reference::String, haplotypes::String; outfile::String="", prefix::String=""
+)
 
     # Read the haplotype file
-    haplotype_input = YAML.load_file(hapfile)
+    haplotype_input = YAML.load_file(haplotypes)
 
     # Read the reference file
-    refrecord = HapLink._first_record(reffile)
+    refrecord = HapLink._first_record(reference)
     refseq = FASTA.sequence(LongDNA{4}, refrecord)
 
     # Find the length of sequences
@@ -444,11 +473,8 @@ function _haplink_sequences(args::Dict{String,Any})
     consensus_seq = reconstruct(consensus_hap)
     consensus_ps = Pseudoread(startpos, endpos, consensus_hap)
 
-    # Convert prefix to string
-    prefix = isnothing(prefix) ? "" : prefix
-
     # Open the new fasta file
-    FASTA.Writer(isnothing(outfile) ? stdout : open(outfile, "w")) do fasta_writer
+    FASTA.Writer(isempty(outfile) ? stdout : open(outfile, "w")) do fasta_writer
         # Write the consensus sequence
         write(fasta_writer, FASTA.Record(consensus_ps; prefix=prefix, is_consensus=true))
 
