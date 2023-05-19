@@ -90,4 +90,5 @@ const VCFS = vcf.(VARIATIONCALLS, ["REFERENCE"])
     include("findset.jl")
     include("haplotype.jl")
     @run_package_tests
+    include("cli.jl")
 end #testset
