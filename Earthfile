@@ -59,4 +59,27 @@ test:
     RUN curl -L https://github.com/julia-actions/julia-processcoverage/archive/refs/tags/v1.2.2.tar.gz | tar xvz
     RUN julia --color=yes julia-processcoverage-1.2.2/main.jl
     SAVE ARTIFACT lcov.info AS LOCAL local-output/lcov.$version.info
-    
+
+compiler:
+    FROM julia:latest
+    RUN apt-get update && apt-get install -y --no-install-recommends curl git ca-certificates build-essential
+
+build:
+    FROM +compiler
+    COPY --dir src .
+    COPY --dir deps .
+    COPY --dir example .
+    COPY Project.toml .
+    COPY Comonicon.toml .
+    RUN julia --project -e 'using Pkg; Pkg.instantiate()'
+    RUN julia --project deps/build.jl app
+    SAVE ARTIFACT build AS LOCAL build
+
+docker:
+    FROM ubuntu:focal
+    ARG TAG=latest
+    COPY +build/build/haplink/bin /usr/bin
+    COPY +build/build/haplink/lib /usr/lib
+    COPY +build/build/haplink/share /usr/share
+    ENTRYPOINT ["/usr/bin/haplink"]
+    SAVE IMAGE --push millironx/haplink:${TAG}
