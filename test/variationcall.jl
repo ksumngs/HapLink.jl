@@ -6,7 +6,7 @@
     @testset "vcf_header" begin
         refpath = "/data/reference.fasta"
         α = 0.05
-        D = 10
+        D = 0x0a
         Q = 12.0
         X = 0.1
         F = 0.05
