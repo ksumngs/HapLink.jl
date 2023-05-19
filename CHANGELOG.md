@@ -38,6 +38,9 @@ and this project adheres to
 - [BREAKING] `linkage` now returns only the unweighted linkage disequilibrium,
   not a tuple of linkage disequilibrium and significance
   ([#37](https://github.com/ksumngs/HapLink.jl/pull/37))
+- CLI now implemented in [Comonicon.jl](https://comonicon.org) instead of
+  [ArgParse](https://github.com/carlobaldassi/ArgParse.jl/)
+  ([#38](https://github.com/ksumngs/HapLink.jl/issues/38)/[#47](https://github.com/ksumngs/HapLink.jl/pull/47))
 
 ### Removed
 
