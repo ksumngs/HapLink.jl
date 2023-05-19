@@ -2,7 +2,7 @@ VERSION 0.7
 FROM alpine:3.17
 
 docs:
-    FROM julia:latest
+    FROM julia:alpine3.18
     COPY --dir src .
     COPY --dir docs .
     COPY Project.toml .
