@@ -41,6 +41,9 @@ and this project adheres to
 - CLI now implemented in [Comonicon.jl](https://comonicon.org) instead of
   [ArgParse](https://github.com/carlobaldassi/ArgParse.jl/)
   ([#38](https://github.com/ksumngs/HapLink.jl/issues/38)/[#47](https://github.com/ksumngs/HapLink.jl/pull/47))
+- `haplink haplotypes` now only outputs simulation-related settings if
+  `--simulated-reads` flag is set
+  ([#40](https://github.com/ksumngs/HapLink.jl/issues/40)/[#48](https://github.com/ksumngs/HapLink.jl/pull/48))
 
 ### Removed
 
