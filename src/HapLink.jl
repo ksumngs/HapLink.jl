@@ -407,11 +407,14 @@ low accuracy long-read chemistry like Oxford Nanopore). There are no guarantees 
         "depth" => depth,
         "frequency" => frequency,
         "simulated_reads" => simulated_reads,
-        "overlap_min" => overlap_min,
-        "overlap_max" => overlap_max,
-        "iterations" => iterations,
-        "seed" => seed,
     )
+    # Only output simulation settings if we used simulated reads
+    if simulated_reads
+        outdict["settings"]["overlap_min"] = overlap_min
+        outdict["settings"]["overlap_max"] = overlap_max
+        outdict["settings"]["iterations"] = iterations
+        outdict["settings"]["seed"] = seed
+    end #if
     outdict["coverage"] = OrderedDict{String,Int}("start" => start_pos, "end" => end_pos)
     outdict["haplotypes"] = [_dict(h) for h in hapcalls]
 
