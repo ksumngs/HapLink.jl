@@ -1,3 +1,19 @@
+"""
+    HaplotypeCall{S,T}
+
+A `Haplotype` that has had linkage disequilibrium calculations performed along with
+metadata to verify or refute its validity. Very similar to a [`VariationCall`](@ref), but
+for `Haplotype`s.
+
+# Fields
+
+- `depth::UInt64`: How many sequencing reads contain all the `Variation`s in `haplotype`
+- `linkage::Float64`: The unweighted linkage disequilibrium coefficient of this call
+- `frequency::Float64`: How often this haplotype occurs compared to the entire read pool
+- `significance::Float64`: The ``χ^2`` statistical significance (``p``-value) of this call
+- `haplotype::Haplotype{S,T}`: The set of `Variation`s that are inherited together in this
+    call
+"""
 struct HaplotypeCall{S<:BioSequence,T<:BioSymbol}
     depth::UInt64
     linkage::Float64
@@ -16,6 +32,16 @@ function _name(hc::HaplotypeCall; prefix::AbstractString="", is_consensus::Bool=
     return _name(haplotype(hc); prefix=prefix, is_consensus=is_consensus)
 end
 
+"""
+    HaplotypeCall(
+        haplotype::Haplotype{S,T}, reads::AbstractArray{Haplotype{S,T}}
+    ) where {S<:BioSequence,T<:BioSymbol}
+    HaplotypeCall(
+        haplotype::AbstractArray{Variation{S,T}}, reads::AbstractArray{Haplotype{S,T}}
+    ) where {S<:BioSequence,T<:BioSymbol}
+
+Calls haplotypes by calculating the linkage disequilibrium of `haplotype` within `reads`
+"""
 function HaplotypeCall(
     haplotype::Haplotype{S,T}, reads::AbstractArray{Haplotype{S,T}}
 ) where {S<:BioSequence,T<:BioSymbol}
