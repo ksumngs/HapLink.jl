@@ -28,6 +28,12 @@ BioGenerics.leftposition(ps::Pseudoread) = ps.startpos
 BioGenerics.rightposition(ps::Pseudoread) = ps.endpos
 variant(ps::Pseudoread) = ps.read
 _variations(ps::Pseudoread) = variations(variant(ps))
+
+"""
+    haplotype(ps::Pseudoread)
+
+Gets the differences between `ps` and its reference sequence as a `Haplotype`
+"""
 haplotype(ps::Pseudoread) = ps.read
 
 """
