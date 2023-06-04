@@ -1,8 +1,9 @@
 """
     VariationInfo{S<:BioSequence,T<:BioSymbol}
 
-Represents statistics associated with a [`SequenceVariation.Variation`](@ref) within an
-aligned sequencing read.
+Represents statistics associated with a
+[`SequenceVariation.Variation`](https://biojulia.dev/SequenceVariation.jl/stable/api/#SequenceVariation.Variation)
+within an aligned sequencing read.
 
 # Fields
 
