@@ -39,6 +39,7 @@ using VariantCallFormat: VCF
 using XAM: BAM, SAM
 using YAML: YAML
 
+export HaplotypeCall
 export Pseudoread
 export VariationCall
 export VariationInfo
