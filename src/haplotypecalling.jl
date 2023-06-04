@@ -19,7 +19,7 @@ end
 function HaplotypeCall(
     haplotype::Haplotype{S,T}, reads::AbstractArray{Haplotype{S,T}}
 ) where {S<:BioSequence,T<:BioSymbol}
-    hapcounts = occurence_matrix(haplotype, reads)
+    hapcounts = occurrence_matrix(haplotype, reads)
 
     depth = last(hapcounts)
     frequency = last(hapcounts) / sum(hapcounts)
@@ -168,11 +168,11 @@ function _dict(hc::HaplotypeCall; prefix::AbstractString="")
 end #function
 
 """
-    occurence_matrix(
+    occurrence_matrix(
         haplotype::AbstractArray{Variation{S,T}},
         reads::AbstractArray{Haplotype{S,T}},
     ) where {S<:BioSequence,T<:BioSymbol}
-    occurence_matrix(
+    occurrence_matrix(
         haplotype::Haplotype{S,T},
         reads::AbstractArray{S,T}
     ) where {S<:BioSequence,T<:BioSymbol}
@@ -195,7 +195,7 @@ dimensional matrix.
     haplotype was found in `reads`, while `occurrence_matrix(reads)[end]` gives the number
     of times the all-alternate base haplotype was found.
 """
-function occurence_matrix(
+function occurrence_matrix(
     haplotype::AbstractArray{Variation{S,T}}, reads::AbstractArray{Haplotype{S,T}}
 ) where {S<:BioSequence,T<:BioSymbol}
     hapcounts = zeros(UInt, repeat([2], length(haplotype))...)
@@ -218,10 +218,10 @@ function occurence_matrix(
     return hapcounts
 end #function
 
-function occurence_matrix(
+function occurrence_matrix(
     haplotype::Haplotype{S,T}, reads::AbstractArray{Haplotype{S,T}}
 ) where {S<:BioSequence,T<:BioSymbol}
-    return occurence_matrix(variations(haplotype), reads)
+    return occurrence_matrix(variations(haplotype), reads)
 end #function
 
 """
@@ -295,7 +295,7 @@ Calculates the ``χ^2`` significance of a haplotype given its ``N``-dimensional 
 matrix, `counts`
 
 See the documentation on [`linkage(::AbstractArray{<:Integer})`](@ref) or
-[`occurence_matrix`](@ref) for details on how `counts` should be constructed.
+[`occurrence_matrix`](@ref) for details on how `counts` should be constructed.
 """
 function significance(counts::AbstractArray{<:Integer})
     Χ_squared = _correlation_coeff(counts)^2 * sum(counts)
