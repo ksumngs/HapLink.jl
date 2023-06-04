@@ -54,6 +54,7 @@ export depth
 export filters
 export findset
 export frequency
+export haplotype
 export interval
 export linkage
 export magnitude
