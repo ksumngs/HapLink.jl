@@ -3,106 +3,106 @@
   Activating project at `~/haplink-tutorial-4`
 
 (haplink-tutorial-4) pkg&gt; add HapLink</code></pre><h2 id="Finding-the-example-files"><a class="docs-heading-anchor" href="#Finding-the-example-files">Finding the example files</a><a id="Finding-the-example-files-1"></a><a class="docs-heading-anchor-permalink" href="#Finding-the-example-files" title="Permalink"></a></h2><p>Instead of downloading the example files from the internet, we can reference them directly from the package.</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; using HapLink</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; const PACKAGE_DIR = dirname(dirname(pathof(HapLink)))</code><code class="nohighlight hljs ansi" style="display:block;">&quot;/home/runner/work/HapLink.jl/HapLink.jl&quot;</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; const EXAMPLE_DIR = joinpath(PACKAGE_DIR, &quot;example&quot;)</code><code class="nohighlight hljs ansi" style="display:block;">&quot;/home/runner/work/HapLink.jl/HapLink.jl/example&quot;</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; const EXAMPLE_BAM = joinpath(EXAMPLE_DIR, &quot;sample.bam&quot;)</code><code class="nohighlight hljs ansi" style="display:block;">&quot;/home/runner/work/HapLink.jl/HapLink.jl/example/sample.bam&quot;</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; const EXAMPLE_REFERENCE = joinpath(EXAMPLE_DIR, &quot;reference.fasta&quot;)</code><code class="nohighlight hljs ansi" style="display:block;">&quot;/home/runner/work/HapLink.jl/HapLink.jl/example/reference.fasta&quot;</code></pre><p>Perfect!</p><h2 id="Pileup-time"><a class="docs-heading-anchor" href="#Pileup-time">Pileup time</a><a id="Pileup-time-1"></a><a class="docs-heading-anchor-permalink" href="#Pileup-time" title="Permalink"></a></h2><p>Variants can&#39;t exist as a single unit, they have to be supported by a set of reads. We can view those reads in a <em>pileup</em>, which can easily be made by using the <a href="../../api/variationpileup/#HapLink.pileup-Tuple{Union{AbstractString, FilePathsBase.AbstractPath}, Union{AbstractString, FilePathsBase.AbstractPath}}"><code>pileup</code></a> function.</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; sample_pileup = pileup(EXAMPLE_BAM, EXAMPLE_REFERENCE)</code><code class="nohighlight hljs ansi" style="display:block;">21-element Vector{VariationPileup}:
- VariationPileup(C26G, 0x0000000000000005, [0.7241379310344828, 0.5517241379310345, 0.3793103448275862, 0.20689655172413793, 0.0], [30.0, 30.0, 30.0, 30.0, 30.0], GenomicFeatures.Strand[STRAND_POS, STRAND_POS, STRAND_POS, STRAND_POS, STRAND_POS])
- VariationPileup(C59G, 0x0000000000000005, [1.0, 0.8275862068965517, 0.6551724137931034, 0.4827586206896552, 0.3103448275862069], [30.0, 30.0, 30.0, 30.0, 30.0], GenomicFeatures.Strand[STRAND_POS, STRAND_POS, STRAND_POS, STRAND_POS, STRAND_POS])
- VariationPileup(C52G, 0x0000000000000006, [0.9310344827586207, 0.7586206896551724, 0.5862068965517241, 0.41379310344827586, 0.2413793103448276, 0.06896551724137931], [30.0, 30.0, 30.0, 30.0, 30.0, 30.0], GenomicFeatures.Strand[STRAND_POS, STRAND_POS, STRAND_POS, STRAND_POS, STRAND_POS, STRAND_POS])
- VariationPileup(Δ63-63, 0x0000000000000004, [0.41379310344827586], [30.0], GenomicFeatures.Strand[STRAND_POS])
- VariationPileup(Δ62-64, 0x0000000000000004, [0.7241379310344828], [30.0], GenomicFeatures.Strand[STRAND_POS])
- VariationPileup(C17G, 0x0000000000000003, [0.41379310344827586, 0.2413793103448276, 0.06896551724137931], [30.0, 30.0, 30.0], GenomicFeatures.Strand[STRAND_POS, STRAND_POS, STRAND_POS])
- VariationPileup(T48A, 0x0000000000000006, [0.9655172413793104, 0.7931034482758621, 0.6206896551724138], [63.0, 63.0, 63.0], GenomicFeatures.Strand[STRAND_POS, STRAND_POS, STRAND_POS])
- VariationPileup(T29A, 0x0000000000000005, [0.4827586206896552, 0.3103448275862069, 0.13793103448275862], [63.0, 63.0, 63.0], GenomicFeatures.Strand[STRAND_POS, STRAND_POS, STRAND_POS])
  VariationPileup(C64G, 0x0000000000000004, [1.0, 0.6551724137931034, 0.4482758620689655], [30.0, 30.0, 30.0], GenomicFeatures.Strand[STRAND_POS, STRAND_POS, STRAND_POS])
- VariationPileup(C54G, 0x0000000000000006, [1.0, 0.8275862068965517, 0.6551724137931034, 0.4827586206896552, 0.3103448275862069, 0.13793103448275862], [30.0, 30.0, 30.0, 30.0, 30.0, 30.0], GenomicFeatures.Strand[STRAND_POS, STRAND_POS, STRAND_POS, STRAND_POS, STRAND_POS, STRAND_POS])
- ⋮
- VariationPileup(A34T, 0x0000000000000006, [1.0, 0.6551724137931034, 0.3103448275862069], [20.0, 20.0, 20.0], GenomicFeatures.Strand[STRAND_POS, STRAND_POS, STRAND_POS])
- VariationPileup(C45G, 0x0000000000000006, [1.0, 0.8620689655172413, 0.6896551724137931, 0.5172413793103449, 0.3448275862068966, 0.1724137931034483], [30.0, 30.0, 30.0, 30.0, 30.0, 30.0], GenomicFeatures.Strand[STRAND_POS, STRAND_POS, STRAND_POS, STRAND_POS, STRAND_POS, STRAND_POS])
- VariationPileup(C42G, 0x0000000000000006, [0.9310344827586207, 0.7586206896551724, 0.5862068965517241, 0.41379310344827586, 0.2413793103448276, 0.06896551724137931], [30.0, 30.0, 30.0, 30.0, 30.0, 30.0], GenomicFeatures.Strand[STRAND_POS, STRAND_POS, STRAND_POS, STRAND_POS, STRAND_POS, STRAND_POS])
+ VariationPileup(Δ62-64, 0x0000000000000004, [0.7241379310344828], [30.0], GenomicFeatures.Strand[STRAND_POS])
  VariationPileup(C37G, 0x0000000000000006, [0.9310344827586207, 0.7586206896551724, 0.5862068965517241, 0.41379310344827586, 0.2413793103448276, 0.06896551724137931], [30.0, 30.0, 30.0, 30.0, 30.0, 30.0], GenomicFeatures.Strand[STRAND_POS, STRAND_POS, STRAND_POS, STRAND_POS, STRAND_POS, STRAND_POS])
- VariationPileup(C73G, 0x0000000000000002, [0.9655172413793104, 0.7586206896551724], [30.0, 30.0], GenomicFeatures.Strand[STRAND_POS, STRAND_POS])
  VariationPileup(C32G, 0x0000000000000006, [0.9310344827586207, 0.7586206896551724, 0.5862068965517241, 0.41379310344827586, 0.2413793103448276, 0.06896551724137931], [30.0, 30.0, 30.0, 30.0, 30.0, 30.0], GenomicFeatures.Strand[STRAND_POS, STRAND_POS, STRAND_POS, STRAND_POS, STRAND_POS, STRAND_POS])
- VariationPileup(C40G, 0x0000000000000006, [1.0, 0.8620689655172413, 0.6896551724137931, 0.5172413793103449, 0.3448275862068966, 0.1724137931034483], [30.0, 30.0, 30.0, 30.0, 30.0, 30.0], GenomicFeatures.Strand[STRAND_POS, STRAND_POS, STRAND_POS, STRAND_POS, STRAND_POS, STRAND_POS])
+ VariationPileup(C45G, 0x0000000000000006, [1.0, 0.8620689655172413, 0.6896551724137931, 0.5172413793103449, 0.3448275862068966, 0.1724137931034483], [30.0, 30.0, 30.0, 30.0, 30.0, 30.0], GenomicFeatures.Strand[STRAND_POS, STRAND_POS, STRAND_POS, STRAND_POS, STRAND_POS, STRAND_POS])
+ VariationPileup(C73G, 0x0000000000000002, [0.9655172413793104, 0.7586206896551724], [30.0, 30.0], GenomicFeatures.Strand[STRAND_POS, STRAND_POS])
+ VariationPileup(C15G, 0x0000000000000002, [0.3448275862068966, 0.1724137931034483], [30.0, 30.0], GenomicFeatures.Strand[STRAND_POS, STRAND_POS])
  VariationPileup(C13G, 0x0000000000000002, [0.27586206896551724, 0.10344827586206896], [30.0, 30.0], GenomicFeatures.Strand[STRAND_POS, STRAND_POS])
- VariationPileup(C50G, 0x0000000000000006, [1.0, 0.8620689655172413, 0.6896551724137931, 0.5172413793103449, 0.3448275862068966, 0.1724137931034483], [30.0, 30.0, 30.0, 30.0, 30.0, 30.0], GenomicFeatures.Strand[STRAND_POS, STRAND_POS, STRAND_POS, STRAND_POS, STRAND_POS, STRAND_POS])</code></pre><h2 id="But-is-it-real?"><a class="docs-heading-anchor" href="#But-is-it-real?">But is it real?</a><a id="But-is-it-real?-1"></a><a class="docs-heading-anchor-permalink" href="#But-is-it-real?" title="Permalink"></a></h2><p>Pileups tell us what the sequences are saying, but they can&#39;t tell us if there are any real variants. We can use the <a href="../../api/variationcall/#HapLink.call_variant-Tuple{VariationPileup, Float64}"><code>call_variant</code></a> function to filter a pileup into a set of variants.</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; all_variant_calls = VariationCall[]</code><code class="nohighlight hljs ansi" style="display:block;">VariationCall[]</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; for pile in sample_pileup
+ VariationPileup(T29A, 0x0000000000000005, [0.4827586206896552, 0.3103448275862069, 0.13793103448275862], [63.0, 63.0, 63.0], GenomicFeatures.Strand[STRAND_POS, STRAND_POS, STRAND_POS])
+ VariationPileup(C17G, 0x0000000000000003, [0.41379310344827586, 0.2413793103448276, 0.06896551724137931], [30.0, 30.0, 30.0], GenomicFeatures.Strand[STRAND_POS, STRAND_POS, STRAND_POS])
+ ⋮
+ VariationPileup(C26G, 0x0000000000000005, [0.7241379310344828, 0.5517241379310345, 0.3793103448275862, 0.20689655172413793, 0.0], [30.0, 30.0, 30.0, 30.0, 30.0], GenomicFeatures.Strand[STRAND_POS, STRAND_POS, STRAND_POS, STRAND_POS, STRAND_POS])
+ VariationPileup(C27G, 0x0000000000000005, [0.7586206896551724, 0.5862068965517241, 0.41379310344827586, 0.2413793103448276, 0.06896551724137931], [30.0, 30.0, 30.0, 30.0, 30.0], GenomicFeatures.Strand[STRAND_POS, STRAND_POS, STRAND_POS, STRAND_POS, STRAND_POS])
+ VariationPileup(T48A, 0x0000000000000006, [0.9655172413793104, 0.7931034482758621, 0.6206896551724138], [63.0, 63.0, 63.0], GenomicFeatures.Strand[STRAND_POS, STRAND_POS, STRAND_POS])
+ VariationPileup(Δ63-63, 0x0000000000000004, [0.41379310344827586], [30.0], GenomicFeatures.Strand[STRAND_POS])
+ VariationPileup(C50G, 0x0000000000000006, [1.0, 0.8620689655172413, 0.6896551724137931, 0.5172413793103449, 0.3448275862068966, 0.1724137931034483], [30.0, 30.0, 30.0, 30.0, 30.0, 30.0], GenomicFeatures.Strand[STRAND_POS, STRAND_POS, STRAND_POS, STRAND_POS, STRAND_POS, STRAND_POS])
+ VariationPileup(C59G, 0x0000000000000005, [1.0, 0.8275862068965517, 0.6551724137931034, 0.4827586206896552, 0.3103448275862069], [30.0, 30.0, 30.0, 30.0, 30.0], GenomicFeatures.Strand[STRAND_POS, STRAND_POS, STRAND_POS, STRAND_POS, STRAND_POS])
+ VariationPileup(C42G, 0x0000000000000006, [0.9310344827586207, 0.7586206896551724, 0.5862068965517241, 0.41379310344827586, 0.2413793103448276, 0.06896551724137931], [30.0, 30.0, 30.0, 30.0, 30.0, 30.0], GenomicFeatures.Strand[STRAND_POS, STRAND_POS, STRAND_POS, STRAND_POS, STRAND_POS, STRAND_POS])
+ VariationPileup(A34T, 0x0000000000000006, [1.0, 0.6551724137931034, 0.3103448275862069], [20.0, 20.0, 20.0], GenomicFeatures.Strand[STRAND_POS, STRAND_POS, STRAND_POS])
+ VariationPileup(C54G, 0x0000000000000006, [1.0, 0.8275862068965517, 0.6551724137931034, 0.4827586206896552, 0.3103448275862069, 0.13793103448275862], [30.0, 30.0, 30.0, 30.0, 30.0, 30.0], GenomicFeatures.Strand[STRAND_POS, STRAND_POS, STRAND_POS, STRAND_POS, STRAND_POS, STRAND_POS])</code></pre><h2 id="But-is-it-real?"><a class="docs-heading-anchor" href="#But-is-it-real?">But is it real?</a><a id="But-is-it-real?-1"></a><a class="docs-heading-anchor-permalink" href="#But-is-it-real?" title="Permalink"></a></h2><p>Pileups tell us what the sequences are saying, but they can&#39;t tell us if there are any real variants. We can use the <a href="../../api/variationcall/#HapLink.call_variant-Tuple{VariationPileup, Float64}"><code>call_variant</code></a> function to filter a pileup into a set of variants.</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; all_variant_calls = VariationCall[]</code><code class="nohighlight hljs ansi" style="display:block;">VariationCall[]</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; for pile in sample_pileup
            push!(all_variant_calls, call_variant(pile, 0.5; D=0x02, Q=10.0, X=0.01, F=0.05))
        end</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; all_variant_calls</code><code class="nohighlight hljs ansi" style="display:block;">21-element Vector{VariationCall}:
- VariationCall(C26G, 30.0, [&quot;PASS&quot;], 0x0000000000000005, 1.0, 0x0000000000000005, 0.3724137931034483, 0.007936507936507936)
- VariationCall(C59G, 30.0, [&quot;PASS&quot;], 0x0000000000000005, 1.0, 0x0000000000000005, 0.6551724137931034, 0.007936507936507936)
- VariationCall(C52G, 30.0, [&quot;PASS&quot;], 0x0000000000000006, 1.0, 0x0000000000000006, 0.5, 0.0021645021645021662)
- VariationCall(Δ63-63, 30.0, [&quot;d2&quot;], 0x0000000000000004, 1.0, 0x0000000000000001, 0.41379310344827586, 0.21212121212121218)
+ VariationCall(C64G, 30.0, [&quot;PASS&quot;], 0x0000000000000004, 1.0, 0x0000000000000003, 0.7011494252873564, 0.07936507936507946)
  VariationCall(Δ62-64, 30.0, [&quot;d2&quot;], 0x0000000000000004, 1.0, 0x0000000000000001, 0.7241379310344828, 0.21212121212121218)
- VariationCall(C17G, 30.0, [&quot;PASS&quot;], 0x0000000000000003, 1.0, 0x0000000000000003, 0.2413793103448276, 0.10000000000000005)
- VariationCall(T48A, 63.0, [&quot;PASS&quot;], 0x0000000000000006, 1.0, 0x0000000000000003, 0.7931034482758621, 0.033566433566433566)
+ VariationCall(C37G, 30.0, [&quot;PASS&quot;], 0x0000000000000006, 1.0, 0x0000000000000006, 0.5, 0.0021645021645021662)
+ VariationCall(C32G, 30.0, [&quot;PASS&quot;], 0x0000000000000006, 1.0, 0x0000000000000006, 0.5, 0.0021645021645021662)
+ VariationCall(C45G, 30.0, [&quot;PASS&quot;], 0x0000000000000006, 1.0, 0x0000000000000006, 0.5977011494252874, 0.0021645021645021662)
+ VariationCall(C73G, 30.0, [&quot;PASS&quot;], 0x0000000000000002, 1.0, 0x0000000000000002, 0.8620689655172413, 0.3333333333333333)
+ VariationCall(C15G, 30.0, [&quot;PASS&quot;], 0x0000000000000002, 1.0, 0x0000000000000002, 0.25862068965517243, 0.3333333333333333)
+ VariationCall(C13G, 30.0, [&quot;PASS&quot;], 0x0000000000000002, 1.0, 0x0000000000000002, 0.1896551724137931, 0.3333333333333333)
  VariationCall(T29A, 63.0, [&quot;PASS&quot;], 0x0000000000000005, 1.0, 0x0000000000000003, 0.3103448275862069, 0.05303030303030305)
- VariationCall(C64G, 30.0, [&quot;PASS&quot;], 0x0000000000000004, 1.0, 0x0000000000000003, 0.7011494252873564, 0.07936507936507946)
- VariationCall(C54G, 30.0, [&quot;PASS&quot;], 0x0000000000000006, 1.0, 0x0000000000000006, 0.5689655172413792, 0.0021645021645021662)
+ VariationCall(C17G, 30.0, [&quot;PASS&quot;], 0x0000000000000003, 1.0, 0x0000000000000003, 0.2413793103448276, 0.10000000000000005)
  ⋮
- VariationCall(A34T, 20.0, [&quot;PASS&quot;], 0x0000000000000006, 1.0, 0x0000000000000003, 0.6551724137931034, 0.033566433566433566)
- VariationCall(C45G, 30.0, [&quot;PASS&quot;], 0x0000000000000006, 1.0, 0x0000000000000006, 0.5977011494252874, 0.0021645021645021662)
- VariationCall(C42G, 30.0, [&quot;PASS&quot;], 0x0000000000000006, 1.0, 0x0000000000000006, 0.5, 0.0021645021645021662)
- VariationCall(C37G, 30.0, [&quot;PASS&quot;], 0x0000000000000006, 1.0, 0x0000000000000006, 0.5, 0.0021645021645021662)
- VariationCall(C73G, 30.0, [&quot;PASS&quot;], 0x0000000000000002, 1.0, 0x0000000000000002, 0.8620689655172413, 0.3333333333333333)
- VariationCall(C32G, 30.0, [&quot;PASS&quot;], 0x0000000000000006, 1.0, 0x0000000000000006, 0.5, 0.0021645021645021662)
- VariationCall(C40G, 30.0, [&quot;PASS&quot;], 0x0000000000000006, 1.0, 0x0000000000000006, 0.5977011494252874, 0.0021645021645021662)
- VariationCall(C13G, 30.0, [&quot;PASS&quot;], 0x0000000000000002, 1.0, 0x0000000000000002, 0.1896551724137931, 0.3333333333333333)
- VariationCall(C50G, 30.0, [&quot;PASS&quot;], 0x0000000000000006, 1.0, 0x0000000000000006, 0.5977011494252874, 0.0021645021645021662)</code></pre><p>We can now remove all variants that did not pass our filters.</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; filter!(var -&gt; filters(var) == [&quot;PASS&quot;], all_variant_calls)</code><code class="nohighlight hljs ansi" style="display:block;">19-element Vector{VariationCall}:
  VariationCall(C26G, 30.0, [&quot;PASS&quot;], 0x0000000000000005, 1.0, 0x0000000000000005, 0.3724137931034483, 0.007936507936507936)
- VariationCall(C59G, 30.0, [&quot;PASS&quot;], 0x0000000000000005, 1.0, 0x0000000000000005, 0.6551724137931034, 0.007936507936507936)
- VariationCall(C52G, 30.0, [&quot;PASS&quot;], 0x0000000000000006, 1.0, 0x0000000000000006, 0.5, 0.0021645021645021662)
- VariationCall(C17G, 30.0, [&quot;PASS&quot;], 0x0000000000000003, 1.0, 0x0000000000000003, 0.2413793103448276, 0.10000000000000005)
+ VariationCall(C27G, 30.0, [&quot;PASS&quot;], 0x0000000000000005, 1.0, 0x0000000000000005, 0.4137931034482758, 0.007936507936507936)
  VariationCall(T48A, 63.0, [&quot;PASS&quot;], 0x0000000000000006, 1.0, 0x0000000000000003, 0.7931034482758621, 0.033566433566433566)
- VariationCall(T29A, 63.0, [&quot;PASS&quot;], 0x0000000000000005, 1.0, 0x0000000000000003, 0.3103448275862069, 0.05303030303030305)
- VariationCall(C64G, 30.0, [&quot;PASS&quot;], 0x0000000000000004, 1.0, 0x0000000000000003, 0.7011494252873564, 0.07936507936507946)
- VariationCall(C54G, 30.0, [&quot;PASS&quot;], 0x0000000000000006, 1.0, 0x0000000000000006, 0.5689655172413792, 0.0021645021645021662)
- VariationCall(C27G, 30.0, [&quot;PASS&quot;], 0x0000000000000005, 1.0, 0x0000000000000005, 0.4137931034482758, 0.007936507936507936)
- VariationCall(C15G, 30.0, [&quot;PASS&quot;], 0x0000000000000002, 1.0, 0x0000000000000002, 0.25862068965517243, 0.3333333333333333)
- VariationCall(A34T, 20.0, [&quot;PASS&quot;], 0x0000000000000006, 1.0, 0x0000000000000003, 0.6551724137931034, 0.033566433566433566)
- VariationCall(C45G, 30.0, [&quot;PASS&quot;], 0x0000000000000006, 1.0, 0x0000000000000006, 0.5977011494252874, 0.0021645021645021662)
- VariationCall(C42G, 30.0, [&quot;PASS&quot;], 0x0000000000000006, 1.0, 0x0000000000000006, 0.5, 0.0021645021645021662)
- VariationCall(C37G, 30.0, [&quot;PASS&quot;], 0x0000000000000006, 1.0, 0x0000000000000006, 0.5, 0.0021645021645021662)
- VariationCall(C73G, 30.0, [&quot;PASS&quot;], 0x0000000000000002, 1.0, 0x0000000000000002, 0.8620689655172413, 0.3333333333333333)
- VariationCall(C32G, 30.0, [&quot;PASS&quot;], 0x0000000000000006, 1.0, 0x0000000000000006, 0.5, 0.0021645021645021662)
- VariationCall(C40G, 30.0, [&quot;PASS&quot;], 0x0000000000000006, 1.0, 0x0000000000000006, 0.5977011494252874, 0.0021645021645021662)
- VariationCall(C13G, 30.0, [&quot;PASS&quot;], 0x0000000000000002, 1.0, 0x0000000000000002, 0.1896551724137931, 0.3333333333333333)
- VariationCall(C50G, 30.0, [&quot;PASS&quot;], 0x0000000000000006, 1.0, 0x0000000000000006, 0.5977011494252874, 0.0021645021645021662)</code></pre><h2 id="Rule-of-the-majority"><a class="docs-heading-anchor" href="#Rule-of-the-majority">Rule of the majority</a><a id="Rule-of-the-majority-1"></a><a class="docs-heading-anchor-permalink" href="#Rule-of-the-majority" title="Permalink"></a></h2><h3 id="Filtering-variants"><a class="docs-heading-anchor" href="#Filtering-variants">Filtering variants</a><a id="Filtering-variants-1"></a><a class="docs-heading-anchor-permalink" href="#Filtering-variants" title="Permalink"></a></h3><p>We can sort into consensus and subconsensus variants. Note that for this fake set, consensus variants will be taken at a &gt;75% frequency.</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; consensus_variant_calls = filter(var -&gt; frequency(var) &gt; 0.75, all_variant_calls)</code><code class="nohighlight hljs ansi" style="display:block;">15-element Vector{VariationCall}:
- VariationCall(C26G, 30.0, [&quot;PASS&quot;], 0x0000000000000005, 1.0, 0x0000000000000005, 0.3724137931034483, 0.007936507936507936)
+ VariationCall(Δ63-63, 30.0, [&quot;d2&quot;], 0x0000000000000004, 1.0, 0x0000000000000001, 0.41379310344827586, 0.21212121212121218)
+ VariationCall(C50G, 30.0, [&quot;PASS&quot;], 0x0000000000000006, 1.0, 0x0000000000000006, 0.5977011494252874, 0.0021645021645021662)
  VariationCall(C59G, 30.0, [&quot;PASS&quot;], 0x0000000000000005, 1.0, 0x0000000000000005, 0.6551724137931034, 0.007936507936507936)
- VariationCall(C52G, 30.0, [&quot;PASS&quot;], 0x0000000000000006, 1.0, 0x0000000000000006, 0.5, 0.0021645021645021662)
- VariationCall(C17G, 30.0, [&quot;PASS&quot;], 0x0000000000000003, 1.0, 0x0000000000000003, 0.2413793103448276, 0.10000000000000005)
- VariationCall(C54G, 30.0, [&quot;PASS&quot;], 0x0000000000000006, 1.0, 0x0000000000000006, 0.5689655172413792, 0.0021645021645021662)
- VariationCall(C27G, 30.0, [&quot;PASS&quot;], 0x0000000000000005, 1.0, 0x0000000000000005, 0.4137931034482758, 0.007936507936507936)
- VariationCall(C15G, 30.0, [&quot;PASS&quot;], 0x0000000000000002, 1.0, 0x0000000000000002, 0.25862068965517243, 0.3333333333333333)
- VariationCall(C45G, 30.0, [&quot;PASS&quot;], 0x0000000000000006, 1.0, 0x0000000000000006, 0.5977011494252874, 0.0021645021645021662)
  VariationCall(C42G, 30.0, [&quot;PASS&quot;], 0x0000000000000006, 1.0, 0x0000000000000006, 0.5, 0.0021645021645021662)
+ VariationCall(A34T, 20.0, [&quot;PASS&quot;], 0x0000000000000006, 1.0, 0x0000000000000003, 0.6551724137931034, 0.033566433566433566)
+ VariationCall(C54G, 30.0, [&quot;PASS&quot;], 0x0000000000000006, 1.0, 0x0000000000000006, 0.5689655172413792, 0.0021645021645021662)</code></pre><p>We can now remove all variants that did not pass our filters.</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; filter!(var -&gt; filters(var) == [&quot;PASS&quot;], all_variant_calls)</code><code class="nohighlight hljs ansi" style="display:block;">19-element Vector{VariationCall}:
+ VariationCall(C64G, 30.0, [&quot;PASS&quot;], 0x0000000000000004, 1.0, 0x0000000000000003, 0.7011494252873564, 0.07936507936507946)
  VariationCall(C37G, 30.0, [&quot;PASS&quot;], 0x0000000000000006, 1.0, 0x0000000000000006, 0.5, 0.0021645021645021662)
- VariationCall(C73G, 30.0, [&quot;PASS&quot;], 0x0000000000000002, 1.0, 0x0000000000000002, 0.8620689655172413, 0.3333333333333333)
  VariationCall(C32G, 30.0, [&quot;PASS&quot;], 0x0000000000000006, 1.0, 0x0000000000000006, 0.5, 0.0021645021645021662)
- VariationCall(C40G, 30.0, [&quot;PASS&quot;], 0x0000000000000006, 1.0, 0x0000000000000006, 0.5977011494252874, 0.0021645021645021662)
+ VariationCall(C45G, 30.0, [&quot;PASS&quot;], 0x0000000000000006, 1.0, 0x0000000000000006, 0.5977011494252874, 0.0021645021645021662)
+ VariationCall(C73G, 30.0, [&quot;PASS&quot;], 0x0000000000000002, 1.0, 0x0000000000000002, 0.8620689655172413, 0.3333333333333333)
+ VariationCall(C15G, 30.0, [&quot;PASS&quot;], 0x0000000000000002, 1.0, 0x0000000000000002, 0.25862068965517243, 0.3333333333333333)
  VariationCall(C13G, 30.0, [&quot;PASS&quot;], 0x0000000000000002, 1.0, 0x0000000000000002, 0.1896551724137931, 0.3333333333333333)
- VariationCall(C50G, 30.0, [&quot;PASS&quot;], 0x0000000000000006, 1.0, 0x0000000000000006, 0.5977011494252874, 0.0021645021645021662)</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; subconsensus_variant_calls = filter(
+ VariationCall(T29A, 63.0, [&quot;PASS&quot;], 0x0000000000000005, 1.0, 0x0000000000000003, 0.3103448275862069, 0.05303030303030305)
+ VariationCall(C17G, 30.0, [&quot;PASS&quot;], 0x0000000000000003, 1.0, 0x0000000000000003, 0.2413793103448276, 0.10000000000000005)
+ VariationCall(C52G, 30.0, [&quot;PASS&quot;], 0x0000000000000006, 1.0, 0x0000000000000006, 0.5, 0.0021645021645021662)
+ VariationCall(C40G, 30.0, [&quot;PASS&quot;], 0x0000000000000006, 1.0, 0x0000000000000006, 0.5977011494252874, 0.0021645021645021662)
+ VariationCall(C26G, 30.0, [&quot;PASS&quot;], 0x0000000000000005, 1.0, 0x0000000000000005, 0.3724137931034483, 0.007936507936507936)
+ VariationCall(C27G, 30.0, [&quot;PASS&quot;], 0x0000000000000005, 1.0, 0x0000000000000005, 0.4137931034482758, 0.007936507936507936)
+ VariationCall(T48A, 63.0, [&quot;PASS&quot;], 0x0000000000000006, 1.0, 0x0000000000000003, 0.7931034482758621, 0.033566433566433566)
+ VariationCall(C50G, 30.0, [&quot;PASS&quot;], 0x0000000000000006, 1.0, 0x0000000000000006, 0.5977011494252874, 0.0021645021645021662)
+ VariationCall(C59G, 30.0, [&quot;PASS&quot;], 0x0000000000000005, 1.0, 0x0000000000000005, 0.6551724137931034, 0.007936507936507936)
+ VariationCall(C42G, 30.0, [&quot;PASS&quot;], 0x0000000000000006, 1.0, 0x0000000000000006, 0.5, 0.0021645021645021662)
+ VariationCall(A34T, 20.0, [&quot;PASS&quot;], 0x0000000000000006, 1.0, 0x0000000000000003, 0.6551724137931034, 0.033566433566433566)
+ VariationCall(C54G, 30.0, [&quot;PASS&quot;], 0x0000000000000006, 1.0, 0x0000000000000006, 0.5689655172413792, 0.0021645021645021662)</code></pre><h2 id="Rule-of-the-majority"><a class="docs-heading-anchor" href="#Rule-of-the-majority">Rule of the majority</a><a id="Rule-of-the-majority-1"></a><a class="docs-heading-anchor-permalink" href="#Rule-of-the-majority" title="Permalink"></a></h2><h3 id="Filtering-variants"><a class="docs-heading-anchor" href="#Filtering-variants">Filtering variants</a><a id="Filtering-variants-1"></a><a class="docs-heading-anchor-permalink" href="#Filtering-variants" title="Permalink"></a></h3><p>We can sort into consensus and subconsensus variants. Note that for this fake set, consensus variants will be taken at a &gt;75% frequency.</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; consensus_variant_calls = filter(var -&gt; frequency(var) &gt; 0.75, all_variant_calls)</code><code class="nohighlight hljs ansi" style="display:block;">15-element Vector{VariationCall}:
+ VariationCall(C37G, 30.0, [&quot;PASS&quot;], 0x0000000000000006, 1.0, 0x0000000000000006, 0.5, 0.0021645021645021662)
+ VariationCall(C32G, 30.0, [&quot;PASS&quot;], 0x0000000000000006, 1.0, 0x0000000000000006, 0.5, 0.0021645021645021662)
+ VariationCall(C45G, 30.0, [&quot;PASS&quot;], 0x0000000000000006, 1.0, 0x0000000000000006, 0.5977011494252874, 0.0021645021645021662)
+ VariationCall(C73G, 30.0, [&quot;PASS&quot;], 0x0000000000000002, 1.0, 0x0000000000000002, 0.8620689655172413, 0.3333333333333333)
+ VariationCall(C15G, 30.0, [&quot;PASS&quot;], 0x0000000000000002, 1.0, 0x0000000000000002, 0.25862068965517243, 0.3333333333333333)
+ VariationCall(C13G, 30.0, [&quot;PASS&quot;], 0x0000000000000002, 1.0, 0x0000000000000002, 0.1896551724137931, 0.3333333333333333)
+ VariationCall(C17G, 30.0, [&quot;PASS&quot;], 0x0000000000000003, 1.0, 0x0000000000000003, 0.2413793103448276, 0.10000000000000005)
+ VariationCall(C52G, 30.0, [&quot;PASS&quot;], 0x0000000000000006, 1.0, 0x0000000000000006, 0.5, 0.0021645021645021662)
+ VariationCall(C40G, 30.0, [&quot;PASS&quot;], 0x0000000000000006, 1.0, 0x0000000000000006, 0.5977011494252874, 0.0021645021645021662)
+ VariationCall(C26G, 30.0, [&quot;PASS&quot;], 0x0000000000000005, 1.0, 0x0000000000000005, 0.3724137931034483, 0.007936507936507936)
+ VariationCall(C27G, 30.0, [&quot;PASS&quot;], 0x0000000000000005, 1.0, 0x0000000000000005, 0.4137931034482758, 0.007936507936507936)
+ VariationCall(C50G, 30.0, [&quot;PASS&quot;], 0x0000000000000006, 1.0, 0x0000000000000006, 0.5977011494252874, 0.0021645021645021662)
+ VariationCall(C59G, 30.0, [&quot;PASS&quot;], 0x0000000000000005, 1.0, 0x0000000000000005, 0.6551724137931034, 0.007936507936507936)
+ VariationCall(C42G, 30.0, [&quot;PASS&quot;], 0x0000000000000006, 1.0, 0x0000000000000006, 0.5, 0.0021645021645021662)
+ VariationCall(C54G, 30.0, [&quot;PASS&quot;], 0x0000000000000006, 1.0, 0x0000000000000006, 0.5689655172413792, 0.0021645021645021662)</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; subconsensus_variant_calls = filter(
            var -&gt; !(var in consensus_variant_calls), all_variant_calls
        )</code><code class="nohighlight hljs ansi" style="display:block;">4-element Vector{VariationCall}:
- VariationCall(T48A, 63.0, [&quot;PASS&quot;], 0x0000000000000006, 1.0, 0x0000000000000003, 0.7931034482758621, 0.033566433566433566)
- VariationCall(T29A, 63.0, [&quot;PASS&quot;], 0x0000000000000005, 1.0, 0x0000000000000003, 0.3103448275862069, 0.05303030303030305)
  VariationCall(C64G, 30.0, [&quot;PASS&quot;], 0x0000000000000004, 1.0, 0x0000000000000003, 0.7011494252873564, 0.07936507936507946)
+ VariationCall(T29A, 63.0, [&quot;PASS&quot;], 0x0000000000000005, 1.0, 0x0000000000000003, 0.3103448275862069, 0.05303030303030305)
+ VariationCall(T48A, 63.0, [&quot;PASS&quot;], 0x0000000000000006, 1.0, 0x0000000000000003, 0.7931034482758621, 0.033566433566433566)
  VariationCall(A34T, 20.0, [&quot;PASS&quot;], 0x0000000000000006, 1.0, 0x0000000000000003, 0.6551724137931034, 0.033566433566433566)</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; consensus_variations = variation.(consensus_variant_calls)</code><code class="nohighlight hljs ansi" style="display:block;">15-element Vector{SequenceVariation.Variation{BioSequences.LongSequence{BioSequences.DNAAlphabet{4}}, BioSymbols.DNA}}:
- C26G
- C59G
- C52G
- C17G
- C54G
- C27G
- C15G
- C45G
- C42G
  C37G
- C73G
  C32G
- C40G
+ C45G
+ C73G
+ C15G
  C13G
- C50G</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; subconsensus_variations = variation.(subconsensus_variant_calls)</code><code class="nohighlight hljs ansi" style="display:block;">4-element Vector{SequenceVariation.Variation{BioSequences.LongSequence{BioSequences.DNAAlphabet{4}}, BioSymbols.DNA}}:
- T48A
- T29A
+ C17G
+ C52G
+ C40G
+ C26G
+ C27G
+ C50G
+ C59G
+ C42G
+ C54G</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; subconsensus_variations = variation.(subconsensus_variant_calls)</code><code class="nohighlight hljs ansi" style="display:block;">4-element Vector{SequenceVariation.Variation{BioSequences.LongSequence{BioSequences.DNAAlphabet{4}}, BioSymbols.DNA}}:
  C64G
+ T29A
+ T48A
  A34T</code></pre><h3 id="Creating-the-consensus-sequence"><a class="docs-heading-anchor" href="#Creating-the-consensus-sequence">Creating the consensus sequence</a><a id="Creating-the-consensus-sequence-1"></a><a class="docs-heading-anchor-permalink" href="#Creating-the-consensus-sequence" title="Permalink"></a></h3><p>We will now need to convert the consensus variations into a consensus sequence. HapLink doesn&#39;t have these tools in-and-of itself, so we&#39;ll have to reach into its dependency packages.</p><pre><code class="language-plaintext hljs">(haplink-tutorial-4) pkg&gt; add BioAlignments SequenceVariation
    Resolving package versions...
     Updating `~/haplink-tutorial-4/Project.toml`
@@ -140,9 +140,9 @@ ACAACTTTATCTGTGTGAACTTCTTGGCTTAGTATCGTTGAGAAGAATCGAGAGATTAGTGCACTTTAAACAGTTTTTTA
            subconsensus_variations,
            subconsensus_variations,
        )</code><code class="nohighlight hljs ansi" style="display:block;">4-element Vector{SequenceVariation.Variation{BioSequences.LongSequence{BioSequences.DNAAlphabet{4}}, BioSymbols.DNA}}:
- T48A
- T29A
  C64G
+ T29A
+ T48A
  A34T</code></pre><h2 id="Bringing-in-the-reads"><a class="docs-heading-anchor" href="#Bringing-in-the-reads">Bringing in the reads</a><a id="Bringing-in-the-reads-1"></a><a class="docs-heading-anchor-permalink" href="#Bringing-in-the-reads" title="Permalink"></a></h2><p>Now that we have a consensus sequence, we can properly import the reads for haplotype calling into HapLink&#39;s specialized <a href="tutorial/@ref"><code>Psuedoread</code></a> class. There is a convient <a href="../../api/psuedoread/#HapLink.pseudoreads-Tuple{Union{AbstractString, FilePathsBase.AbstractPath}, BioSequences.BioSequence{&lt;:BioSequences.NucleicAcidAlphabet}}"><code>pseudoreads</code></a> function that can directly convert a BAM file for us.</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; haplotyping_pseudoreads = pseudoreads(EXAMPLE_BAM, consensus_sequence)</code><code class="nohighlight hljs ansi" style="display:block;">10-element Vector{Pseudoread}:
  Pseudoread(0x0000000000000006, 0x0000000000000023, SequenceVariation.Haplotype{BioSequences.LongSequence{BioSequences.DNAAlphabet{4}}, BioSymbols.DNA} with 1 edit:
   A34T)
@@ -174,23 +174,22 @@ ACAACTTTATCTGTGTGAACTTCTTGGCTTAGTATCGTTGAGAAGAATCGAGAGATTAGTGCACTTTAAACAGTTTTTTA
   No Changes to `~/haplink-tutorial-4/Manifest.toml`</code></pre><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; using BioGenerics</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; filter!(
            var -&gt; leftposition(var) &gt;= leftposition(first(subconsensus_variations)),
            haplotyping_pseudoreads,
-       )</code><code class="nohighlight hljs ansi" style="display:block;">1-element Vector{Pseudoread}:
- Pseudoread(0x0000000000000033, 0x0000000000000050, SequenceVariation.Haplotype{BioSequences.LongSequence{BioSequences.DNAAlphabet{4}}, BioSymbols.DNA} with 2 edits:
-  Δ63-63
-  C64G)</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; filter!(
+       )</code><code class="nohighlight hljs ansi" style="display:block;">Pseudoread[]</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; filter!(
            var -&gt; rightposition(var) &gt;= rightposition(first(subconsensus_variations)),
            haplotyping_pseudoreads,
-       )</code><code class="nohighlight hljs ansi" style="display:block;">1-element Vector{Pseudoread}:
- Pseudoread(0x0000000000000033, 0x0000000000000050, SequenceVariation.Haplotype{BioSequences.LongSequence{BioSequences.DNAAlphabet{4}}, BioSymbols.DNA} with 2 edits:
-  Δ63-63
-  C64G)</code></pre><h2 id="Finding-haplotypes..."><a class="docs-heading-anchor" href="#Finding-haplotypes...">Finding haplotypes...</a><a id="Finding-haplotypes...-1"></a><a class="docs-heading-anchor-permalink" href="#Finding-haplotypes..." title="Permalink"></a></h2><p>This one is a bit of a mind-bender, but bear with me.</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; haplotyping_haploypes = haplotype.(haplotyping_pseudoreads)</code><code class="nohighlight hljs ansi" style="display:block;">1-element Vector{SequenceVariation.Haplotype{BioSequences.LongSequence{BioSequences.DNAAlphabet{4}}, BioSymbols.DNA}}:
- SequenceVariation.Haplotype{BioSequences.LongSequence{BioSequences.DNAAlphabet{4}}, BioSymbols.DNA} with 2 edits:
-  Δ63-63
-  C64G</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; valid_haplotypes = findset(
+       )</code><code class="nohighlight hljs ansi" style="display:block;">Pseudoread[]</code></pre><h2 id="Finding-haplotypes..."><a class="docs-heading-anchor" href="#Finding-haplotypes...">Finding haplotypes...</a><a id="Finding-haplotypes...-1"></a><a class="docs-heading-anchor-permalink" href="#Finding-haplotypes..." title="Permalink"></a></h2><p>This one is a bit of a mind-bender, but bear with me.</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; haplotyping_haploypes = haplotype.(haplotyping_pseudoreads)</code><code class="nohighlight hljs ansi" style="display:block;">Any[]</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; valid_haplotypes = findset(
            subconsensus_variations, hap -&gt; ishaplotype(hap, haplotyping_haploypes)
-       )</code><code class="nohighlight hljs ansi" style="display:block;">1-element Vector{Vector{SequenceVariation.Variation{BioSequences.LongSequence{BioSequences.DNAAlphabet{4}}, BioSymbols.DNA}}}:
- [T48A, T29A, C64G, A34T]</code></pre><h2 id="...and-deciding-if-they&#39;re-real"><a class="docs-heading-anchor" href="#...and-deciding-if-they&#39;re-real">...and deciding if they&#39;re real</a><a id="...and-deciding-if-they&#39;re-real-1"></a><a class="docs-heading-anchor-permalink" href="#...and-deciding-if-they&#39;re-real" title="Permalink"></a></h2><p>Just because a haplotype <em>could</em> exist, doesn&#39;t mean it should. You can check the statistics of a haplotype by converting it into a <a href="../../api/haplotypecall/#HapLink.HaplotypeCall"><code>HaplotypeCall</code></a>.</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; map(hap -&gt; HaplotypeCall(hap, haplotyping_haploypes), valid_haplotypes);</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; hc = first(ans)</code><code class="nohighlight hljs ansi" style="display:block;">HaplotypeCall{BioSequences.LongSequence{BioSequences.DNAAlphabet{4}}, BioSymbols.DNA}(0x0000000000000000, 0.0, 0.0, NaN, SequenceVariation.Haplotype{BioSequences.LongSequence{BioSequences.DNAAlphabet{4}}, BioSymbols.DNA} with 4 edits:
-  T29A
-  A34T
-  T48A
-  C64G)</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; depth(hc)</code><code class="nohighlight hljs ansi" style="display:block;">0x0000000000000000</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; linkage(hc)</code><code class="nohighlight hljs ansi" style="display:block;">0.0</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; significance(hc)</code><code class="nohighlight hljs ansi" style="display:block;">NaN</code></pre><p>Nope! This one sure isn&#39;t!</p><ul><li><ul><li><ul><li></li></ul></li></ul></li></ul><p>This tutorial only scratches the surface of what&#39;s possible with HapLink&#39;s REPL mode. Take a look at the full API reference for more details on how to tweak your haplotype calling. Have fun!</p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../3-other/">« Plays well with others (External tools)</a><a class="docs-footer-nextpage" href="../../cli/variants/">haplink variants »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 0.27.24 on <span class="colophon-date" title="Sunday 4 June 2023 21:53">Sunday 4 June 2023</span>. Using Julia version 1.9.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+       )</code><code class="nohighlight hljs ansi" style="display:block;">ERROR: MethodError: no method matching ishaplotype(::Vector{SequenceVariation.Variation{BioSequences.LongSequence{BioSequences.DNAAlphabet{4}}, BioSymbols.DNA}}, ::Vector{Any})
+
+Closest candidates are:
+  ishaplotype(::AbstractArray{SequenceVariation.Variation{S, T}}, !Matched::AbstractArray{SequenceVariation.Haplotype{S, T}}; min_frequency, significance_level, min_depth) where {S&lt;:BioSequences.BioSequence, T&lt;:BioSymbols.BioSymbol}
+   @ HapLink ~/work/HapLink.jl/HapLink.jl/src/haplotypecalling.jl:151</code></pre><h2 id="...and-deciding-if-they&#39;re-real"><a class="docs-heading-anchor" href="#...and-deciding-if-they&#39;re-real">...and deciding if they&#39;re real</a><a id="...and-deciding-if-they&#39;re-real-1"></a><a class="docs-heading-anchor-permalink" href="#...and-deciding-if-they&#39;re-real" title="Permalink"></a></h2><p>Just because a haplotype <em>could</em> exist, doesn&#39;t mean it should. You can check the statistics of a haplotype by converting it into a <a href="../../api/haplotypecall/#HapLink.HaplotypeCall"><code>HaplotypeCall</code></a>.</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; map(hap -&gt; HaplotypeCall(hap, haplotyping_haploypes), valid_haplotypes);</code><code class="nohighlight hljs ansi" style="display:block;">ERROR: UndefVarError: `valid_haplotypes` not defined</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; hc = first(ans)</code><code class="nohighlight hljs ansi" style="display:block;">ERROR: MethodError: no method matching iterate(::UndefVarError)
+
+Closest candidates are:
+  iterate(!Matched::Union{LinRange, StepRangeLen})
+   @ Base range.jl:880
+  iterate(!Matched::Union{LinRange, StepRangeLen}, !Matched::Integer)
+   @ Base range.jl:880
+  iterate(!Matched::T) where T&lt;:Union{Base.KeySet{&lt;:Any, &lt;:Dict}, Base.ValueIterator{&lt;:Dict}}
+   @ Base dict.jl:698
+  ...</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; depth(hc)</code><code class="nohighlight hljs ansi" style="display:block;">ERROR: UndefVarError: `hc` not defined</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; linkage(hc)</code><code class="nohighlight hljs ansi" style="display:block;">ERROR: UndefVarError: `hc` not defined</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; significance(hc)</code><code class="nohighlight hljs ansi" style="display:block;">ERROR: UndefVarError: `hc` not defined</code></pre><p>Nope! This one sure isn&#39;t!</p><ul><li><ul><li><ul><li></li></ul></li></ul></li></ul><p>This tutorial only scratches the surface of what&#39;s possible with HapLink&#39;s REPL mode. Take a look at the full API reference for more details on how to tweak your haplotype calling. Have fun!</p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../3-other/">« Plays well with others (External tools)</a><a class="docs-footer-nextpage" href="../../cli/variants/">haplink variants »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 0.27.24 on <span class="colophon-date" title="Sunday 4 June 2023 21:55">Sunday 4 June 2023</span>. Using Julia version 1.9.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
