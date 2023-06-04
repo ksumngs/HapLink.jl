@@ -33,3 +33,8 @@ example/reference.fasta.fai
 ### Julia prettierignore ###
 # Project file managed and formatted by Pkg.jl
 Project.toml
+
+# Prettier doesn't understand the nuance of Julia markdown, so ignore docs
+# entirely
+docs/src/*.md
+docs/src/*/*.md
