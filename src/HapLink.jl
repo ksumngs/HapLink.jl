@@ -56,6 +56,7 @@ export findset
 export frequency
 export haplotype
 export interval
+export ishaplotype
 export linkage
 export magnitude
 export occurence_matrix
