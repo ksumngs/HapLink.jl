@@ -9,7 +9,7 @@ Summarizes the basecalls that support a `Variation` within a set of alignments.
   alignments
 - `readpos::Vector{Float64}`: The relative positions of `variation` within each read
 - `quality::Vector{Float64}`: The phred quality of `variation` within each read
-- `strand::Vecotr{Strand}`: Which strand each `variation` is found on
+- `strand::Vector{Strand}`: Which strand each `variation` is found on
 """
 Base.@kwdef struct VariationPileup
     variation::Variation
