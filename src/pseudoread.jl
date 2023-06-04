@@ -110,7 +110,7 @@ function simulate(
         end_pos = is_reversed ? rightposition(previous_read) : rightposition(matching_read)
 
         # Check the found variations for consistency
-        check_contridicts(previous_variations) && return missing
+        check_contradicts(previous_variations) && return missing
 
         # Create the new pseudoread
         previous_read = Pseudoread(
@@ -155,7 +155,7 @@ end #function
 Returns `true` if `query` could be a read from `reference`.
 
 Additional `Variation`s found within `query` that are not present in `reference` **do not**
-invalid a positive match result so long as none of those `Variation`s [`contridict`](@ref)
+invalid a positive match result so long as none of those `Variation`s [`contradicts`](@ref)
 `reference`. These `Variation`s can either
 
 1. Extend beyond the length of `reference`, or
@@ -180,7 +180,7 @@ function variations_match(reference::Pseudoread, query::Haplotype)
     for var in variations(query)
         var in variant(reference) && continue
 
-        contridicts(var, variant(reference)) && return false
+        contradicts(var, variant(reference)) && return false
     end #for
 
     return true
@@ -191,7 +191,7 @@ function variations_match(reference::Pseudoread, query::Pseudoread)
 end #function
 
 """
-    contridicts(var::Variation{S,T}, ref::Haplotype{S,T}) where {S,T}
+    contradicts(var::Variation{S,T}, ref::Haplotype{S,T}) where {S,T}
 
 Returns `true` if `var` contains a modification incompatible with any of the `Variation`s
 that make up `ref`.
@@ -202,22 +202,22 @@ julia> using BioSequences, SequenceVariation
 
 julia> ref = Haplotype(dna"GATTACA", [Variation(dna"GATTACA", "A2T"), Variation(dna"GATTACA", "Δ5-6")]);
 
-julia> contridicts(Variation(dna"GATTACA", "A2C"), ref)
+julia> contradicts(Variation(dna"GATTACA", "A2C"), ref)
 true
 
-julia> contridicts(Variation(dna"GATTACA", "T4A"), ref)
+julia> contradicts(Variation(dna"GATTACA", "T4A"), ref)
 false
 
-julia> contridicts(Variation(dna"GATTACA", "Δ2-2"), ref)
+julia> contradicts(Variation(dna"GATTACA", "Δ2-2"), ref)
 true
 
-julia> contridicts(Variation(dna"GATTACA", "Δ4-4"), ref)
+julia> contradicts(Variation(dna"GATTACA", "Δ4-4"), ref)
 false
 
-julia> contridicts(Variation(dna"GATTACA", "2G"), ref)
+julia> contradicts(Variation(dna"GATTACA", "2G"), ref)
 false
 
-julia> contridicts(Variation(dna"GATTACA", "4G"), ref)
+julia> contradicts(Variation(dna"GATTACA", "4G"), ref)
 false
 ```
 <!--
@@ -228,7 +228,7 @@ true
 ```
 --->
 """
-function contridicts(var::Variation{S,T}, ref::Haplotype{S,T}) where {S,T}
+function contradicts(var::Variation{S,T}, ref::Haplotype{S,T}) where {S,T}
     all_variations = sort!([variations(ref)..., var])
     fake_haplotype = SequenceVariation.Haplotype{S,T}(
         reference(ref), SequenceVariation._edit.(all_variations), SequenceVariation.Unsafe()

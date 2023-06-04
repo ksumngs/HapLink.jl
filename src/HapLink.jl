@@ -49,7 +49,7 @@ export call_variant
 export cigar
 export consensus_haplotype
 export consensus_record
-export contridicts
+export contradicts
 export depth
 export filters
 export findset

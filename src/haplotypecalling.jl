@@ -100,7 +100,7 @@ function ishaplotype(
     significance_level::Union{Float64,Nothing}=nothing,
     min_depth::Union{Unsigned,Nothing}=nothing,
 ) where {S<:BioSequence,T<:BioSymbol}
-    check_contridicts(haplotype) && return false
+    check_contradicts(haplotype) && return false
     hap = Haplotype(reference(first(haplotype)), haplotype)
 
     return ishaplotype(
@@ -136,13 +136,13 @@ function ishaplotype(
     return true
 end #function
 
-function check_contridicts(vars::AbstractArray{Variation{S,T}}) where {S,T}
+function check_contradicts(vars::AbstractArray{Variation{S,T}}) where {S,T}
     passed_vars = similar(vars, 0)
     ref = reference(first(vars))
 
     for var in vars
         passed_hap = Haplotype(ref, passed_vars)
-        contridicts(var, passed_hap) && return true
+        contradicts(var, passed_hap) && return true
         push!(passed_vars, var)
     end #for
 
