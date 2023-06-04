@@ -1,3 +1,11 @@
+"""
+    SequenceVariation.Haplotype(
+        query::Union{SAM.Record,BAM.Record}, reference::NucleotideSeq
+    ) -> SequenceVariation.Haplotype
+
+Specialized constructor that allows converting the alignment in a `XAM.Record` into a
+`Haplotype`.
+"""
 function SequenceVariation.Haplotype(
     query::Union{SAM.Record,BAM.Record}, reference::NucleotideSeq
 )
