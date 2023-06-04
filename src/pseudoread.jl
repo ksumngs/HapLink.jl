@@ -220,13 +220,6 @@ false
 julia> contradicts(Variation(dna"GATTACA", "4G"), ref)
 false
 ```
-<!--
-Broken test
-```
-julia> contridicts(Variation(dna"GATTACA", "Δ6-6"), ref)
-true
-```
---->
 """
 function contradicts(var::Variation{S,T}, ref::Haplotype{S,T}) where {S,T}
     all_variations = sort!([variations(ref)..., var])
