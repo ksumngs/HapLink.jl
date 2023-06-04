@@ -7,31 +7,9 @@ DocTestSetup = quote
 end
 ```
 
-```@docs
-VariationPileup
-```
-
-## Getter methods
-
-```@docs
-variation(::VariationPileup)
-depth(::VariationPileup)
-readpos(::VariationPileup)
-quality(::VariationPileup)
-strand(::VariationPileup)
-
-```
-
-## Pileup calculations
-
-```@docs
-altdepth(::VariationPileup)
-frequency(::VariationPileup)
-strand_bias(::VariationPileup)
-```
-
-## Miscellaneous
-
-```@docs
-pileup
+```@autodocs
+Modules = [HapLink]
+Pages = ["variationpileup.jl"]
+Public = true
+Private = false
 ```

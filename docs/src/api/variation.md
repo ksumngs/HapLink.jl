@@ -8,13 +8,13 @@ end
 ```
 
 These methods extend the functionality of
-[`SequenceVariation.Variation`](https://github.com/BioJulia/SequenceVariation.jl)
+[`SequenceVariation.Variation`](https://biojulia.dev/SequenceVariation.jl/v0.2/api/#SequenceVariation.Variation)
 for calculation of data related to `Variation`s created from NGS read
 alignments.
 
-```@docs
-seqpos
-relativepos
-quality(::Variation, ::Union{SAM.Record,BAM.Record})
-variation(::VCF.Record, ::NucleotideSeq)
+```@autodocs
+Modules = [HapLink]
+Pages = ["variation.jl"]
+Public = true
+Private = false
 ```

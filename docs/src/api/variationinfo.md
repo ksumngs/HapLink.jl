@@ -7,21 +7,9 @@ DocTestSetup = quote
 end
 ```
 
-```@docs
-VariationInfo
-```
-
-## Getter methods
-
-```@docs
-variation(::VariationInfo)
-readpos(::VariationInfo)
-quality(::VariationInfo)
-strand(::VariationInfo)
-```
-
-## Miscellaneous
-
-```@docs
-variationinfos
+```@autodocs
+Modules = [HapLink]
+Pages = ["variationinfo.jl"]
+Public = true
+Private = false
 ```
