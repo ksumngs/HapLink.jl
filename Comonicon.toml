@@ -8,6 +8,7 @@ optimize = 2
 [application]
 incremental = false
 filter_stdlibs = true
+cpu_target = "x86-64"
 
 [application.precompile]
 execution_file = ["deps/precompile.jl"]
