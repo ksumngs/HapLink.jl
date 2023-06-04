@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>For advanced beginners (REPL mode) · HapLink.jl</title><script data-outdated-warner src="../../assets/warner.js"></script><link rel="canonical" href="https://ksumngs.github.io/HapLink.jl/tutorial/4-repl/"/><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.045/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.24/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><a class="docs-logo" href="../../"><img class="docs-light-only" src="../../assets/logo.png" alt="HapLink.jl logo"/><img class="docs-dark-only" src="../../assets/logo-dark.png" alt="HapLink.jl logo"/></a><div class="docs-package-name"><span class="docs-autofit"><a href="../../">HapLink.jl</a></span></div><form class="docs-search" action="../../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../../">Home</a></li><li><span class="tocitem">Tutorials</span><ul><li><a class="tocitem" href="../1-install/">In the beginning (Installation)</a></li><li><a class="tocitem" href="../2-examples/">Kicking the tires (Fake sequences)</a></li><li><a class="tocitem" href="../3-other/">Plays well with others (External tools)</a></li><li class="is-active"><a class="tocitem" href>For advanced beginners (REPL mode)</a><ul class="internal"><li><a class="tocitem" href="#Installing-HapLink-...-into-a-project"><span>Installing HapLink ... into a project</span></a></li><li><a class="tocitem" href="#Finding-the-example-files"><span>Finding the example files</span></a></li><li><a class="tocitem" href="#Pileup-time"><span>Pileup time</span></a></li><li><a class="tocitem" href="#But-is-it-real?"><span>But is it real?</span></a></li><li><a class="tocitem" href="#Rule-of-the-majority"><span>Rule of the majority</span></a></li><li><a class="tocitem" href="#Bringing-in-the-reads"><span>Bringing in the reads</span></a></li><li><a class="tocitem" href="#Finding-haplotypes..."><span>Finding haplotypes...</span></a></li><li><a class="tocitem" href="#...and-deciding-if-they&#39;re-real"><span>...and deciding if they&#39;re real</span></a></li></ul></li></ul></li><li><span class="tocitem">CLI Reference</span><ul><li><a class="tocitem" href="../../cli/variants/">haplink variants</a></li><li><a class="tocitem" href="../../cli/consensus/">haplink consensus</a></li><li><a class="tocitem" href="../../cli/haplotypes/">haplink haplotypes</a></li><li><a class="tocitem" href="../../cli/sequences/">haplink sequences</a></li></ul></li><li><span class="tocitem">Public API Reference</span><ul><li><a class="tocitem" href="../../api/variation/">Variation Extensions</a></li><li><a class="tocitem" href="../../api/variationinfo/">VariationInfo</a></li><li><a class="tocitem" href="../../api/variationpileup/">VariationPileup</a></li><li><a class="tocitem" href="../../api/variationcall/">VariationCall</a></li><li><a class="tocitem" href="../../api/consensus/">Consensus Tools</a></li><li><a class="tocitem" href="../../api/psuedoread/">Pseudoread</a></li><li><a class="tocitem" href="../../api/haplotype/">Haplotype Extensions</a></li><li><a class="tocitem" href="../../api/haplotypecall/">HaplotypeCall</a></li></ul></li><li><a class="tocitem" href="../../api/private/">Private API Reference</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">Tutorials</a></li><li class="is-active"><a href>For advanced beginners (REPL mode)</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>For advanced beginners (REPL mode)</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/ksumngs/HapLink.jl/blob/master/docs/src/tutorial/4-repl.md#" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="repl-tutorial"><a class="docs-heading-anchor" href="#repl-tutorial">For advanced beginners (REPL mode)</a><a id="repl-tutorial-1"></a><a class="docs-heading-anchor-permalink" href="#repl-tutorial" title="Permalink"></a></h1><p>Julia is an ahead-of-time compiled language. Practically, that means that every time you restart Julia, you have to recompile all the code you were running. Using HapLink on the command line involves up to four different commands. Translation: up to four cases where you lose time to recompiling code that was just running. Surely there&#39;s a better way, right? Yep, you can stay within a single Julia session by using HapLink&#39;s REPL mode.</p><ul><li><a href="#repl-tutorial">For advanced beginners (REPL mode)</a></li><li class="no-marker"><ul><li><a href="#Installing-HapLink-...-into-a-project">Installing HapLink ... into a project</a></li><li><a href="#Finding-the-example-files">Finding the example files</a></li><li><a href="#Pileup-time">Pileup time</a></li><li><a href="#But-is-it-real?">But is it real?</a></li><li><a href="#Rule-of-the-majority">Rule of the majority</a></li><li><a href="#Bringing-in-the-reads">Bringing in the reads</a></li><li><a href="#Finding-haplotypes...">Finding haplotypes...</a></li><li><a href="#...and-deciding-if-they&#39;re-real">...and deciding if they&#39;re real</a></li></ul></li></ul><h2 id="Installing-HapLink-...-into-a-project"><a class="docs-heading-anchor" href="#Installing-HapLink-...-into-a-project">Installing HapLink ... into a project</a><a id="Installing-HapLink-...-into-a-project-1"></a><a class="docs-heading-anchor-permalink" href="#Installing-HapLink-...-into-a-project" title="Permalink"></a></h2><p>Wait, isn&#39;t that what <a href="../1-install/#install-tutorial">the first tutorial</a> was about? Yes and no. Those projects installed HapLink&#39;s command line interface to a global environment. We&#39;re going to locally install HapLink as a library into a local package environment.</p><div class="admonition is-success"><header class="admonition-header">Tip</header><div class="admonition-body"><p>If you want to learn more about package environments, check out the <a href="https://pkgdocs.julialang.org/v1/environments/">official Julia environments documentation</a> or <a href="https://jkrumbiegel.com/pages/2022-08-26-pkg-introduction/index.html">Julius Krumbiegel&#39;s tutorial</a>.</p></div></div><p>Press <code>]</code> to enter Pkg mode, then follow along with these prompts.</p><pre><code class="language-plaintext hljs">(@v1.6) pkg&gt; activate .
+  Activating project at `~/haplink-tutorial-4`
+
+(haplink-tutorial-4) pkg&gt; add HapLink</code></pre><h2 id="Finding-the-example-files"><a class="docs-heading-anchor" href="#Finding-the-example-files">Finding the example files</a><a id="Finding-the-example-files-1"></a><a class="docs-heading-anchor-permalink" href="#Finding-the-example-files" title="Permalink"></a></h2><p>Instead of downloading the example files from the internet, we can reference them directly from the package.</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; using HapLink</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; const PACKAGE_DIR = dirname(dirname(pathof(HapLink)))</code><code class="nohighlight hljs ansi" style="display:block;">&quot;/home/runner/work/HapLink.jl/HapLink.jl&quot;</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; const EXAMPLE_DIR = joinpath(PACKAGE_DIR, &quot;example&quot;)</code><code class="nohighlight hljs ansi" style="display:block;">&quot;/home/runner/work/HapLink.jl/HapLink.jl/example&quot;</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; const EXAMPLE_BAM = joinpath(EXAMPLE_DIR, &quot;sample.bam&quot;)</code><code class="nohighlight hljs ansi" style="display:block;">&quot;/home/runner/work/HapLink.jl/HapLink.jl/example/sample.bam&quot;</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; const EXAMPLE_REFERENCE = joinpath(EXAMPLE_DIR, &quot;reference.fasta&quot;)</code><code class="nohighlight hljs ansi" style="display:block;">&quot;/home/runner/work/HapLink.jl/HapLink.jl/example/reference.fasta&quot;</code></pre><p>Perfect!</p><h2 id="Pileup-time"><a class="docs-heading-anchor" href="#Pileup-time">Pileup time</a><a id="Pileup-time-1"></a><a class="docs-heading-anchor-permalink" href="#Pileup-time" title="Permalink"></a></h2><p>Variants can&#39;t exist as a single unit, they have to be supported by a set of reads. We can view those reads in a <em>pileup</em>, which can easily be made by using the <a href="../../api/variationpileup/#HapLink.pileup-Tuple{Union{AbstractString, FilePathsBase.AbstractPath}, Union{AbstractString, FilePathsBase.AbstractPath}}"><code>pileup</code></a> function.</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; sample_pileup = pileup(EXAMPLE_BAM, EXAMPLE_REFERENCE)</code><code class="nohighlight hljs ansi" style="display:block;">21-element Vector{VariationPileup}:
+ VariationPileup(C17G, 0x0000000000000003, [0.41379310344827586, 0.2413793103448276, 0.06896551724137931], [30.0, 30.0, 30.0], GenomicFeatures.Strand[STRAND_POS, STRAND_POS, STRAND_POS])
+ VariationPileup(C59G, 0x0000000000000005, [1.0, 0.8275862068965517, 0.6551724137931034, 0.4827586206896552, 0.3103448275862069], [30.0, 30.0, 30.0, 30.0, 30.0], GenomicFeatures.Strand[STRAND_POS, STRAND_POS, STRAND_POS, STRAND_POS, STRAND_POS])
+ VariationPileup(A34T, 0x0000000000000006, [1.0, 0.6551724137931034, 0.3103448275862069], [20.0, 20.0, 20.0], GenomicFeatures.Strand[STRAND_POS, STRAND_POS, STRAND_POS])
+ VariationPileup(C32G, 0x0000000000000006, [0.9310344827586207, 0.7586206896551724, 0.5862068965517241, 0.41379310344827586, 0.2413793103448276, 0.06896551724137931], [30.0, 30.0, 30.0, 30.0, 30.0, 30.0], GenomicFeatures.Strand[STRAND_POS, STRAND_POS, STRAND_POS, STRAND_POS, STRAND_POS, STRAND_POS])
+ VariationPileup(C37G, 0x0000000000000006, [0.9310344827586207, 0.7586206896551724, 0.5862068965517241, 0.41379310344827586, 0.2413793103448276, 0.06896551724137931], [30.0, 30.0, 30.0, 30.0, 30.0, 30.0], GenomicFeatures.Strand[STRAND_POS, STRAND_POS, STRAND_POS, STRAND_POS, STRAND_POS, STRAND_POS])
+ VariationPileup(C64G, 0x0000000000000004, [1.0, 0.6551724137931034, 0.4482758620689655], [30.0, 30.0, 30.0], GenomicFeatures.Strand[STRAND_POS, STRAND_POS, STRAND_POS])
+ VariationPileup(C54G, 0x0000000000000006, [1.0, 0.8275862068965517, 0.6551724137931034, 0.4827586206896552, 0.3103448275862069, 0.13793103448275862], [30.0, 30.0, 30.0, 30.0, 30.0, 30.0], GenomicFeatures.Strand[STRAND_POS, STRAND_POS, STRAND_POS, STRAND_POS, STRAND_POS, STRAND_POS])
+ VariationPileup(Δ63-63, 0x0000000000000004, [0.41379310344827586], [30.0], GenomicFeatures.Strand[STRAND_POS])
+ VariationPileup(Δ62-64, 0x0000000000000004, [0.7241379310344828], [30.0], GenomicFeatures.Strand[STRAND_POS])
+ VariationPileup(C15G, 0x0000000000000002, [0.3448275862068966, 0.1724137931034483], [30.0, 30.0], GenomicFeatures.Strand[STRAND_POS, STRAND_POS])
+ ⋮
+ VariationPileup(C73G, 0x0000000000000002, [0.9655172413793104, 0.7586206896551724], [30.0, 30.0], GenomicFeatures.Strand[STRAND_POS, STRAND_POS])
+ VariationPileup(C13G, 0x0000000000000002, [0.27586206896551724, 0.10344827586206896], [30.0, 30.0], GenomicFeatures.Strand[STRAND_POS, STRAND_POS])
+ VariationPileup(C40G, 0x0000000000000006, [1.0, 0.8620689655172413, 0.6896551724137931, 0.5172413793103449, 0.3448275862068966, 0.1724137931034483], [30.0, 30.0, 30.0, 30.0, 30.0, 30.0], GenomicFeatures.Strand[STRAND_POS, STRAND_POS, STRAND_POS, STRAND_POS, STRAND_POS, STRAND_POS])
+ VariationPileup(C42G, 0x0000000000000006, [0.9310344827586207, 0.7586206896551724, 0.5862068965517241, 0.41379310344827586, 0.2413793103448276, 0.06896551724137931], [30.0, 30.0, 30.0, 30.0, 30.0, 30.0], GenomicFeatures.Strand[STRAND_POS, STRAND_POS, STRAND_POS, STRAND_POS, STRAND_POS, STRAND_POS])
+ VariationPileup(C52G, 0x0000000000000006, [0.9310344827586207, 0.7586206896551724, 0.5862068965517241, 0.41379310344827586, 0.2413793103448276, 0.06896551724137931], [30.0, 30.0, 30.0, 30.0, 30.0, 30.0], GenomicFeatures.Strand[STRAND_POS, STRAND_POS, STRAND_POS, STRAND_POS, STRAND_POS, STRAND_POS])
+ VariationPileup(T29A, 0x0000000000000005, [0.4827586206896552, 0.3103448275862069, 0.13793103448275862], [63.0, 63.0, 63.0], GenomicFeatures.Strand[STRAND_POS, STRAND_POS, STRAND_POS])
+ VariationPileup(C45G, 0x0000000000000006, [1.0, 0.8620689655172413, 0.6896551724137931, 0.5172413793103449, 0.3448275862068966, 0.1724137931034483], [30.0, 30.0, 30.0, 30.0, 30.0, 30.0], GenomicFeatures.Strand[STRAND_POS, STRAND_POS, STRAND_POS, STRAND_POS, STRAND_POS, STRAND_POS])
+ VariationPileup(C26G, 0x0000000000000005, [0.7241379310344828, 0.5517241379310345, 0.3793103448275862, 0.20689655172413793, 0.0], [30.0, 30.0, 30.0, 30.0, 30.0], GenomicFeatures.Strand[STRAND_POS, STRAND_POS, STRAND_POS, STRAND_POS, STRAND_POS])
+ VariationPileup(C27G, 0x0000000000000005, [0.7586206896551724, 0.5862068965517241, 0.41379310344827586, 0.2413793103448276, 0.06896551724137931], [30.0, 30.0, 30.0, 30.0, 30.0], GenomicFeatures.Strand[STRAND_POS, STRAND_POS, STRAND_POS, STRAND_POS, STRAND_POS])</code></pre><h2 id="But-is-it-real?"><a class="docs-heading-anchor" href="#But-is-it-real?">But is it real?</a><a id="But-is-it-real?-1"></a><a class="docs-heading-anchor-permalink" href="#But-is-it-real?" title="Permalink"></a></h2><p>Pileups tell us what the sequences are saying, but they can&#39;t tell us if there are any real variants. We can use the <a href="../../api/variationcall/#HapLink.call_variant-Tuple{VariationPileup, Float64}"><code>call_variant</code></a> function to filter a pileup into a set of variants.</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; all_variant_calls = VariationCall[]</code><code class="nohighlight hljs ansi" style="display:block;">VariationCall[]</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; for pile in sample_pileup
+           push!(all_variant_calls, call_variant(pile, 0.5; D=0x02, Q=10.0, X=0.01, F=0.05))
+       end</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; all_variant_calls</code><code class="nohighlight hljs ansi" style="display:block;">21-element Vector{VariationCall}:
+ VariationCall(C17G, 30.0, [&quot;PASS&quot;], 0x0000000000000003, 1.0, 0x0000000000000003, 0.2413793103448276, 0.10000000000000005)
+ VariationCall(C59G, 30.0, [&quot;PASS&quot;], 0x0000000000000005, 1.0, 0x0000000000000005, 0.6551724137931034, 0.007936507936507936)
+ VariationCall(A34T, 20.0, [&quot;PASS&quot;], 0x0000000000000006, 1.0, 0x0000000000000003, 0.6551724137931034, 0.033566433566433566)
+ VariationCall(C32G, 30.0, [&quot;PASS&quot;], 0x0000000000000006, 1.0, 0x0000000000000006, 0.5, 0.0021645021645021662)
+ VariationCall(C37G, 30.0, [&quot;PASS&quot;], 0x0000000000000006, 1.0, 0x0000000000000006, 0.5, 0.0021645021645021662)
+ VariationCall(C64G, 30.0, [&quot;PASS&quot;], 0x0000000000000004, 1.0, 0x0000000000000003, 0.7011494252873564, 0.07936507936507946)
+ VariationCall(C54G, 30.0, [&quot;PASS&quot;], 0x0000000000000006, 1.0, 0x0000000000000006, 0.5689655172413792, 0.0021645021645021662)
+ VariationCall(Δ63-63, 30.0, [&quot;d2&quot;], 0x0000000000000004, 1.0, 0x0000000000000001, 0.41379310344827586, 0.21212121212121218)
+ VariationCall(Δ62-64, 30.0, [&quot;d2&quot;], 0x0000000000000004, 1.0, 0x0000000000000001, 0.7241379310344828, 0.21212121212121218)
+ VariationCall(C15G, 30.0, [&quot;PASS&quot;], 0x0000000000000002, 1.0, 0x0000000000000002, 0.25862068965517243, 0.3333333333333333)
+ ⋮
+ VariationCall(C73G, 30.0, [&quot;PASS&quot;], 0x0000000000000002, 1.0, 0x0000000000000002, 0.8620689655172413, 0.3333333333333333)
+ VariationCall(C13G, 30.0, [&quot;PASS&quot;], 0x0000000000000002, 1.0, 0x0000000000000002, 0.1896551724137931, 0.3333333333333333)
+ VariationCall(C40G, 30.0, [&quot;PASS&quot;], 0x0000000000000006, 1.0, 0x0000000000000006, 0.5977011494252874, 0.0021645021645021662)
+ VariationCall(C42G, 30.0, [&quot;PASS&quot;], 0x0000000000000006, 1.0, 0x0000000000000006, 0.5, 0.0021645021645021662)
+ VariationCall(C52G, 30.0, [&quot;PASS&quot;], 0x0000000000000006, 1.0, 0x0000000000000006, 0.5, 0.0021645021645021662)
+ VariationCall(T29A, 63.0, [&quot;PASS&quot;], 0x0000000000000005, 1.0, 0x0000000000000003, 0.3103448275862069, 0.05303030303030305)
+ VariationCall(C45G, 30.0, [&quot;PASS&quot;], 0x0000000000000006, 1.0, 0x0000000000000006, 0.5977011494252874, 0.0021645021645021662)
+ VariationCall(C26G, 30.0, [&quot;PASS&quot;], 0x0000000000000005, 1.0, 0x0000000000000005, 0.3724137931034483, 0.007936507936507936)
+ VariationCall(C27G, 30.0, [&quot;PASS&quot;], 0x0000000000000005, 1.0, 0x0000000000000005, 0.4137931034482758, 0.007936507936507936)</code></pre><p>We can now remove all variants that did not pass our filters.</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; filter!(var -&gt; filters(var) == [&quot;PASS&quot;], all_variant_calls)</code><code class="nohighlight hljs ansi" style="display:block;">19-element Vector{VariationCall}:
+ VariationCall(C17G, 30.0, [&quot;PASS&quot;], 0x0000000000000003, 1.0, 0x0000000000000003, 0.2413793103448276, 0.10000000000000005)
+ VariationCall(C59G, 30.0, [&quot;PASS&quot;], 0x0000000000000005, 1.0, 0x0000000000000005, 0.6551724137931034, 0.007936507936507936)
+ VariationCall(A34T, 20.0, [&quot;PASS&quot;], 0x0000000000000006, 1.0, 0x0000000000000003, 0.6551724137931034, 0.033566433566433566)
+ VariationCall(C32G, 30.0, [&quot;PASS&quot;], 0x0000000000000006, 1.0, 0x0000000000000006, 0.5, 0.0021645021645021662)
+ VariationCall(C37G, 30.0, [&quot;PASS&quot;], 0x0000000000000006, 1.0, 0x0000000000000006, 0.5, 0.0021645021645021662)
+ VariationCall(C64G, 30.0, [&quot;PASS&quot;], 0x0000000000000004, 1.0, 0x0000000000000003, 0.7011494252873564, 0.07936507936507946)
+ VariationCall(C54G, 30.0, [&quot;PASS&quot;], 0x0000000000000006, 1.0, 0x0000000000000006, 0.5689655172413792, 0.0021645021645021662)
+ VariationCall(C15G, 30.0, [&quot;PASS&quot;], 0x0000000000000002, 1.0, 0x0000000000000002, 0.25862068965517243, 0.3333333333333333)
+ VariationCall(C50G, 30.0, [&quot;PASS&quot;], 0x0000000000000006, 1.0, 0x0000000000000006, 0.5977011494252874, 0.0021645021645021662)
+ VariationCall(T48A, 63.0, [&quot;PASS&quot;], 0x0000000000000006, 1.0, 0x0000000000000003, 0.7931034482758621, 0.033566433566433566)
+ VariationCall(C73G, 30.0, [&quot;PASS&quot;], 0x0000000000000002, 1.0, 0x0000000000000002, 0.8620689655172413, 0.3333333333333333)
+ VariationCall(C13G, 30.0, [&quot;PASS&quot;], 0x0000000000000002, 1.0, 0x0000000000000002, 0.1896551724137931, 0.3333333333333333)
+ VariationCall(C40G, 30.0, [&quot;PASS&quot;], 0x0000000000000006, 1.0, 0x0000000000000006, 0.5977011494252874, 0.0021645021645021662)
+ VariationCall(C42G, 30.0, [&quot;PASS&quot;], 0x0000000000000006, 1.0, 0x0000000000000006, 0.5, 0.0021645021645021662)
+ VariationCall(C52G, 30.0, [&quot;PASS&quot;], 0x0000000000000006, 1.0, 0x0000000000000006, 0.5, 0.0021645021645021662)
+ VariationCall(T29A, 63.0, [&quot;PASS&quot;], 0x0000000000000005, 1.0, 0x0000000000000003, 0.3103448275862069, 0.05303030303030305)
+ VariationCall(C45G, 30.0, [&quot;PASS&quot;], 0x0000000000000006, 1.0, 0x0000000000000006, 0.5977011494252874, 0.0021645021645021662)
+ VariationCall(C26G, 30.0, [&quot;PASS&quot;], 0x0000000000000005, 1.0, 0x0000000000000005, 0.3724137931034483, 0.007936507936507936)
+ VariationCall(C27G, 30.0, [&quot;PASS&quot;], 0x0000000000000005, 1.0, 0x0000000000000005, 0.4137931034482758, 0.007936507936507936)</code></pre><h2 id="Rule-of-the-majority"><a class="docs-heading-anchor" href="#Rule-of-the-majority">Rule of the majority</a><a id="Rule-of-the-majority-1"></a><a class="docs-heading-anchor-permalink" href="#Rule-of-the-majority" title="Permalink"></a></h2><h3 id="Filtering-variants"><a class="docs-heading-anchor" href="#Filtering-variants">Filtering variants</a><a id="Filtering-variants-1"></a><a class="docs-heading-anchor-permalink" href="#Filtering-variants" title="Permalink"></a></h3><p>We can sort into consensus and subconsensus variants. Note that for this fake set, consensus variants will be taken at a &gt;75% frequency.</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; consensus_variant_calls = filter(var -&gt; frequency(var) &gt; 0.75, all_variant_calls)</code><code class="nohighlight hljs ansi" style="display:block;">15-element Vector{VariationCall}:
+ VariationCall(C17G, 30.0, [&quot;PASS&quot;], 0x0000000000000003, 1.0, 0x0000000000000003, 0.2413793103448276, 0.10000000000000005)
+ VariationCall(C59G, 30.0, [&quot;PASS&quot;], 0x0000000000000005, 1.0, 0x0000000000000005, 0.6551724137931034, 0.007936507936507936)
+ VariationCall(C32G, 30.0, [&quot;PASS&quot;], 0x0000000000000006, 1.0, 0x0000000000000006, 0.5, 0.0021645021645021662)
+ VariationCall(C37G, 30.0, [&quot;PASS&quot;], 0x0000000000000006, 1.0, 0x0000000000000006, 0.5, 0.0021645021645021662)
+ VariationCall(C54G, 30.0, [&quot;PASS&quot;], 0x0000000000000006, 1.0, 0x0000000000000006, 0.5689655172413792, 0.0021645021645021662)
+ VariationCall(C15G, 30.0, [&quot;PASS&quot;], 0x0000000000000002, 1.0, 0x0000000000000002, 0.25862068965517243, 0.3333333333333333)
+ VariationCall(C50G, 30.0, [&quot;PASS&quot;], 0x0000000000000006, 1.0, 0x0000000000000006, 0.5977011494252874, 0.0021645021645021662)
+ VariationCall(C73G, 30.0, [&quot;PASS&quot;], 0x0000000000000002, 1.0, 0x0000000000000002, 0.8620689655172413, 0.3333333333333333)
+ VariationCall(C13G, 30.0, [&quot;PASS&quot;], 0x0000000000000002, 1.0, 0x0000000000000002, 0.1896551724137931, 0.3333333333333333)
+ VariationCall(C40G, 30.0, [&quot;PASS&quot;], 0x0000000000000006, 1.0, 0x0000000000000006, 0.5977011494252874, 0.0021645021645021662)
+ VariationCall(C42G, 30.0, [&quot;PASS&quot;], 0x0000000000000006, 1.0, 0x0000000000000006, 0.5, 0.0021645021645021662)
+ VariationCall(C52G, 30.0, [&quot;PASS&quot;], 0x0000000000000006, 1.0, 0x0000000000000006, 0.5, 0.0021645021645021662)
+ VariationCall(C45G, 30.0, [&quot;PASS&quot;], 0x0000000000000006, 1.0, 0x0000000000000006, 0.5977011494252874, 0.0021645021645021662)
+ VariationCall(C26G, 30.0, [&quot;PASS&quot;], 0x0000000000000005, 1.0, 0x0000000000000005, 0.3724137931034483, 0.007936507936507936)
+ VariationCall(C27G, 30.0, [&quot;PASS&quot;], 0x0000000000000005, 1.0, 0x0000000000000005, 0.4137931034482758, 0.007936507936507936)</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; subconsensus_variant_calls = filter(
+           var -&gt; !(var in consensus_variant_calls), all_variant_calls
+       )</code><code class="nohighlight hljs ansi" style="display:block;">4-element Vector{VariationCall}:
+ VariationCall(A34T, 20.0, [&quot;PASS&quot;], 0x0000000000000006, 1.0, 0x0000000000000003, 0.6551724137931034, 0.033566433566433566)
+ VariationCall(C64G, 30.0, [&quot;PASS&quot;], 0x0000000000000004, 1.0, 0x0000000000000003, 0.7011494252873564, 0.07936507936507946)
+ VariationCall(T48A, 63.0, [&quot;PASS&quot;], 0x0000000000000006, 1.0, 0x0000000000000003, 0.7931034482758621, 0.033566433566433566)
+ VariationCall(T29A, 63.0, [&quot;PASS&quot;], 0x0000000000000005, 1.0, 0x0000000000000003, 0.3103448275862069, 0.05303030303030305)</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; consensus_variations = variation.(consensus_variant_calls)</code><code class="nohighlight hljs ansi" style="display:block;">15-element Vector{SequenceVariation.Variation{BioSequences.LongSequence{BioSequences.DNAAlphabet{4}}, BioSymbols.DNA}}:
+ C17G
+ C59G
+ C32G
+ C37G
+ C54G
+ C15G
+ C50G
+ C73G
+ C13G
+ C40G
+ C42G
+ C52G
+ C45G
+ C26G
+ C27G</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; subconsensus_variations = variation.(subconsensus_variant_calls)</code><code class="nohighlight hljs ansi" style="display:block;">4-element Vector{SequenceVariation.Variation{BioSequences.LongSequence{BioSequences.DNAAlphabet{4}}, BioSymbols.DNA}}:
+ A34T
+ C64G
+ T48A
+ T29A</code></pre><h3 id="Creating-the-consensus-sequence"><a class="docs-heading-anchor" href="#Creating-the-consensus-sequence">Creating the consensus sequence</a><a id="Creating-the-consensus-sequence-1"></a><a class="docs-heading-anchor-permalink" href="#Creating-the-consensus-sequence" title="Permalink"></a></h3><p>We will now need to convert the consensus variations into a consensus sequence. HapLink doesn&#39;t have these tools in-and-of itself, so we&#39;ll have to reach into its dependency packages.</p><pre><code class="language-plaintext hljs">(haplink-tutorial-4) pkg&gt; add BioAlignments SequenceVariation
+   Resolving package versions...
+    Updating `~/haplink-tutorial-4/Project.toml`
+  [00701ae9] + BioAlignments v3.1.0
+  [eef6e190] + SequenceVariation v0.2.2
+  No Changes to `~/haplink-tutorial-4/Manifest.toml`</code></pre><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; using BioAlignments, SequenceVariation</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; reference_sequence = reference(first(consensus_variations))</code><code class="nohighlight hljs ansi" style="display:block;">80nt DNA Sequence:
+ACAACTTTATCTCTCTCAACTTCTTCCCTTACTATCCTTCACAACAATCCACACATTACTGCACTTTAAACACTTTTTTA</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; consensus_haplotype = Haplotype(reference_sequence, consensus_variations)</code><code class="nohighlight hljs ansi" style="display:block;">SequenceVariation.Haplotype{BioSequences.LongSequence{BioSequences.DNAAlphabet{4}}, BioSymbols.DNA} with 15 edits:
+  C13G
+  C15G
+  C17G
+  C26G
+  C27G
+  C32G
+  C37G
+  C40G
+  C42G
+  C45G
+  C50G
+  C52G
+  C54G
+  C59G
+  C73G</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; consensus_sequence = reconstruct(consensus_haplotype)</code><code class="nohighlight hljs ansi" style="display:block;">80nt DNA Sequence:
+ACAACTTTATCTGTGTGAACTTCTTGGCTTAGTATCGTTGAGAAGAATCGAGAGATTAGTGCACTTTAAACAGTTTTTTA</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; consensus_alignment = PairwiseAlignment(
+           AlignedSequence(consensus_sequence, Alignment(HapLink.cigar(consensus_haplotype))),
+           reference_sequence,
+       )</code><code class="nohighlight hljs ansi" style="display:block;">BioAlignments.PairwiseAlignment{BioSequences.LongSequence{BioSequences.DNAAlphabet{4}}, BioSequences.LongSequence{BioSequences.DNAAlphabet{4}}}:
+  seq:  1 ACAACTTTATCTGTGTGAACTTCTTGGCTTAGTATCGTTGAGAAGAATCGAGAGATTAGT 60
+          |||||||||||| | | ||||||||  |||| |||| || | || |||| | | |||| |
+  ref:  1 ACAACTTTATCTCTCTCAACTTCTTCCCTTACTATCCTTCACAACAATCCACACATTACT 60
+
+  seq: 61 GCACTTTAAACAGTTTTTTA 80
+          |||||||||||| |||||||
+  ref: 61 GCACTTTAAACACTTTTTTA 80</code></pre><h3 id="Minority-report"><a class="docs-heading-anchor" href="#Minority-report">Minority report</a><a id="Minority-report-1"></a><a class="docs-heading-anchor-permalink" href="#Minority-report" title="Permalink"></a></h3><p>We are interested in looking at the subconsensus variants, but they need to be reoriented to be put in terms of the consensus sequence.</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; map!(
+           var -&gt; translate(var, consensus_alignment),
+           subconsensus_variations,
+           subconsensus_variations,
+       )</code><code class="nohighlight hljs ansi" style="display:block;">4-element Vector{SequenceVariation.Variation{BioSequences.LongSequence{BioSequences.DNAAlphabet{4}}, BioSymbols.DNA}}:
+ A34T
+ C64G
+ T48A
+ T29A</code></pre><h2 id="Bringing-in-the-reads"><a class="docs-heading-anchor" href="#Bringing-in-the-reads">Bringing in the reads</a><a id="Bringing-in-the-reads-1"></a><a class="docs-heading-anchor-permalink" href="#Bringing-in-the-reads" title="Permalink"></a></h2><p>Now that we have a consensus sequence, we can properly import the reads for haplotype calling into HapLink&#39;s specialized <a href="tutorial/@ref"><code>Psuedoread</code></a> class. There is a convient <a href="../../api/psuedoread/#HapLink.pseudoreads-Tuple{Union{AbstractString, FilePathsBase.AbstractPath}, BioSequences.BioSequence{&lt;:BioSequences.NucleicAcidAlphabet}}"><code>pseudoreads</code></a> function that can directly convert a BAM file for us.</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; haplotyping_pseudoreads = pseudoreads(EXAMPLE_BAM, consensus_sequence)</code><code class="nohighlight hljs ansi" style="display:block;">10-element Vector{Pseudoread}:
+ Pseudoread(0x0000000000000006, 0x0000000000000023, SequenceVariation.Haplotype{BioSequences.LongSequence{BioSequences.DNAAlphabet{4}}, BioSymbols.DNA} with 1 edit:
+  A34T)
+ Pseudoread(0x000000000000000b, 0x0000000000000028, SequenceVariation.Haplotype{BioSequences.LongSequence{BioSequences.DNAAlphabet{4}}, BioSymbols.DNA} with 0 edit:)
+ Pseudoread(0x0000000000000010, 0x000000000000002d, SequenceVariation.Haplotype{BioSequences.LongSequence{BioSequences.DNAAlphabet{4}}, BioSymbols.DNA} with 2 edits:
+  T29A
+  A34T)
+ Pseudoread(0x0000000000000015, 0x0000000000000032, SequenceVariation.Haplotype{BioSequences.LongSequence{BioSequences.DNAAlphabet{4}}, BioSymbols.DNA} with 2 edits:
+  T29A
+  T48A)
+ Pseudoread(0x000000000000001a, 0x0000000000000037, SequenceVariation.Haplotype{BioSequences.LongSequence{BioSequences.DNAAlphabet{4}}, BioSymbols.DNA} with 3 edits:
+  T29A
+  A34T
+  T48A)
+ Pseudoread(0x000000000000001f, 0x000000000000003c, SequenceVariation.Haplotype{BioSequences.LongSequence{BioSequences.DNAAlphabet{4}}, BioSymbols.DNA} with 1 edit:
+  T48A)
+ Pseudoread(0x0000000000000024, 0x0000000000000041, SequenceVariation.Haplotype{BioSequences.LongSequence{BioSequences.DNAAlphabet{4}}, BioSymbols.DNA} with 1 edit:
+  C64G)
+ Pseudoread(0x0000000000000029, 0x0000000000000046, SequenceVariation.Haplotype{BioSequences.LongSequence{BioSequences.DNAAlphabet{4}}, BioSymbols.DNA} with 1 edit:
+  Δ62-64)
+ Pseudoread(0x000000000000002e, 0x000000000000004b, SequenceVariation.Haplotype{BioSequences.LongSequence{BioSequences.DNAAlphabet{4}}, BioSymbols.DNA} with 1 edit:
+  C64G)
+ Pseudoread(0x0000000000000033, 0x0000000000000050, SequenceVariation.Haplotype{BioSequences.LongSequence{BioSequences.DNAAlphabet{4}}, BioSymbols.DNA} with 2 edits:
+  Δ63-63
+  C64G)</code></pre><h3 id="Cutting-the-chaff"><a class="docs-heading-anchor" href="#Cutting-the-chaff">Cutting the chaff</a><a id="Cutting-the-chaff-1"></a><a class="docs-heading-anchor-permalink" href="#Cutting-the-chaff" title="Permalink"></a></h3><p>We only need reads that span every one of our subconsensus variants, so let&#39;s get rid of every other read.</p><pre><code class="language-plaintext hljs">(haplink-tutorial-4) pkg&gt; add BioGenerics
+   Resolving package versions...
+    Updating `~/haplink-tutorial-4/Project.toml`
+  [47718e42] + BioGenerics v0.1.2
+  No Changes to `~/haplink-tutorial-4/Manifest.toml`</code></pre><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; using BioGenerics</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; filter!(
+           var -&gt; leftposition(var) &gt;= leftposition(first(subconsensus_variations)),
+           haplotyping_pseudoreads,
+       )</code><code class="nohighlight hljs ansi" style="display:block;">4-element Vector{Pseudoread}:
+ Pseudoread(0x0000000000000024, 0x0000000000000041, SequenceVariation.Haplotype{BioSequences.LongSequence{BioSequences.DNAAlphabet{4}}, BioSymbols.DNA} with 1 edit:
+  C64G)
+ Pseudoread(0x0000000000000029, 0x0000000000000046, SequenceVariation.Haplotype{BioSequences.LongSequence{BioSequences.DNAAlphabet{4}}, BioSymbols.DNA} with 1 edit:
+  Δ62-64)
+ Pseudoread(0x000000000000002e, 0x000000000000004b, SequenceVariation.Haplotype{BioSequences.LongSequence{BioSequences.DNAAlphabet{4}}, BioSymbols.DNA} with 1 edit:
+  C64G)
+ Pseudoread(0x0000000000000033, 0x0000000000000050, SequenceVariation.Haplotype{BioSequences.LongSequence{BioSequences.DNAAlphabet{4}}, BioSymbols.DNA} with 2 edits:
+  Δ63-63
+  C64G)</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; filter!(
+           var -&gt; rightposition(var) &gt;= rightposition(first(subconsensus_variations)),
+           haplotyping_pseudoreads,
+       )</code><code class="nohighlight hljs ansi" style="display:block;">4-element Vector{Pseudoread}:
+ Pseudoread(0x0000000000000024, 0x0000000000000041, SequenceVariation.Haplotype{BioSequences.LongSequence{BioSequences.DNAAlphabet{4}}, BioSymbols.DNA} with 1 edit:
+  C64G)
+ Pseudoread(0x0000000000000029, 0x0000000000000046, SequenceVariation.Haplotype{BioSequences.LongSequence{BioSequences.DNAAlphabet{4}}, BioSymbols.DNA} with 1 edit:
+  Δ62-64)
+ Pseudoread(0x000000000000002e, 0x000000000000004b, SequenceVariation.Haplotype{BioSequences.LongSequence{BioSequences.DNAAlphabet{4}}, BioSymbols.DNA} with 1 edit:
+  C64G)
+ Pseudoread(0x0000000000000033, 0x0000000000000050, SequenceVariation.Haplotype{BioSequences.LongSequence{BioSequences.DNAAlphabet{4}}, BioSymbols.DNA} with 2 edits:
+  Δ63-63
+  C64G)</code></pre><h2 id="Finding-haplotypes..."><a class="docs-heading-anchor" href="#Finding-haplotypes...">Finding haplotypes...</a><a id="Finding-haplotypes...-1"></a><a class="docs-heading-anchor-permalink" href="#Finding-haplotypes..." title="Permalink"></a></h2><p>This one is a bit of a mind-bender, but bear with me.</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; haplotyping_haploypes = haplotype.(haplotyping_pseudoreads)</code><code class="nohighlight hljs ansi" style="display:block;">4-element Vector{SequenceVariation.Haplotype{BioSequences.LongSequence{BioSequences.DNAAlphabet{4}}, BioSymbols.DNA}}:
+ SequenceVariation.Haplotype{BioSequences.LongSequence{BioSequences.DNAAlphabet{4}}, BioSymbols.DNA} with 1 edit:
+  C64G
+ SequenceVariation.Haplotype{BioSequences.LongSequence{BioSequences.DNAAlphabet{4}}, BioSymbols.DNA} with 1 edit:
+  Δ62-64
+ SequenceVariation.Haplotype{BioSequences.LongSequence{BioSequences.DNAAlphabet{4}}, BioSymbols.DNA} with 1 edit:
+  C64G
+ SequenceVariation.Haplotype{BioSequences.LongSequence{BioSequences.DNAAlphabet{4}}, BioSymbols.DNA} with 2 edits:
+  Δ63-63
+  C64G</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; valid_haplotypes = findset(
+           subconsensus_variations, hap -&gt; ishaplotype(hap, haplotyping_haploypes)
+       )</code><code class="nohighlight hljs ansi" style="display:block;">1-element Vector{Vector{SequenceVariation.Variation{BioSequences.LongSequence{BioSequences.DNAAlphabet{4}}, BioSymbols.DNA}}}:
+ [A34T, C64G, T48A, T29A]</code></pre><h2 id="...and-deciding-if-they&#39;re-real"><a class="docs-heading-anchor" href="#...and-deciding-if-they&#39;re-real">...and deciding if they&#39;re real</a><a id="...and-deciding-if-they&#39;re-real-1"></a><a class="docs-heading-anchor-permalink" href="#...and-deciding-if-they&#39;re-real" title="Permalink"></a></h2><p>Just because a haplotype <em>could</em> exist, doesn&#39;t mean it should. You can check the statistics of a haplotype by converting it into a <a href="../../api/haplotypecall/#HapLink.HaplotypeCall"><code>HaplotypeCall</code></a>.</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; map(hap -&gt; HaplotypeCall(hap, haplotyping_haploypes), valid_haplotypes);</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; hc = first(ans)</code><code class="nohighlight hljs ansi" style="display:block;">HaplotypeCall{BioSequences.LongSequence{BioSequences.DNAAlphabet{4}}, BioSymbols.DNA}(0x0000000000000000, 0.0, 0.0, NaN, SequenceVariation.Haplotype{BioSequences.LongSequence{BioSequences.DNAAlphabet{4}}, BioSymbols.DNA} with 4 edits:
+  T29A
+  A34T
+  T48A
+  C64G)</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; depth(hc)</code><code class="nohighlight hljs ansi" style="display:block;">0x0000000000000000</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; linkage(hc)</code><code class="nohighlight hljs ansi" style="display:block;">0.0</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; significance(hc)</code><code class="nohighlight hljs ansi" style="display:block;">NaN</code></pre><p>Nope! This one sure isn&#39;t!</p><ul><li><ul><li><ul><li></li></ul></li></ul></li></ul><p>This tutorial only scratches the surface of what&#39;s possible with HapLink&#39;s REPL mode. Take a look at the full API reference for more details on how to tweak your haplotype calling. Have fun!</p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../3-other/">« Plays well with others (External tools)</a><a class="docs-footer-nextpage" href="../../cli/variants/">haplink variants »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 0.27.24 on <span class="colophon-date" title="Sunday 4 June 2023 21:53">Sunday 4 June 2023</span>. Using Julia version 1.9.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
