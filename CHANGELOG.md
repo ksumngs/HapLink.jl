@@ -24,6 +24,8 @@ and this project adheres to
   ([#37](https://github.com/ksumngs/HapLink.jl/pull/37))
 - Earthfile for repeatable testing and documentation builds
   ([#42](https://github.com/ksumngs/HapLink.jl/issues/42)/[#45](https://github.com/ksumngs/HapLink.jl/pull/45))
+- Nix configuration
+  ([#41](https://github.com/ksumngs/HapLink.jl/issues/41)/[#53](https://github.com/ksumngs/HapLink.jl/pull/52))
 
 ### Changed
 
