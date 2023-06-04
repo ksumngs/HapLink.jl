@@ -15,12 +15,29 @@ makedocs(;
     ),
     pages=[
         "Home" => "index.md",
-        "API Reference" => [
+        "Tutorials" => [
+            "In the beginning (Installation)" => "tutorial/1-install.md",
+            "Kicking the tires (Fake sequences)" => "tutorial/2-examples.md",
+            "Plays well with others (External tools)" => "tutorial/3-other.md",
+            "For advanced beginners (REPL mode)" => "tutorial/4-repl.md",
+        ],
+        "CLI Reference" => [
+            "haplink variants" => "cli/variants.md",
+            "haplink consensus" => "cli/consensus.md",
+            "haplink haplotypes" => "cli/haplotypes.md",
+            "haplink sequences" => "cli/sequences.md",
+        ],
+        "Public API Reference" => [
             "Variation Extensions" => "api/variation.md",
             "VariationInfo" => "api/variationinfo.md",
             "VariationPileup" => "api/variationpileup.md",
             "VariationCall" => "api/variationcall.md",
+            "Consensus Tools" => "api/consensus.md",
+            "Pseudoread" => "api/psuedoread.md",
+            "Haplotype Extensions" => "api/haplotype.md",
+            "HaplotypeCall" => "api/haplotypecall.md",
         ],
+        "Private API Reference" => "api/private.md",
     ],
 )
 deploydocs(; repo="github.com/ksumngs/HapLink.jl", devbranch="master")
