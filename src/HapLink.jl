@@ -102,17 +102,7 @@ include("findset.jl")
 include("haplotypecalling.jl")
 
 """
-    function variants(
-        reference::String,
-        bam::String;
-        outfile::Union{String,Nothing}=nothing,
-        significance::Float64=1e-5,
-        depth::UInt64=UInt64(10),
-        quality::Float64=12.0,
-        frequency::Float64=0.05,
-        position::Float64=0.5,
-        strandedness::Union{Float64,Nothing}=nothing,
-    )
+    haplink variants [options] reference bam
 
 Call variants
 
@@ -187,13 +177,7 @@ the variant calling. Outputs a Variant Call Format (VCF) file compliant with VCF
 end #function
 
 """
-    function consensus(
-        reference::String,
-        variants::String;
-        outfile::Union{String,Nothing}=nothing,
-        frequency::Float64=0.5,
-        prefix::String=""
-    )
+    haplink consensus [options] reference variants
 
 Convert variant calls to consensus sequence
 
@@ -236,21 +220,7 @@ Outputs results in FASTA format.
 end #function
 
 """
-    function haplotypes(
-        reference::String,
-        variants::String,
-        bam::String;
-        outfile::String="",
-        consensus_frequency::Float64=0.5,
-        significance::Float64=0.05,
-        depth::UInt64=0x0000000000000003,
-        frequency::Float64=0.1,
-        simulated_reads::Bool=false,
-        overlap_min::Int64=0,
-        overlap_max::Int64=500,
-        iterations::UInt64=0x0000000000002710,
-        seed::Union{UInt64,Nothing}=nothing,
-    )
+    haplink haplotypes [options] reference variants bam
 
 Call haplotypes
 
@@ -426,9 +396,7 @@ low accuracy long-read chemistry like Oxford Nanopore). There are no guarantees 
 end #function
 
 """
-    function sequences(
-        reference::String, haplotypes::String; outfile::String="", prefix::String=""
-    )
+    haplink sequences [options] reference haplotypes
 
 Convert haplotype calls into haplotype sequences
 
