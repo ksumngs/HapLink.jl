@@ -22,10 +22,39 @@ struct HaplotypeCall{S<:BioSequence,T<:BioSymbol}
     haplotype::Haplotype{S,T}
 end #struct
 
+"""
+    depth(hc::HaplotypeCall)
+
+Gets the number of times `hc` was found
+"""
 depth(hc::HaplotypeCall) = hc.depth
+
+"""
+    linkage(hc::HaplotypeCall)
+
+Gets the unweighted linkage disequilibrium coefficient of `hc`
+"""
 linkage(hc::HaplotypeCall) = hc.linkage
+
+"""
+    frequency(hc::HaplotypeCall)
+
+Gets the relative number of times `hc` was found
+"""
 frequency(hc::HaplotypeCall) = hc.frequency
+
+"""
+    significance(hc::HaplotypeCall)
+
+Gets the ``χ^2`` statistical significance (``p``-value) of `hc`
+"""
 significance(hc::HaplotypeCall) = hc.significance
+
+"""
+    haplotype(hc::HaplotypeCall)
+
+Gets the underlying `Haplotype` of `hc`
+"""
 haplotype(hc::HaplotypeCall) = hc.haplotype
 variant(hc::HaplotypeCall) = haplotype(hc)
 function _name(hc::HaplotypeCall; prefix::AbstractString="", is_consensus::Bool=false)
