@@ -287,7 +287,7 @@ low accuracy long-read chemistry like Oxford Nanopore). There are no guarantees 
     consensus_frequency::Float64=0.5,
     significance::Float64=0.05,
     depth::UInt64=0x0000000000000003,
-    frequency::Float64=0.1,
+    frequency::Float64=0.05,
     simulated_reads::Bool=false,
     overlap_min::Int64=0,
     overlap_max::Int64=500,
