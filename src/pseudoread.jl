@@ -288,6 +288,8 @@ Finds the inclusive overlap interval of `x` and `y`
 
 # Example
 ```jldoctest
+julia> using HapLink: overlap
+
 julia> overlap(1:5, 3:10)
 3:5
 

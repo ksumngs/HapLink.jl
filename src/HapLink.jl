@@ -59,7 +59,6 @@ export interval
 export ishaplotype
 export linkage
 export occurence_matrix
-export overlap
 export overlap_inrange
 export overlapping_variations
 export p_value
