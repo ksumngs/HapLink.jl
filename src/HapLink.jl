@@ -58,7 +58,6 @@ export haplotype
 export interval
 export ishaplotype
 export linkage
-export magnitude
 export occurence_matrix
 export overlap
 export overlap_inrange

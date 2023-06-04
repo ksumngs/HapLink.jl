@@ -317,6 +317,8 @@ Gets the difference between the last and first elements of `x`
 
 # Example
 ```jldoctest
+julia> using HapLink: magnitude
+
 julia> magnitude(0:10)
 10
 
