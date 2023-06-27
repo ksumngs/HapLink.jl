@@ -8,6 +8,9 @@ and this project adheres to
 
 ## [Unreleased]
 
+- FASTX.jl downgraded to v1
+  ([#56](https://github.com/ksumng/HapLink.jl/pull/56))
+
 ## [1.0.0] - 2023-06-04
 
 > This release represents a [big rewrite](https://youtu.be/xCGu5Z_vaps) of
