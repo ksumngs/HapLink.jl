@@ -253,7 +253,7 @@ dimensional matrix.
 function occurrence_matrix(
     haplotype::AbstractArray{Variation{S,T}}, reads::AbstractArray{Haplotype{S,T}}
 ) where {S<:BioSequence,T<:BioSymbol}
-    hapcounts = zeros(UInt, repeat([2], length(haplotype))...)
+    hapcounts = SparseArray{UInt}(undef, Tuple(repeat([2], length(haplotype))))
 
     for read in reads
         coordinates = zeros(Int, size(haplotype))
