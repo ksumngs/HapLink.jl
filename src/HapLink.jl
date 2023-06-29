@@ -34,6 +34,7 @@ using SequenceVariation:
     translate,
     variations
 using SHA: sha1
+using SparseArrayKit: SparseArray
 using Statistics: mean
 using VariantCallFormat: VCF
 using XAM: BAM, SAM
