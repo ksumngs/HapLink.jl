@@ -280,7 +280,7 @@ function occurrence_matrix(
 end #function
 
 """
-    linkage(counts::AbstractArray{<:Integer})
+    linkage(counts::AbstractArray{<:Integer, N}) where N
 
 Calculates the linkage disequilibrium of a haplotype given its ``N``-dimensional contingency
 matrix, `counts`.
@@ -290,7 +290,7 @@ variant call locus within a haplotype. `findoccurrences` produces such an array.
 
 # Extended help
 
-`linkage(::AbstractArray{<:Integer})` calculates an unweighted linkage disequilibrium as
+`linkage(::AbstractArray{<:Integer, N})` calculates an unweighted linkage disequilibrium as
 given by Equation (6) of [Slatkin (1972)](https://doi.org/10.1093/genetics/72.1.157).
 
 ```math
@@ -308,9 +308,8 @@ where
   locus, i.e. the frequency at which the reference allele is found within the entire read set
   at the ``k``-th locus
 """
-function linkage(counts::AbstractArray{<:Integer})
+function linkage(counts::AbstractArray{<:Integer,N}) where {N}
     # Make math easier by declaring variables
-    N = ndims(counts)
     n = sum(counts)
 
     # Short-circuit if there is only one contingency
@@ -319,12 +318,9 @@ function linkage(counts::AbstractArray{<:Integer})
     return Σ(map(i -> _e_operand(i, counts) * counts[i], CartesianIndices(counts))) / n
 end #function
 
-function _e_operand(coord::CartesianIndex, counts::AbstractArray{<:Integer})
+function _e_operand(coord::CartesianIndex, counts::AbstractArray{<:Integer,N}) where {N}
     # Skip if there are no reads for this contingency
     counts[coord] > 0 || return 0
-
-    # Make math nicer-looking
-    N = ndims(counts)
 
     # Return the result of the operand
     return Π(j -> _sub_i(j, coord, counts), 1:N)
