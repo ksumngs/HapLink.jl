@@ -30,7 +30,7 @@ YAML = "ddb6d928-2868-570f-bddf-ab3f9cf99eb6"
 
 [compat]
 ArgParse = "1"
-Automa = "0.7"
+Automa = "0.7, 1"
 BioAlignments = "3"
 BioGenerics = "0.1.1"
 BioSequences = "3"
