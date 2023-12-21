@@ -136,7 +136,7 @@ map!(
 ## Bringing in the reads
 
 Now that we have a consensus sequence, we can properly import the reads for
-haplotype calling into HapLink's specialized [`Psuedoread`](@ref) class.
+haplotype calling into HapLink's specialized [`Pseudoread`](@ref) class.
 There is a convient [`pseudoreads`](@ref) function that can directly convert a
 BAM file for us.
 
