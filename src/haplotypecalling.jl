@@ -253,7 +253,16 @@ dimensional matrix.
 function occurrence_matrix(
     haplotype::AbstractArray{Variation{S,T}}, reads::AbstractArray{Haplotype{S,T}}
 ) where {S<:BioSequence,T<:BioSymbol}
-    hapcounts = SparseArray{UInt}(undef, Tuple(repeat([2], length(haplotype))))
+    Q = UInt
+    for int_type in [UInt8, UInt16, UInt32, UInt64, UInt128]
+        if length(reads) < typemax(int_type)
+            Q = int_type
+            break
+        end #if
+        error("Too many reads to represent in memory")
+    end #for
+
+    hapcounts = SparseArray{Q}(undef, Tuple(repeat([2], length(haplotype))))
 
     for read in reads
         coordinates = zeros(Int, size(haplotype))
