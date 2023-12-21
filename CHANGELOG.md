@@ -8,6 +8,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Changed
+
+- Haplotype calling now uses sparse matrices
+  ([#60](https://github.com/ksumngs/HapLink.jl/pull/60))
 - FASTX.jl downgraded to v1
   ([#56](https://github.com/ksumng/HapLink.jl/pull/56))
 
