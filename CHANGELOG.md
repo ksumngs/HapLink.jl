@@ -10,6 +10,7 @@ and this project adheres to
 
 ### Changed
 
+- Documentation improved ([#62](https://github.com/ksumngs/pull/62))
 - Haplotype calling uses smallest possible bit depth
   ([#61](https://github.com/ksumngs/pull/61))
 - Haplotype calling now uses sparse matrices
