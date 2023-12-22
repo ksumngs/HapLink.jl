@@ -8,6 +8,8 @@ and this project adheres to
 
 ## [Unreleased]
 
+## [1.1.0] - 2023-12-22
+
 ### Changed
 
 - Documentation improved ([#62](https://github.com/ksumngs/pull/62))
@@ -16,7 +18,7 @@ and this project adheres to
 - Haplotype calling now uses sparse matrices
   ([#60](https://github.com/ksumngs/HapLink.jl/pull/60))
 - FASTX.jl downgraded to v1
-  ([#56](https://github.com/ksumng/HapLink.jl/pull/56))
+  ([#56](https://github.com/ksumngs/HapLink.jl/pull/56))
 
 ## [1.0.0] - 2023-06-04
 
@@ -216,7 +218,8 @@ and this project adheres to
   - `Haplotype`
   - `Variant`
 
-[unreleased]: https://github.com/ksumngs/HapLink.jl/compare/v1.0.0...HEAD
+[unreleased]: https://github.com/ksumngs/HapLink.jl/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/ksumngs/HapLink.jl/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/ksumngs/HapLink.jl/compare/v0.7.1...v1.0.0
 [0.7.1]: https://github.com/ksumngs/HapLink.jl/compare/v0.7.0...v0.7.1
 [0.7.0]: https://github.com/ksumngs/HapLink.jl/compare/v0.6.0...v0.7.0
