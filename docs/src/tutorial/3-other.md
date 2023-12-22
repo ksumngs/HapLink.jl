@@ -1,6 +1,6 @@
-# [Playing well with others](@id integration-tutorial)
+# [Playing well with others: Combining HapLink with external tools](@id integration-tutorial)
 
-HapLink is not a one-man show: it definitely knows how to cooperate with other
+HapLink is not a one-man show: it knows how to cooperate with other
 tools! In this tutorial, we'll let HapLink do the haplotype calling, but use
 other tools to go from reads to variant calls, and from haplotypes to
 phylogenies.
@@ -53,7 +53,7 @@ esearch \
 Next, we'll download one of the pools from the validation set from SRA.
 
 ```bash
-fasterq-dump "SUB13489216"
+fasterq-dump --concatenate-reads -X "SRR24796010" | gzip > "IDV-Aug2022-P2.fastq.gz"
 ```
 
 !!! info "Output"
@@ -66,7 +66,7 @@ fasterq-dump "SUB13489216"
 We have a set of Nanopore reads and a reference genome to go with them. We'll
 use [minimap2](https://doi.org/10.1093/bioinformatics/bty191) to align the reads
 to reference. minimap2 requires the `-a` flag to output in SAM format, and uses
-the `-x` flag to tweak the settings for optimal Nanoore alignment. We then run
+the `-x` flag to tweak the settings for optimal Nanopore alignment. We then run
 those reads through `samtools sort` and `samtools index` to reduce the
 computational load needed to find reads by our downstream tools, and
 `samtools view -b` to convert the SAM file into a compressed BAM file.
