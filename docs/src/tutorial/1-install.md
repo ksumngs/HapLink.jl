@@ -1,10 +1,7 @@
 # [In the beginning](@id install-tutorial)
 
-There are many different ways to install HapLink. Here we walk you through two
-of the most common. If you're one of the 0.01% who needs a different method,
-then we trust you can extrapolate from these instructions. Note that all of
-these tutorials assume you have a Unix-type system (MacOS, BSD, Linux). Windows
-command-line support is basically non-existant!
+There are many different ways to install HapLink. Note that some of these
+install methods are platform-specific.
 
 ```@contents
 Pages = ["1-install.md"]
@@ -17,6 +14,10 @@ We understand: every bioinformatian is addicted to
 here to judge. 👩‍⚖️ It's easy and portable and is bundled on most HPCs. If you
 already have conda (or [mamba](https://mamba.readthedocs.io/en/latest/)), then
 this route is probably for you.
+
+!!! warning
+    
+    Bioconda install is only supported on Linux
 
 ### Install HapLink inside a conda environment
 
@@ -43,14 +44,83 @@ Next, cross your fingers 🤞 and run the following command:
 haplink --help
 ```
 
-Check for error messages, but otherwise you're done. You can reuse your
+The most common error is
+
+```shellsession
+The following package could not be installed
+└─ haplink   does not exist (perhaps a typo or a missing channel).
+```
+
+If this happens,
+
+ 1. Check your spelling in the install command
+ 2. Check that you are using an x86-64 version of conda on Linux
+
+Another common error is
+
+```shellsession
+bash: haplink: command not found
+bash: /bin/julia: No such file or directory
+```
+
+If this happens, check that `CONDA_PREFIX` is set correctly by running
+`echo "$CONDA_PREFIX"`, and/or rerun `conda activate haplink`.
+
+If there are no error messages, you're done. You can reuse your
 `haplink` environment for the [next tutorial](@ref cli-tutorial).
 
-## Comonicon
+## Container install
+
+One option for installing HapLink is don't install HapLink. Or rather, pull a
+[container](https://apptainer.org/docs/user/1.2/introduction.html#why-use-containers)
+that already has HapLink installed, and process files inside of it. HapLink
+provides a Docker container that has been tested on [Apptainer](https://apptainer.org).
+You should be able to use nearly any container software to run HapLink, but we
+recommend Apptainer, due to its ubiquity on HPCs, simple file permissions, and
+increased security.
+
+### Download the container
+
+With Apptainer installed, run
+
+```bash
+apptainer pull docker://ghcr.io/ksumngs/haplink.jl
+```
+
+!!! info "Output"
+    
+      - haplink.jl_latest.sif
+
+### Run the container as a one-off
+
+You can check to see if the container downloaded correctly by using the
+`apptainer exec` command.
+
+```bash
+apptainer exec haplink.jl_latest.sif haplink --version
+```
+
+### Enter the container to run multiple commands
+
+For more complex commands, it is often better to enter the container's shell
+environment and execute commands within the container. Apptainer will include
+all files in your working directory as part of the container when doing this.
+
+```shellsession
+$ apptainer shell haplink.jl_latest.sif
+Apptainer> haplink --version
+```
+
+## Julia dependent-install
 
 HapLink is unashamedly a Julia program. If you already have Julia installed,
-then you can leverage that existing Julia install to install HapLink thanks to
-the power of [Comonicon.jl](https://comonicon.org/).
+then you can leverage that existing Julia install to install HapLink.
+
+!!! tip
+    
+    Under the hood, HapLink can self-install thanks to the power of
+    [Comonicon.jl](https://comonicon.org/). Check out their docs if you want to
+    learn more, or want to troubleshoot a direct install.
 
 ### Check your Julia version
 
@@ -63,9 +133,9 @@ julia --version
 
 ### Add HapLink to a temporary environment and install
 
-Using the magic 🪄 of Julia's environments, we can do a "temp install" of the
+Using the magic of Julia's environments, we can do a "temp install" of the
 HapLink package to a temporary directory environment. Because this is a fresh
-install, though, it will trigger Comonicon to install the application to a
+install, though, it will trigger an installation of the application to a
 brand-new isolated environment.
 
 ```bash

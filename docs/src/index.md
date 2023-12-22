@@ -14,21 +14,15 @@ HapLink
 ## Welcome
 
 Howdy! 🤠 And welcome to HapLink! 👋 HapLink is a command-line suite of tools to
-enable the exploration of viral quasispecies within a single metagenomic sample.
-Every piece eventually builds up to our viral haplotype caller, which uses
-linkage disequilibrium on long sequencing reads (💡 think
+enable the exploration of viral quasispecies within a single sample.
+Our viral haplotype caller uses
+linkage disequilibrium on long sequencing reads (think
 [Oxford Nanopore](https://nanoporetech.com/) or
 [PacBio HiFi](https://www.pacb.com/)) to identify genetic mutations that are
-conserved within a single virus particle.
+likely conserved within a single virus particle.
 
 This manual will cover the different ways of using HapLink, starting with a few
 tutorials before diving into the details of our reference section.
-
-### Contents
-
-```@contents
-
-```
 
 ## Getting started
 
@@ -45,9 +39,9 @@ julia \
 echo 'export PATH=$HOME/.julia/bin:$PATH' >> $HOME/.bashrc
 source ~/.bashrc
 
-wget https://github.com/ksumngs/HapLink.jl/raw/v1.0.0-rc1/example/reference.fasta
-wget https://github.com/ksumngs/HapLink.jl/raw/v1.0.0-rc1/example/sample.bam
-wget https://github.com/ksumngs/HapLink.jl/raw/v1.0.0-rc1/example/sample.bam.bai
+wget https://github.com/ksumngs/HapLink.jl/raw/v1.0.0/example/reference.fasta
+wget https://github.com/ksumngs/HapLink.jl/raw/v1.0.0/example/sample.bam
+wget https://github.com/ksumngs/HapLink.jl/raw/v1.0.0/example/sample.bam.bai
 
 haplink variants \
   reference.fasta \

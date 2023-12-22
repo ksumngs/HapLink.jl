@@ -1,7 +1,7 @@
-# [Kicking the tires](@id cli-tutorial)
+# [Starting at the command line](@id cli-tutorial)
 
 At this point, we'll play with the example sequences included _gratis_ 💰 with
-HapLink. No, they don't represent anything ☁️, and they aren't particularly
+HapLink. No, they don't represent anything, and they aren't particularly
 interesting 🥱, but they **do** run fast 🏇, so we can get a handle on how the
 interface and workflow operate.
 
@@ -9,14 +9,14 @@ interface and workflow operate.
 Pages = ["2-examples.md"]
 ```
 
-## Getting the goods
+## Getting the goods: extracting example files
 
 Let's get the example files from the code repository. In your terminal, run
 
 ```bash
-wget https://github.com/ksumngs/HapLink.jl/raw/v1.0.0-rc1/example/reference.fasta
-wget https://github.com/ksumngs/HapLink.jl/raw/v1.0.0-rc1/example/sample.bam
-wget https://github.com/ksumngs/HapLink.jl/raw/v1.0.0-rc1/example/sample.bam.bai
+wget https://github.com/ksumngs/HapLink.jl/raw/v1.0.0/example/reference.fasta
+wget https://github.com/ksumngs/HapLink.jl/raw/v1.0.0/example/sample.bam
+wget https://github.com/ksumngs/HapLink.jl/raw/v1.0.0/example/sample.bam.bai
 ```
 
 !!! info "Output"
@@ -25,7 +25,7 @@ wget https://github.com/ksumngs/HapLink.jl/raw/v1.0.0-rc1/example/sample.bam.bai
       - sample.bam
       - sample.bam.bai
 
-## Spot the difference
+## Spot the difference: differentiating between sequence error and mutations
 
 In order for HapLink to call haplotypes, it needs to know which sequence
 differences are due to sequencing errors, and which are due to genetic mutation.
@@ -43,11 +43,11 @@ haplink variants reference.fasta sample.bam
     _None_
 
 HapLink by default outputs to standard output, so the variant calls were printed
-on your screen instead of saved 😡. That's okay, though 😌. It's often good to
-visually check your variant calls, and it this case we absolutely needed to.
+on your screen instead of saved. That's okay, though. It's often good to
+visually check your variant calls, and in this case, we absolutely needed to.
 Notice that none of the variants got a `PASS` filter. In fact, all of them were
-weeded out by too high of thresholds for depth (remember we only have 10
-sequences) and significance. Let's readjust (and save our results this time).
+weeded out by the depth threshold (remember we only have 10 sequences) and
+significance. Let's readjust (and save our results this time).
 
 ```bash
 haplink \
@@ -65,7 +65,7 @@ haplink \
 
 These settings seemed to work out well. Let's stick with them and move on.
 
-## The general lay of the land
+## The general lay of the land: generating consensus sequences from variant calls
 
 At this point, we're going to take a break from haplotype calling and convert
 those variant calls into a useful summary: the consensus sequence. HapLink can
@@ -79,10 +79,10 @@ haplink consensus reference.fasta sample.vcf | tee sample.consensus.fasta
     
       - sample.consensus.fasta
 
-## The star attraction
+## The star attraction: calling haplotypes from sequence data
 
 And now it's time for haplotype calling. Before you get your hopes up, there are
-no _true_ haplotypes in this file. If 10 reads could yield subconsenus
+no _true_ haplotypes in this file. If 10 reads could manifest subconsenus
 mysteries, then bioinformatics would be a super easy job. Alas, we live in the
 real world, and we'll have to stretch mathematical constructs to get anything
 out of these reads.
@@ -106,7 +106,7 @@ You can see that HapLink found only one haplotype in this alignment, but
 formatted in HapLink's haplotype scheme. The first haplotype in any output file
 is always the consensus sequence.
 
-## Haplotypes in the Matrix
+## Haplotypes in the Matrix: simulating additional reads during haplotype calling
 
 If you have reads that don't span the entire genome (like we have here), you can
 use HapLink's maximum likelihood simulator to "create" full-length reads by
@@ -136,7 +136,7 @@ Still nothing, huh? Like I said, no haplotypes here, and simulation can't change
 that. Note that simulating full-length reads used _a lot_ more computational
 power, so you should try to stick with full-length reads when you can!
 
-## But, what does it mean?
+## But, what does it mean? Reformatting into fasta format
 
 HapLink's haplotype YAML files contain everything needed to recreate the
 haplotype computation, but they can't really be used by any other programs.

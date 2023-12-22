@@ -4,8 +4,15 @@ Julia is an ahead-of-time compiled language. Practically, that means that every
 time you restart Julia, you have to recompile all the code you were running.
 Using HapLink on the command line involves up to four different commands.
 Translation: up to four cases where you lose time to recompiling code that was
-just running. Surely there's a better way, right? Yep, you can stay within a
+just running. Surely there's a better way, right? Well, you can stay within a
 single Julia session by using HapLink's REPL mode.
+
+!!! tip
+    
+    Julia's latency (aka, Time-to-first-plot or TTFP) is a big deal among Julia
+    programmers. Although there's no "definitive" place to learn about TTFP,
+    [Jakob Nissen's blog](https://viralinstruction.com/posts/badjulia/#compile_time_latency)
+    provides some great explanations and actionable advice for reducing latency.
 
 ```@contents
 Pages = ["4-repl.md"]
@@ -137,7 +144,7 @@ map!(
 
 Now that we have a consensus sequence, we can properly import the reads for
 haplotype calling into HapLink's specialized [`Pseudoread`](@ref) class.
-There is a convient [`pseudoreads`](@ref) function that can directly convert a
+There is a convenient [`pseudoreads`](@ref) function that can directly convert a
 BAM file for us.
 
 ```@repl main
