@@ -10,6 +10,8 @@ and this project adheres to
 
 ### Changed
 
+- Haplotype calling uses smallest possible bit depth
+  ([#61](https://github.com/ksumngs/pull/61))
 - Haplotype calling now uses sparse matrices
   ([#60](https://github.com/ksumngs/HapLink.jl/pull/60))
 - FASTX.jl downgraded to v1
